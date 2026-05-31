@@ -1,0 +1,45 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Modules\GestionAcademica\Models\Carrera;
+use App\Modules\GestionAcademica\Models\CupoCarrera;
+use App\Modules\GestionAcademica\Models\GestionAcademica;
+use Illuminate\Database\Seeder;
+
+class CupCatalogSeeder extends Seeder
+{
+    /**
+     * Seed the application's CUP catalog data.
+     */
+    public function run(): void
+    {
+        $gestion = GestionAcademica::updateOrCreate(
+            ['nombre' => 'CUP 2026'],
+            [
+                'fecha_inicio' => '2026-01-01',
+                'fecha_fin' => '2026-12-31',
+                'activo' => true,
+            ],
+        );
+
+        foreach ([
+            'Ingeniería de Sistemas',
+            'Ingeniería Informática',
+            'Redes y Telecomunicaciones',
+        ] as $nombreCarrera) {
+            $carrera = Carrera::updateOrCreate(
+                ['nombre' => $nombreCarrera],
+                ['activo' => true],
+            );
+
+            CupoCarrera::updateOrCreate(
+                [
+                    'id_carrera' => $carrera->id_carrera,
+                    'id_gestion' => $gestion->id_gestion,
+                ],
+                ['cupo_maximo' => 70],
+            );
+        }
+    }
+}
