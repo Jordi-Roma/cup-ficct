@@ -50,6 +50,7 @@ export default function AsignacionAcademicaForm({
                 `/academico/asignaciones/${asignacion.id_asignacion}`,
                 requestOptions,
             );
+
             return;
         }
 

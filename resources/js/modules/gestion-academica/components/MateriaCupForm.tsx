@@ -30,6 +30,7 @@ export default function MateriaCupForm({
 
         if (materia) {
             put(`/academico/materias/${materia.id_materia}`, options);
+
             return;
         }
 

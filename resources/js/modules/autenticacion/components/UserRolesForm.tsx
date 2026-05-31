@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import { FormEvent } from 'react';
+import type { FormEvent } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Label } from '@/shared/components/ui/label';

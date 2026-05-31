@@ -1,12 +1,12 @@
 import { useForm } from '@inertiajs/react';
-import { FormEvent } from 'react';
+import type { FormEvent } from 'react';
 import InputError from '@/shared/components/input-error';
 import { Button } from '@/shared/components/ui/button';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
-import PermissionsMatrix from './PermissionsMatrix';
 import type { PermisosPorModulo, Rol } from '../types/access-control';
+import PermissionsMatrix from './PermissionsMatrix';
 
 type Props = {
     role?: Rol | null;
@@ -44,6 +44,7 @@ export default function RoleForm({
 
         if (role) {
             put(`/admin/roles/${role.id_rol}`, options);
+
             return;
         }
 

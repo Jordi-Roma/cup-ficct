@@ -1,5 +1,6 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { FormEvent, useMemo, useState } from 'react';
+import type { FormEvent} from 'react';
+import { useMemo, useState } from 'react';
 import UserRolesForm from '@/modules/autenticacion/components/UserRolesForm';
 import UsersTable from '@/modules/autenticacion/components/UsersTable';
 import { Button } from '@/shared/components/ui/button';

@@ -1,5 +1,6 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { FormEvent, useMemo, useState } from 'react';
+import type { FormEvent} from 'react';
+import { useMemo, useState } from 'react';
 import InputError from '@/shared/components/input-error';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
@@ -28,7 +29,7 @@ type Props = {
     permisosPorModulo: PermisosPorModulo;
 };
 
-export default function PermisosPage({ permisos, permisosPorModulo }: Props) {
+export default function PermisosPage({ permisosPorModulo }: Props) {
     const { auth } = usePage<{ auth: Auth }>().props;
     const canCreate = auth.permissions.includes('permisos:create');
     const canUpdate = auth.permissions.includes('permisos:update');
@@ -78,6 +79,7 @@ export default function PermisosPage({ permisos, permisosPorModulo }: Props) {
 
         if (selected) {
             put(`/admin/permisos/${selected.id_permiso}`, options);
+
             return;
         }
 
@@ -204,7 +206,7 @@ export default function PermisosPage({ permisos, permisosPorModulo }: Props) {
                                     onChange={(event) =>
                                         setData('accion', event.target.value)
                                     }
-                                placeholder="LEER"
+                                    placeholder="LEER"
                                 />
                                 <InputError message={errors.accion} />
                             </div>

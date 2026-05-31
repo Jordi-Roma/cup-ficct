@@ -29,6 +29,7 @@ export default function GrupoAcademicoForm({
 
         if (grupo) {
             put(`/academico/grupos/${grupo.id_grupo}`, options);
+
             return;
         }
 
