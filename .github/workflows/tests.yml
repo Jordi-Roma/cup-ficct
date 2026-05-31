@@ -17,6 +17,22 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: SegundoParcial_testing
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d SegundoParcial_testing"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     strategy:
       matrix:
         php-version: ['8.4']
@@ -48,8 +64,21 @@ jobs:
       - name: Copy Environment File
         run: cp .env.example .env
 
+      - name: Configure Testing Database
+        run: |
+          echo "APP_ENV=testing" >> .env
+          echo "DB_CONNECTION=pgsql" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=5432" >> .env
+          echo "DB_DATABASE=SegundoParcial_testing" >> .env
+          echo "DB_USERNAME=postgres" >> .env
+          echo "DB_PASSWORD=postgres" >> .env
+
       - name: Generate Application Key
         run: php artisan key:generate
+
+      - name: Run Migrations
+        run: php artisan migrate --force
 
       - name: Build Assets
         run: npm run build
