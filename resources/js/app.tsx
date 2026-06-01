@@ -8,7 +8,7 @@ import { initializeTheme } from '@/shared/hooks/use-appearance';
 import AppLayout from '@/shared/layouts/app-layout';
 import SettingsLayout from '@/shared/layouts/settings/layout';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'CUP-FICCT';
 const pages = import.meta.glob<{ default: ComponentType }>(
     './modules/**/pages/**/*.tsx',
 );

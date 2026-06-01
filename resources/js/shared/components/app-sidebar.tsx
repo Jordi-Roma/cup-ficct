@@ -3,7 +3,6 @@ import {
     BookOpen,
     BookText,
     CalendarCheck,
-    FolderGit2,
     GraduationCap,
     Layers,
     KeyRound,
@@ -16,7 +15,6 @@ import {
 } from 'lucide-react';
 import { dashboard } from '@/routes';
 import AppLogo from '@/shared/components/app-logo';
-import { NavFooter } from '@/shared/components/nav-footer';
 import { NavMain } from '@/shared/components/nav-main';
 import { NavUser } from '@/shared/components/nav-user';
 import {
@@ -28,7 +26,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/shared/components/ui/sidebar';
-import type { Auth, NavGroup, NavItem } from '@/shared/types';
+import type { Auth, NavGroup } from '@/shared/types';
 
 const mainNavGroups: NavGroup[] = [
     {
@@ -119,19 +117,6 @@ const mainNavGroups: NavGroup[] = [
     },
 ];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repositorio',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentacion',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
-
 export function AppSidebar() {
     const { auth } = usePage<{ auth: Auth }>().props;
     const permissions = auth.permissions ?? [];
@@ -164,7 +149,6 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
