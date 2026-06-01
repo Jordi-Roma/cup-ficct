@@ -1,5 +1,4 @@
 import { Form, Head } from '@inertiajs/react';
-import PasskeyVerify from '@/modules/autenticacion/components/PasskeyVerify';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
@@ -21,8 +20,6 @@ export default function Login({ status, canResetPassword }: Props) {
     return (
         <>
             <Head title="Iniciar sesión" />
-
-            <PasskeyVerify />
 
             <Form
                 {...store.form()}

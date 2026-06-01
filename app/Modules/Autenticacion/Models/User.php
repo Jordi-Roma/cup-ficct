@@ -7,20 +7,15 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\Contracts\PasskeyUser;
-use Laravel\Fortify\PasskeyAuthenticatable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Passkeys\Passkeys;
 
 #[UseFactory(UserFactory::class)]
-class User extends Authenticatable implements PasskeyUser
+class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+    use HasFactory, Notifiable;
 
     protected $table = 'usuario';
 
@@ -54,8 +49,6 @@ class User extends Authenticatable implements PasskeyUser
      */
     protected $hidden = [
         'password_hash',
-        'two_factor_secret',
-        'two_factor_recovery_codes',
         'remember_token',
     ];
 
@@ -71,7 +64,6 @@ class User extends Authenticatable implements PasskeyUser
             'password_hash' => 'hashed',
             'activo' => 'boolean',
             'fecha_registro' => 'datetime',
-            'two_factor_confirmed_at' => 'datetime',
         ];
     }
 
@@ -166,8 +158,4 @@ class User extends Authenticatable implements PasskeyUser
         return $this->hasRole('ADMINISTRADOR');
     }
 
-    public function passkeys(): HasMany
-    {
-        return $this->hasMany(Passkeys::passkeyModel(), 'user_id', 'id_usuario');
-    }
 }

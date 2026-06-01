@@ -1,10 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import { useRef } from 'react';
 import SecurityController from '@/actions/App/Modules/Autenticacion/Controllers/SecurityController';
-import type { Props as ManagePasskeysProps } from '@/modules/autenticacion/components/ManagePasskeys';
-import ManagePasskeys from '@/modules/autenticacion/components/ManagePasskeys';
-import type { Props as ManageTwoFactorProps } from '@/modules/autenticacion/components/ManageTwoFactor';
-import ManageTwoFactor from '@/modules/autenticacion/components/ManageTwoFactor';
 import { edit } from '@/routes/security';
 import Heading from '@/shared/components/heading';
 import InputError from '@/shared/components/input-error';
@@ -14,8 +10,7 @@ import { Label } from '@/shared/components/ui/label';
 
 type Props = {
     passwordRules: string;
-} & ManagePasskeysProps &
-    ManageTwoFactorProps;
+};
 
 export default function Security(props: Props) {
     const passwordInput = useRef<HTMLInputElement>(null);
@@ -123,16 +118,6 @@ export default function Security(props: Props) {
                 </Form>
             </div>
 
-            <ManageTwoFactor
-                canManageTwoFactor={props.canManageTwoFactor}
-                requiresConfirmation={props.requiresConfirmation}
-                twoFactorEnabled={props.twoFactorEnabled}
-            />
-
-            <ManagePasskeys
-                canManagePasskeys={props.canManagePasskeys}
-                passkeys={props.passkeys}
-            />
         </>
     );
 }

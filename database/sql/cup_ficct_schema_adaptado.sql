@@ -20,9 +20,6 @@ CREATE TABLE usuario (
     correo VARCHAR(150) UNIQUE NOT NULL,
     email_verified_at TIMESTAMP NULL,
     password_hash VARCHAR(255) NOT NULL,
-    two_factor_secret TEXT NULL,
-    two_factor_recovery_codes TEXT NULL,
-    two_factor_confirmed_at TIMESTAMP NULL,
     telefono VARCHAR(20),
     sexo CHAR(1),
     intentos_fallidos INT DEFAULT 0 NOT NULL,
@@ -54,19 +51,6 @@ CREATE TABLE sessions (
 
 CREATE INDEX sessions_user_id_index ON sessions (user_id);
 CREATE INDEX sessions_last_activity_index ON sessions (last_activity);
-
-CREATE TABLE passkeys (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    credential_id VARCHAR(255) UNIQUE NOT NULL,
-    credential JSON NOT NULL,
-    last_used_at TIMESTAMP NULL,
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL
-);
-
-CREATE INDEX passkeys_user_id_index ON passkeys (user_id);
 
 CREATE TABLE sesion (
     id_sesion BIGSERIAL PRIMARY KEY,

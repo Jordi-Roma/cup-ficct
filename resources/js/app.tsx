@@ -23,8 +23,6 @@ const pageAliases: Record<string, string> = {
     'auth/register': './modules/registro-postulantes/pages/RegistroPage.tsx',
     'auth/reset-password':
         './modules/autenticacion/pages/ResetPasswordPage.tsx',
-    'auth/two-factor-challenge':
-        './modules/autenticacion/pages/TwoFactorChallengePage.tsx',
     'auth/verify-email': './modules/autenticacion/pages/VerifyEmailPage.tsx',
     'admin/permisos': './modules/autenticacion/pages/PermisosPage.tsx',
     'admin/roles': './modules/autenticacion/pages/RolesPage.tsx',

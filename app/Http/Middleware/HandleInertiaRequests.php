@@ -67,9 +67,6 @@ class HandleInertiaRequests extends Middleware
                     'correo' => $user->correo,
                     'avatar' => null,
                     'email_verified_at' => $user->email_verified_at,
-                    'two_factor_enabled' => method_exists($user, 'hasEnabledTwoFactorAuthentication')
-                        ? $user->hasEnabledTwoFactorAuthentication()
-                        : false,
                     'created_at' => $user->fecha_registro,
                     'updated_at' => null,
                 ] : null,

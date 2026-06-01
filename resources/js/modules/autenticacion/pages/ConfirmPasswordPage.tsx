@@ -1,9 +1,4 @@
 import { Form, Head } from '@inertiajs/react';
-import {
-    index as confirmOptions,
-    store as confirmStore,
-} from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyConfirmationController';
-import PasskeyVerify from '@/modules/autenticacion/components/PasskeyVerify';
 import { store } from '@/routes/password/confirm';
 import InputError from '@/shared/components/input-error';
 import PasswordInput from '@/shared/components/password-input';
@@ -15,16 +10,6 @@ export default function ConfirmPassword() {
     return (
         <>
             <Head title="Confirmar contrasena" />
-
-            <PasskeyVerify
-                routes={{
-                    options: confirmOptions(),
-                    submit: confirmStore(),
-                }}
-                label="Confirmar con llave de acceso"
-                loadingLabel="Confirmando..."
-                separator="O confirma con tu contrasena"
-            />
 
             <Form {...store.form()} resetOnSuccess={['password']}>
                 {({ processing, errors }) => (
