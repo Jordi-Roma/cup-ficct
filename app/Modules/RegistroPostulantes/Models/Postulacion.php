@@ -54,6 +54,11 @@ class Postulacion extends Model
         return $this->belongsTo(Carrera::class, 'id_carrera_opcion2', 'id_carrera');
     }
 
+    public function carreraAdmitida(): BelongsTo
+    {
+        return $this->belongsTo(Carrera::class, 'id_carrera_admitida', 'id_carrera');
+    }
+
     public function grupo(): BelongsTo
     {
         return $this->belongsTo(GrupoAcademico::class, 'id_grupo', 'id_grupo');

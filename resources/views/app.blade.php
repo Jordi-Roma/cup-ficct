@@ -36,7 +36,7 @@
         @fonts
 
         @viteReactRefresh
-        @vite(['resources/css/app.css', 'resources/js/app.tsx'])
+        @vite(['resources/css/app.css', 'resources/js/app.jsx'])
         <x-inertia::head>
             <title>{{ config('app.name', 'CUP-FICCT') }}</title>
         </x-inertia::head>

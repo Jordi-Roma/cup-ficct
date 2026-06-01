@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\GestionAcademica\Controllers\AsignacionAcademicaController;
+use App\Modules\GestionAcademica\Controllers\AdmisionCupoController;
 use App\Modules\GestionAcademica\Controllers\MateriaCupController;
 use App\Modules\GestionAcademica\Controllers\GrupoAcademicoController;
 use App\Modules\GestionAcademica\Controllers\DocenteController;
@@ -10,6 +11,18 @@ Route::middleware(['auth'])
     ->prefix('academico')
     ->name('academico.')
     ->group(function () {
+        Route::get('admision-cupos', [AdmisionCupoController::class, 'index'])
+            ->middleware('permission:admision:read')
+            ->name('admision-cupos.index');
+
+        Route::post('admision-cupos/cupos', [AdmisionCupoController::class, 'upsertCupo'])
+            ->middleware('permission:admision:update')
+            ->name('admision-cupos.cupos.upsert');
+
+        Route::post('admision-cupos/procesar', [AdmisionCupoController::class, 'process'])
+            ->middleware('permission:admision:process')
+            ->name('admision-cupos.process');
+
         Route::get('asignaciones', [AsignacionAcademicaController::class, 'index'])
             ->middleware('permission:asignaciones:read')
             ->name('asignaciones.index');

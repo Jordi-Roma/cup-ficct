@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\ReportesMonitoreo\Controllers\ReporteController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -7,8 +8,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])
-    ->prefix('reportes-monitoreo')
-    ->name('reportes-monitoreo.')
+    ->prefix('reportes')
+    ->name('reportes.')
     ->group(function () {
-        //
+        Route::get('/', [ReporteController::class, 'index'])
+            ->middleware('permission:reportes:read')
+            ->name('index');
+
+        Route::get('export/{tipo}', [ReporteController::class, 'export'])
+            ->middleware('permission:reportes:export')
+            ->name('export');
     });

@@ -64,11 +64,16 @@ class AccessControlSeeder extends Seeder
                 'asignaciones:create' => ['accion' => 'CREAR', 'descripcion' => 'Crear asignaciones academicas'],
                 'asignaciones:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Actualizar asignaciones academicas'],
                 'asignaciones:delete' => ['accion' => 'ELIMINAR', 'descripcion' => 'Desactivar asignaciones academicas'],
+                'admision:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar admision por cupos'],
+                'admision:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Configurar cupos por carrera'],
+                'admision:process' => ['accion' => 'EJECUTAR', 'descripcion' => 'Procesar admision por cupos'],
             ],
             'Examenes' => [
                 'notas:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar notas'],
                 'notas:create' => ['accion' => 'CREAR', 'descripcion' => 'Registrar notas'],
                 'notas:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Actualizar notas'],
+                'notas:delete' => ['accion' => 'ELIMINAR', 'descripcion' => 'Anular notas si el flujo lo habilita'],
+                'historial:read-own' => ['accion' => 'LEER', 'descripcion' => 'Consultar historial academico propio'],
                 'historial:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar historial académico'],
             ],
             'ReportesMonitoreo' => [
@@ -128,6 +133,14 @@ class AccessControlSeeder extends Seeder
             'asignaciones:create',
             'asignaciones:update',
             'asignaciones:delete',
+            'admision:read',
+            'admision:update',
+            'admision:process',
+            'notas:read',
+            'notas:create',
+            'notas:update',
+            'historial:read-own',
+            'historial:read',
             'reportes:read',
             'reportes:export',
         ];
@@ -136,14 +149,13 @@ class AccessControlSeeder extends Seeder
             'notas:read',
             'notas:create',
             'notas:update',
-            'historial:read',
             'materias:read',
             'grupos:read',
             'asignaciones:read',
         ];
 
         $postulante = [
-            'historial:read',
+            'historial:read-own',
         ];
 
         $this->syncByNames('ADMINISTRATIVO', $administrativo);
