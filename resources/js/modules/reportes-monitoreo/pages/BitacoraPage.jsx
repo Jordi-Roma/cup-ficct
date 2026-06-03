@@ -25,7 +25,7 @@ export default function BitacoraPage({ logs = { data: [], from: 0, to: 0, total:
     const canExport = auth?.permissions?.includes('bitacora:read') || false;
     
     const [search, setSearch] = useState(filters.search || '');
-    const [operacion, setOperacion] = useState(filters.operacion || '');
+    const [operacion, setOperacion] = useState(filters.operacion || 'all');
     const [fechaInicio, setFechaInicio] = useState(filters.fecha_inicio || '');
     const [fechaFin, setFechaFin] = useState(filters.fecha_fin || '');
     
@@ -34,7 +34,7 @@ export default function BitacoraPage({ logs = { data: [], from: 0, to: 0, total:
     const applyFilters = () => {
         router.get('/reportes/bitacora', {
             search,
-            operacion,
+            operacion: operacion === 'all' ? '' : operacion,
             fecha_inicio: fechaInicio,
             fecha_fin: fechaFin,
         }, { preserveState: true });
@@ -49,7 +49,7 @@ export default function BitacoraPage({ logs = { data: [], from: 0, to: 0, total:
     const exportCsv = () => {
         const queryParams = new URLSearchParams({
             search,
-            operacion,
+            operacion: operacion === 'all' ? '' : operacion,
             fecha_inicio: fechaInicio,
             fecha_fin: fechaFin,
         }).toString();
@@ -96,7 +96,7 @@ export default function BitacoraPage({ logs = { data: [], from: 0, to: 0, total:
                                 <SelectValue placeholder="Todas" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">Todas</SelectItem>
+                                <SelectItem value="all">Todas</SelectItem>
                                 <SelectItem value="INSERT">INSERT</SelectItem>
                                 <SelectItem value="UPDATE">UPDATE</SelectItem>
                                 <SelectItem value="DELETE">DELETE</SelectItem>
