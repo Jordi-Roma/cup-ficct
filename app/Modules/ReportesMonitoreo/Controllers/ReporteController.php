@@ -12,6 +12,25 @@ class ReporteController extends BaseController
 {
     public function __construct(private readonly ReporteService $service) {}
 
+    public function dashboard(Request $request): Response
+    {
+        $gestion = $this->service->resolveGestion(
+            filled($request->query('id_gestion')) ? (int) $request->query('id_gestion') : null,
+        );
+
+        return Inertia::render('dashboard', [
+            'gestiones' => $this->service->gestiones(),
+            'selectedGestion' => [
+                'id_gestion' => $gestion->id_gestion,
+                'nombre' => $gestion->nombre,
+                'activo' => (bool) $gestion->activo,
+            ],
+            'resumen' => $this->service->dashboard($gestion->id_gestion),
+            'estadisticasPorMateria' => $this->service->estadisticasPorMateria($gestion->id_gestion),
+            'filters' => $request->only(['id_gestion']),
+        ]);
+    }
+
     public function index(Request $request): Response
     {
         $gestion = $this->service->resolveGestion(

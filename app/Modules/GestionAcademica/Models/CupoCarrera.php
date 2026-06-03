@@ -4,9 +4,12 @@ namespace App\Modules\GestionAcademica\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Modules\ReportesMonitoreo\Traits\Auditable;
 
 class CupoCarrera extends Model
 {
+    use Auditable;
+
     protected $table = 'cupo_carrera';
 
     protected $primaryKey = 'id_cupo';

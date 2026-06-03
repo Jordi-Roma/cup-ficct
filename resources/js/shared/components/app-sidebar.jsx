@@ -141,6 +141,12 @@ const mainNavGroups = [
                 icon: BarChart3,
                 permission: 'reportes:read',
             },
+            {
+                title: 'Bitácora',
+                href: '/reportes/bitacora',
+                icon: BookText,
+                permission: 'bitacora:read',
+            },
         ],
     },
 ];

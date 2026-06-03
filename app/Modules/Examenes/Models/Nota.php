@@ -7,9 +7,12 @@ use App\Modules\GestionAcademica\Models\MateriaCup;
 use App\Modules\RegistroPostulantes\Models\Postulacion;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Modules\ReportesMonitoreo\Traits\Auditable;
 
 class Nota extends Model
 {
+    use Auditable;
+
     protected $table = 'nota';
 
     protected $primaryKey = 'id_nota';

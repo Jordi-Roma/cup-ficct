@@ -6,9 +6,12 @@ use App\Modules\Autenticacion\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Modules\ReportesMonitoreo\Traits\Auditable;
 
 class Postulante extends Model
 {
+    use Auditable;
+
     protected $table = 'postulante';
 
     protected $primaryKey = 'id_postulante';

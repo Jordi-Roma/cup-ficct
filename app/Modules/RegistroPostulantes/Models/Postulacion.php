@@ -7,9 +7,12 @@ use App\Modules\GestionAcademica\Models\GestionAcademica;
 use App\Modules\GestionAcademica\Models\GrupoAcademico;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Modules\ReportesMonitoreo\Traits\Auditable;
 
 class Postulacion extends Model
 {
+    use Auditable;
+
     protected $table = 'postulacion';
 
     protected $primaryKey = 'id_postulacion';

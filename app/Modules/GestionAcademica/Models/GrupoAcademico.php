@@ -6,9 +6,12 @@ use App\Modules\RegistroPostulantes\Models\Postulacion;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Modules\ReportesMonitoreo\Traits\Auditable;
 
 class GrupoAcademico extends Model
 {
+    use Auditable;
+
     protected $table = 'grupo_academico';
 
     protected $primaryKey = 'id_grupo';

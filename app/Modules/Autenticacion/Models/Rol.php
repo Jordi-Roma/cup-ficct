@@ -4,9 +4,12 @@ namespace App\Modules\Autenticacion\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Modules\ReportesMonitoreo\Traits\Auditable;
 
 class Rol extends Model
 {
+    use Auditable;
+
     protected $table = 'rol';
 
     protected $primaryKey = 'id_rol';

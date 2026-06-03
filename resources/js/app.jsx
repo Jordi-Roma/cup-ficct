@@ -29,6 +29,7 @@ const pageAliases = {
     'gestion-academica/materias': './modules/gestion-academica/pages/MateriasCupPage.jsx',
     'registro-postulantes/postulantes': './modules/registro-postulantes/pages/PostulantesPage.jsx',
     'reportes-monitoreo/reportes': './modules/reportes-monitoreo/pages/ReportesPage.jsx',
+    'reportes-monitoreo/bitacora': './modules/reportes-monitoreo/pages/BitacoraPage.jsx',
     'settings/appearance': './modules/autenticacion/pages/AparienciaPage.jsx',
     'settings/profile': './modules/autenticacion/pages/PerfilPage.jsx',
     'settings/security': './modules/autenticacion/pages/SeguridadPage.jsx',
