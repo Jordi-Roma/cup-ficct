@@ -2,11 +2,11 @@
 
 namespace App\Modules\RegistroPostulantes\Models;
 
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Modules\ReportesMonitoreo\Traits\Auditable;
+use App\Modules\AccesoSeguridad\Traits\Auditable;
 
 class Postulante extends Model
 {
@@ -25,6 +25,13 @@ class Postulante extends Model
         'colegio_procedencia',
         'ciudad',
         'documentacion_completa',
+        'presento_titulo_bachiller',
+        'presento_fotocopia_carnet',
+        'documentacion_validada',
+        'fecha_validacion_documentos',
+        'validado_por',
+        'creado_por_admin',
+        'requiere_pago',
     ];
 
     protected function casts(): array
@@ -32,6 +39,12 @@ class Postulante extends Model
         return [
             'fecha_nacimiento' => 'date',
             'documentacion_completa' => 'boolean',
+            'presento_titulo_bachiller' => 'boolean',
+            'presento_fotocopia_carnet' => 'boolean',
+            'documentacion_validada' => 'boolean',
+            'fecha_validacion_documentos' => 'datetime',
+            'creado_por_admin' => 'boolean',
+            'requiere_pago' => 'boolean',
         ];
     }
 
@@ -43,5 +56,10 @@ class Postulante extends Model
     public function postulaciones(): HasMany
     {
         return $this->hasMany(Postulacion::class, 'id_postulante', 'id_postulante');
+    }
+
+    public function validador(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'validado_por', 'id_usuario');
     }
 }

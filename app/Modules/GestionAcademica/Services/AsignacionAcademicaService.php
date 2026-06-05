@@ -89,9 +89,9 @@ class AsignacionAcademicaService
     {
         $grupo = GrupoAcademico::findOrFail($data['id_grupo']);
         $materia = MateriaCup::findOrFail($data['id_materia']);
-        $docente = Docente::with('usuario')->findOrFail($data['id_docente']);
+        $docente = Docente::with(['usuario', 'habilitaciones'])->findOrFail($data['id_docente']);
         $aula = Aula::findOrFail($data['id_aula']);
-        Horario::findOrFail($data['id_horario']);
+        $horario = Horario::findOrFail($data['id_horario']);
 
         if (! $grupo->activo) {
             throw ValidationException::withMessages(['id_grupo' => 'Solo se pueden asignar grupos activos.']);
@@ -105,8 +105,20 @@ class AsignacionAcademicaService
             throw ValidationException::withMessages(['id_docente' => 'Solo se pueden asignar docentes activos y contratados.']);
         }
 
+        if (! $docente->puedeDictarMateria((int) $data['id_materia'])) {
+            throw ValidationException::withMessages(['id_docente' => 'El docente seleccionado no esta habilitado para dictar esta materia.']);
+        }
+
         if ($aula->capacidad < $grupo->capacidad_maxima) {
             throw ValidationException::withMessages(['id_aula' => 'El aula no tiene capacidad suficiente para el grupo.']);
+        }
+
+        if (! $aula->activo) {
+            throw ValidationException::withMessages(['id_aula' => 'Solo se pueden usar aulas activas.']);
+        }
+
+        if (! $horario->activo) {
+            throw ValidationException::withMessages(['id_horario' => 'Solo se pueden usar horarios activos.']);
         }
 
         if ($this->existsConflict('id_grupo', $data['id_grupo'], 'id_materia', $data['id_materia'], $ignore)) {
@@ -150,7 +162,7 @@ class AsignacionAcademicaService
                     'nombre' => $materia->nombre,
                 ]),
             'docentes' => Docente::query()
-                ->with('usuario')
+                ->with(['usuario', 'habilitaciones.materia'])
                 ->where('activo', true)
                 ->where('contratado', true)
                 ->get()
@@ -159,9 +171,19 @@ class AsignacionAcademicaService
                     'id_docente' => $docente->id_docente,
                     'nombre_completo' => $docente->usuario?->name,
                     'correo' => $docente->usuario?->correo,
+                    'materias_habilitadas' => $docente->habilitaciones
+                        ->where('activo', true)
+                        ->map(fn ($habilitacion) => [
+                            'id_materia' => $habilitacion->id_materia,
+                            'nombre' => $habilitacion->materia?->nombre,
+                        ])
+                        ->unique('id_materia')
+                        ->values()
+                        ->all(),
                 ])
                 ->values(),
             'aulas' => Aula::query()
+                ->where('activo', true)
                 ->orderBy('nombre')
                 ->get()
                 ->map(fn (Aula $aula) => [
@@ -170,6 +192,7 @@ class AsignacionAcademicaService
                     'capacidad' => $aula->capacidad,
                 ]),
             'horarios' => Horario::query()
+                ->where('activo', true)
                 ->orderByRaw("array_position(ARRAY['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'], dia)")
                 ->orderBy('hora_inicio')
                 ->get()

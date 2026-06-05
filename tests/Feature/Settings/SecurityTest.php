@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Settings;
 
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Testing\AssertableInertia as Assert;

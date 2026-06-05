@@ -8,7 +8,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // La autenticacion en dos pasos fue retirada del sistema CUP-FICCT.
+        // La AccesoSeguridad en dos pasos fue retirada del sistema CUP-FICCT.
     }
 
     /**

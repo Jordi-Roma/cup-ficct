@@ -2,10 +2,14 @@ import { Link, usePage } from '@inertiajs/react';
 import {
     BarChart3,
     BookCheck,
+    BookMarked,
     BookOpen,
     BookText,
     CalendarCheck,
     ClipboardCheck,
+    ClipboardList,
+    Clock,
+    DoorOpen,
     GraduationCap,
     KeyRound,
     Layers,
@@ -32,14 +36,9 @@ import {
 
 const mainNavGroups = [
     {
-        title: 'Sistema y Acceso',
+        title: 'Acceso / Seguridad',
         icon: Shield,
         items: [
-            {
-                title: 'Panel',
-                href: dashboard(),
-                icon: LayoutGrid,
-            },
             {
                 title: 'Perfil',
                 href: '/settings/profile',
@@ -62,6 +61,36 @@ const mainNavGroups = [
                 href: '/admin/usuarios',
                 icon: Users,
                 permission: 'usuarios:read',
+            },
+            {
+                title: 'Bitácora',
+                href: '/admin/bitacora',
+                icon: BookText,
+                permission: 'bitacora:read',
+            },
+        ],
+    },
+    {
+        title: 'Postulaciones',
+        icon: UserRoundCheck,
+        items: [
+            {
+                title: 'Postulantes',
+                href: '/postulantes',
+                icon: UserRoundCheck,
+                permission: 'postulantes:read',
+            },
+            {
+                title: 'Solicitudes pendientes',
+                href: '/postulantes/solicitudes',
+                icon: ClipboardList,
+                permission: 'postulantes:update',
+            },
+            {
+                title: 'Admisión por cupos',
+                href: '/postulantes/admision-cupos',
+                icon: ClipboardCheck,
+                permission: 'admision:read',
             },
         ],
     },
@@ -88,22 +117,28 @@ const mainNavGroups = [
                 permission: 'docentes:read',
             },
             {
+                title: 'Aulas',
+                href: '/academico/aulas',
+                icon: DoorOpen,
+                permission: 'aulas:read',
+            },
+            {
+                title: 'Horarios',
+                href: '/academico/horarios',
+                icon: Clock,
+                permission: 'horarios:read',
+            },
+            {
                 title: 'Asignación académica',
                 href: '/academico/asignaciones',
                 icon: CalendarCheck,
                 permission: 'asignaciones:read',
             },
-            {
-                title: 'Admisión por cupos',
-                href: '/academico/admision-cupos',
-                icon: ClipboardCheck,
-                permission: 'admision:read',
-            },
         ],
     },
     {
-        title: 'Exámenes',
-        icon: BookOpen,
+        title: 'Evaluaciones',
+        icon: BookMarked,
         items: [
             {
                 title: 'Notas',
@@ -120,32 +155,19 @@ const mainNavGroups = [
         ],
     },
     {
-        title: 'Gestión de Postulantes',
-        icon: UserRoundCheck,
-        items: [
-            {
-                title: 'Postulantes',
-                href: '/postulantes',
-                icon: UserRoundCheck,
-                permission: 'postulantes:read',
-            },
-        ],
-    },
-    {
         title: 'Reportes y Monitoreo',
         icon: UserCog,
         items: [
+            {
+                title: 'Dashboard Adm.',
+                href: dashboard.url(),
+                icon: LayoutGrid,
+            },
             {
                 title: 'Reportes',
                 href: '/reportes',
                 icon: BarChart3,
                 permission: 'reportes:read',
-            },
-            {
-                title: 'Bitácora',
-                href: '/reportes/bitacora',
-                icon: BookText,
-                permission: 'bitacora:read',
             },
         ],
     },
@@ -169,7 +191,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href={dashboard.url()} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

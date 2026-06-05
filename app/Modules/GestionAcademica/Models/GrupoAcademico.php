@@ -6,7 +6,7 @@ use App\Modules\RegistroPostulantes\Models\Postulacion;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Modules\ReportesMonitoreo\Traits\Auditable;
+use App\Modules\AccesoSeguridad\Traits\Auditable;
 
 class GrupoAcademico extends Model
 {

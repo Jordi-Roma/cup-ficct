@@ -2,7 +2,7 @@
 
 namespace App\Modules\Examenes\Services;
 
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\User;
 use App\Modules\Examenes\Models\Nota;
 use App\Modules\GestionAcademica\Models\GestionAcademica;
 use App\Modules\GestionAcademica\Models\MateriaCup;

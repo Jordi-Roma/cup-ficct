@@ -15,8 +15,8 @@ import { useInitials } from '@/shared/hooks/use-initials';
 import { cn } from '@/shared/lib/utils';
 const mainNavItems = [
     {
-        title: 'Panel',
-        href: dashboard(),
+        title: 'Dashboard Administrativo',
+        href: dashboard.url(),
         icon: LayoutGrid,
     },
 ];
@@ -39,7 +39,7 @@ export function AppHeader({ breadcrumbs = [] }) {
                             </SheetTrigger>
                             <SheetContent side="left" className="flex h-full w-64 flex-col items-stretch justify-between bg-sidebar">
                                 <SheetTitle className="sr-only">
-                                    Menu de navegacion
+                                    Menú de navegación
                                 </SheetTitle>
                                 <SheetHeader className="flex justify-start text-left">
                                     <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white"/>
@@ -58,7 +58,7 @@ export function AppHeader({ breadcrumbs = [] }) {
                         </Sheet>
                     </div>
 
-                    <Link href={dashboard()} prefetch className="flex items-center space-x-2">
+                    <Link href={dashboard.url()} prefetch className="flex items-center space-x-2">
                         <AppLogo />
                     </Link>
 

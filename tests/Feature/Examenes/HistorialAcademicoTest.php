@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Examenes;
 
-use App\Modules\Autenticacion\Models\Permiso;
-use App\Modules\Autenticacion\Models\Rol;
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\Permiso;
+use App\Modules\AccesoSeguridad\Models\Rol;
+use App\Modules\AccesoSeguridad\Models\User;
 use App\Modules\Examenes\Models\Nota;
 use App\Modules\GestionAcademica\Models\GestionAcademica;
 use App\Modules\GestionAcademica\Models\GrupoAcademico;

@@ -65,7 +65,7 @@ export default function Dashboard({
 
     return (
         <>
-            <Head title="Panel Administrativo" />
+            <Head title="Dashboard Administrativo" />
             
             <div className="space-y-6 p-4 md:p-6">
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -188,8 +188,8 @@ export default function Dashboard({
 Dashboard.layout = {
     breadcrumbs: [
         {
-            title: 'Panel',
-            href: dashboard(),
+            title: 'Dashboard Administrativo',
+            href: dashboard.url(),
         },
     ],
 };

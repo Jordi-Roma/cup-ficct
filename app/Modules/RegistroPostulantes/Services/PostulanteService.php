@@ -75,6 +75,15 @@ class PostulanteService
                 'colegio_procedencia' => $data['colegio_procedencia'] ?? null,
                 'ciudad' => $data['ciudad'] ?? null,
                 'documentacion_completa' => $data['documentacion_completa'],
+                'presento_titulo_bachiller' => $data['documentacion_completa'] ? true : $postulante->presento_titulo_bachiller,
+                'presento_fotocopia_carnet' => $data['documentacion_completa'] ? true : $postulante->presento_fotocopia_carnet,
+                'documentacion_validada' => $data['documentacion_completa'],
+                'fecha_validacion_documentos' => $data['documentacion_completa']
+                    ? ($postulante->fecha_validacion_documentos ?? now())
+                    : null,
+                'validado_por' => $data['documentacion_completa']
+                    ? ($postulante->validado_por ?? auth()->id())
+                    : null,
             ]);
 
             $postulacion = $this->currentPostulacion($postulante);
@@ -121,9 +130,16 @@ class PostulanteService
             'colegio_procedencia' => $postulante->colegio_procedencia,
             'ciudad' => $postulante->ciudad,
             'documentacion_completa' => $postulante->documentacion_completa,
+            'presento_titulo_bachiller' => (bool) $postulante->presento_titulo_bachiller,
+            'presento_fotocopia_carnet' => (bool) $postulante->presento_fotocopia_carnet,
+            'documentacion_validada' => (bool) $postulante->documentacion_validada,
+            'fecha_validacion_documentos' => $postulante->fecha_validacion_documentos?->toDateTimeString(),
+            'creado_por_admin' => (bool) $postulante->creado_por_admin,
+            'requiere_pago' => (bool) $postulante->requiere_pago,
             'postulacion' => $postulacion ? [
                 'id_postulacion' => $postulacion->id_postulacion,
                 'estado_admision' => $postulacion->estado_admision,
+                'estado_proceso' => $postulacion->estado_proceso,
                 'carrera_opcion1' => $postulacion->carreraOpcion1 ? [
                     'id_carrera' => $postulacion->carreraOpcion1->id_carrera,
                     'nombre' => $postulacion->carreraOpcion1->nombre,

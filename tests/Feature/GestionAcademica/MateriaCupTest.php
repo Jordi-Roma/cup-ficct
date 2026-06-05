@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\GestionAcademica;
 
-use App\Modules\Autenticacion\Models\Permiso;
-use App\Modules\Autenticacion\Models\Rol;
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\Permiso;
+use App\Modules\AccesoSeguridad\Models\Rol;
+use App\Modules\AccesoSeguridad\Models\User;
 use App\Modules\GestionAcademica\Models\MateriaCup;
 use Database\Seeders\AccessControlSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -1,28 +1,17 @@
 <?php
 
 use App\Modules\GestionAcademica\Controllers\AsignacionAcademicaController;
-use App\Modules\GestionAcademica\Controllers\AdmisionCupoController;
+use App\Modules\GestionAcademica\Controllers\AulaController;
 use App\Modules\GestionAcademica\Controllers\MateriaCupController;
 use App\Modules\GestionAcademica\Controllers\GrupoAcademicoController;
 use App\Modules\GestionAcademica\Controllers\DocenteController;
+use App\Modules\GestionAcademica\Controllers\HorarioController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])
     ->prefix('academico')
     ->name('academico.')
     ->group(function () {
-        Route::get('admision-cupos', [AdmisionCupoController::class, 'index'])
-            ->middleware('permission:admision:read')
-            ->name('admision-cupos.index');
-
-        Route::post('admision-cupos/cupos', [AdmisionCupoController::class, 'upsertCupo'])
-            ->middleware('permission:admision:update')
-            ->name('admision-cupos.cupos.upsert');
-
-        Route::post('admision-cupos/procesar', [AdmisionCupoController::class, 'process'])
-            ->middleware('permission:admision:process')
-            ->name('admision-cupos.process');
-
         Route::get('asignaciones', [AsignacionAcademicaController::class, 'index'])
             ->middleware('permission:asignaciones:read')
             ->name('asignaciones.index');
@@ -38,6 +27,38 @@ Route::middleware(['auth'])
         Route::patch('asignaciones/{asignacion}/toggle', [AsignacionAcademicaController::class, 'toggle'])
             ->middleware('permission:asignaciones:delete')
             ->name('asignaciones.toggle');
+
+        Route::get('aulas', [AulaController::class, 'index'])
+            ->middleware('permission:aulas:read')
+            ->name('aulas.index');
+
+        Route::post('aulas', [AulaController::class, 'store'])
+            ->middleware('permission:aulas:create')
+            ->name('aulas.store');
+
+        Route::put('aulas/{aula}', [AulaController::class, 'update'])
+            ->middleware('permission:aulas:update')
+            ->name('aulas.update');
+
+        Route::patch('aulas/{aula}/toggle', [AulaController::class, 'toggle'])
+            ->middleware('permission:aulas:delete')
+            ->name('aulas.toggle');
+
+        Route::get('horarios', [HorarioController::class, 'index'])
+            ->middleware('permission:horarios:read')
+            ->name('horarios.index');
+
+        Route::post('horarios', [HorarioController::class, 'store'])
+            ->middleware('permission:horarios:create')
+            ->name('horarios.store');
+
+        Route::put('horarios/{horario}', [HorarioController::class, 'update'])
+            ->middleware('permission:horarios:update')
+            ->name('horarios.update');
+
+        Route::patch('horarios/{horario}/toggle', [HorarioController::class, 'toggle'])
+            ->middleware('permission:horarios:delete')
+            ->name('horarios.toggle');
 
         Route::get('grupos', [GrupoAcademicoController::class, 'index'])
             ->middleware('permission:grupos:read')

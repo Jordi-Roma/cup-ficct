@@ -2,7 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\User;
+use App\Modules\GestionAcademica\Models\GestionAcademica;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,6 +19,13 @@ class DashboardTest extends TestCase
 
     public function test_authenticated_users_can_visit_the_dashboard()
     {
+        GestionAcademica::create([
+            'nombre' => 'CUP 2026',
+            'fecha_inicio' => '2026-01-01',
+            'fecha_fin' => '2026-12-31',
+            'activo' => true,
+        ]);
+
         $user = User::factory()->create();
         $this->actingAs($user);
 

@@ -13,7 +13,7 @@ const booleanOptions = [
     { value: 'true', label: 'Si' },
     { value: 'false', label: 'No' },
 ];
-export default function DocentesPage({ docentes, filters }) {
+export default function DocentesPage({ docentes, filters, materias = [] }) {
     const { auth } = usePage().props;
     const canCreate = auth.permissions.includes('docentes:create');
     const canUpdate = auth.permissions.includes('docentes:update');
@@ -24,16 +24,13 @@ export default function DocentesPage({ docentes, filters }) {
         search: filters.search ?? '',
         contratado: filters.contratado ?? '',
         activo: filters.activo ?? '',
-        profesional_area: filters.profesional_area ?? '',
-        maestria: filters.maestria ?? '',
-        diplomado_educacion_superior: filters.diplomado_educacion_superior ?? '',
+        maestria_educacion_superior: filters.maestria_educacion_superior ?? '',
     });
     const summary = useMemo(() => {
         const active = docentes.filter((docente) => docente.activo).length;
         const hired = docentes.filter((docente) => docente.contratado).length;
-        const qualified = docentes.filter((docente) => docente.profesional_area &&
-            docente.maestria &&
-            docente.diplomado_educacion_superior).length;
+        const qualified = docentes.filter((docente) => docente.maestria_educacion_superior &&
+            (docente.materias_habilitadas?.length ?? 0) > 0).length;
         return { active, hired, qualified };
     }, [docentes]);
     const openCreate = () => {
@@ -121,17 +118,9 @@ export default function DocentesPage({ docentes, filters }) {
             ...current,
             activo: value,
         }))}/>
-                        <BooleanFilter value={localFilters.profesional_area} placeholder="Profesional" onChange={(value) => setLocalFilters((current) => ({
+                        <BooleanFilter value={localFilters.maestria_educacion_superior} placeholder="Maestria superior" onChange={(value) => setLocalFilters((current) => ({
             ...current,
-            profesional_area: value,
-        }))}/>
-                        <BooleanFilter value={localFilters.maestria} placeholder="Maestria" onChange={(value) => setLocalFilters((current) => ({
-            ...current,
-            maestria: value,
-        }))}/>
-                        <BooleanFilter value={localFilters.diplomado_educacion_superior} placeholder="Diplomado" onChange={(value) => setLocalFilters((current) => ({
-            ...current,
-            diplomado_educacion_superior: value,
+            maestria_educacion_superior: value,
         }))}/>
                         <div className="flex gap-2 md:col-span-3 xl:col-span-6">
                             <Button type="button" onClick={applyFilters}>
@@ -171,7 +160,7 @@ export default function DocentesPage({ docentes, filters }) {
                             docente.
                         </DialogDescription>
                     </DialogHeader>
-                    <DocenteForm docente={selectedDocente} canSubmit={selectedDocente ? canUpdate : canCreate} onSuccess={() => setOpen(false)}/>
+                    <DocenteForm docente={selectedDocente} materias={materias} canSubmit={selectedDocente ? canUpdate : canCreate} onSuccess={() => setOpen(false)}/>
                 </DialogContent>
             </Dialog>
         </>);

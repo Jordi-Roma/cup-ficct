@@ -7,7 +7,7 @@ use App\Modules\GestionAcademica\Models\GestionAcademica;
 use App\Modules\GestionAcademica\Models\GrupoAcademico;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Modules\ReportesMonitoreo\Traits\Auditable;
+use App\Modules\AccesoSeguridad\Traits\Auditable;
 
 class Postulacion extends Model
 {
@@ -27,6 +27,7 @@ class Postulacion extends Model
         'id_carrera_admitida',
         'id_grupo',
         'estado_admision',
+        'estado_proceso',
         'fecha_postulacion',
     ];
 

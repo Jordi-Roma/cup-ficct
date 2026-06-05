@@ -2,14 +2,15 @@
 
 namespace Tests\Feature\Examenes;
 
-use App\Modules\Autenticacion\Models\Permiso;
-use App\Modules\Autenticacion\Models\Rol;
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\Permiso;
+use App\Modules\AccesoSeguridad\Models\Rol;
+use App\Modules\AccesoSeguridad\Models\User;
 use App\Modules\Examenes\Models\Nota;
 use App\Modules\Examenes\Services\NotaService;
 use App\Modules\GestionAcademica\Models\AsignacionAcademica;
 use App\Modules\GestionAcademica\Models\Aula;
 use App\Modules\GestionAcademica\Models\Docente;
+use App\Modules\GestionAcademica\Models\DocenteHabilitacionMateria;
 use App\Modules\GestionAcademica\Models\GestionAcademica;
 use App\Modules\GestionAcademica\Models\GrupoAcademico;
 use App\Modules\GestionAcademica\Models\Horario;
@@ -318,6 +319,7 @@ class NotaTest extends TestCase
         ]);
         $materia = $this->createMateria();
         $docente = $this->createDocente();
+        $this->habilitateDocenteForMateria($docente, $materia);
         $aula = Aula::create([
             'nombre' => 'Aula '.Str::upper(Str::random(6)),
             'capacidad' => 70,
@@ -369,9 +371,22 @@ class NotaTest extends TestCase
             'profesional_area' => true,
             'maestria' => true,
             'diplomado_educacion_superior' => true,
+            'maestria_educacion_superior' => true,
             'contratado' => true,
             'activo' => true,
         ])->load('usuario');
+    }
+
+    private function habilitateDocenteForMateria(Docente $docente, MateriaCup $materia): void
+    {
+        DocenteHabilitacionMateria::updateOrCreate(
+            [
+                'id_docente' => $docente->id_docente,
+                'id_materia' => $materia->id_materia,
+                'tipo_habilitacion' => DocenteHabilitacionMateria::PROFESIONAL_AREA,
+            ],
+            ['activo' => true]
+        );
     }
 
     private function createPostulacion(GestionAcademica $gestion, GrupoAcademico $grupo): Postulacion

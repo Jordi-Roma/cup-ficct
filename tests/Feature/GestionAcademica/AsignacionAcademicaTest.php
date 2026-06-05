@@ -2,12 +2,13 @@
 
 namespace Tests\Feature\GestionAcademica;
 
-use App\Modules\Autenticacion\Models\Permiso;
-use App\Modules\Autenticacion\Models\Rol;
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\Permiso;
+use App\Modules\AccesoSeguridad\Models\Rol;
+use App\Modules\AccesoSeguridad\Models\User;
 use App\Modules\GestionAcademica\Models\AsignacionAcademica;
 use App\Modules\GestionAcademica\Models\Aula;
 use App\Modules\GestionAcademica\Models\Docente;
+use App\Modules\GestionAcademica\Models\DocenteHabilitacionMateria;
 use App\Modules\GestionAcademica\Models\GestionAcademica;
 use App\Modules\GestionAcademica\Models\GrupoAcademico;
 use App\Modules\GestionAcademica\Models\Horario;
@@ -292,13 +293,21 @@ class AsignacionAcademicaTest extends TestCase
         $aula = $overrides['aula'] ?? null;
         $horario = $overrides['horario'] ?? null;
 
+        $grupo = $grupo instanceof GrupoAcademico ? $grupo : $this->createGrupo($gestion, overrides: is_array($grupo) ? $grupo : []);
+        $materia = $materia instanceof MateriaCup ? $materia : $this->createMateria(overrides: is_array($materia) ? $materia : []);
+        $docente = $docente instanceof Docente ? $docente : $this->createDocente(is_array($docente) ? $docente : []);
+        $aula = $aula instanceof Aula ? $aula : $this->createAula(overrides: is_array($aula) ? $aula : []);
+        $horario = $horario instanceof Horario ? $horario : $this->createHorario();
+
+        $this->habilitateDocenteForMateria($docente, $materia);
+
         return [
             'gestion' => $gestion,
-            'grupo' => $grupo instanceof GrupoAcademico ? $grupo : $this->createGrupo($gestion, overrides: is_array($grupo) ? $grupo : []),
-            'materia' => $materia instanceof MateriaCup ? $materia : $this->createMateria(overrides: is_array($materia) ? $materia : []),
-            'docente' => $docente instanceof Docente ? $docente : $this->createDocente(is_array($docente) ? $docente : []),
-            'aula' => $aula instanceof Aula ? $aula : $this->createAula(overrides: is_array($aula) ? $aula : []),
-            'horario' => $horario instanceof Horario ? $horario : $this->createHorario(),
+            'grupo' => $grupo,
+            'materia' => $materia,
+            'docente' => $docente,
+            'aula' => $aula,
+            'horario' => $horario,
         ];
     }
 
@@ -352,9 +361,22 @@ class AsignacionAcademicaTest extends TestCase
             'profesional_area' => true,
             'maestria' => true,
             'diplomado_educacion_superior' => true,
+            'maestria_educacion_superior' => true,
             'contratado' => $overrides['contratado'] ?? true,
             'activo' => $overrides['activo'] ?? true,
         ])->load('usuario');
+    }
+
+    private function habilitateDocenteForMateria(Docente $docente, MateriaCup $materia): void
+    {
+        DocenteHabilitacionMateria::updateOrCreate(
+            [
+                'id_docente' => $docente->id_docente,
+                'id_materia' => $materia->id_materia,
+                'tipo_habilitacion' => DocenteHabilitacionMateria::PROFESIONAL_AREA,
+            ],
+            ['activo' => true]
+        );
     }
 
     private function createAula(?string $nombre = null, array $overrides = []): Aula

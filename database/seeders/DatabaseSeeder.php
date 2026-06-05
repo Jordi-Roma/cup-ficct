@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             'sexo' => 'O',
             'estado_acceso' => 'HABILITADO',
             'activo' => true,
+            'email_verified_at' => now(),
         ]);
 
         $this->call(AccessControlSeeder::class);

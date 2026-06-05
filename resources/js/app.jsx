@@ -1,6 +1,6 @@
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import AuthLayout from '@/modules/autenticacion/layouts/AuthLayout';
+import AuthLayout from '@/modules/acceso-seguridad/layouts/AuthLayout';
 import { Toaster } from '@/shared/components/ui/sonner';
 import { TooltipProvider } from '@/shared/components/ui/tooltip';
 import { initializeTheme } from '@/shared/hooks/use-appearance';
@@ -9,30 +9,34 @@ import SettingsLayout from '@/shared/layouts/settings/layout';
 const appName = import.meta.env.VITE_APP_NAME || 'CUP-FICCT';
 const pages = import.meta.glob('./modules/**/pages/**/*.jsx');
 const pageAliases = {
-    welcome: './modules/autenticacion/pages/WelcomePage.jsx',
+    welcome: './modules/acceso-seguridad/pages/WelcomePage.jsx',
     dashboard: './modules/reportes-monitoreo/pages/DashboardPage.jsx',
-    'auth/confirm-password': './modules/autenticacion/pages/ConfirmPasswordPage.jsx',
-    'auth/forgot-password': './modules/autenticacion/pages/ForgotPasswordPage.jsx',
-    'auth/login': './modules/autenticacion/pages/SesionPage.jsx',
+    'auth/confirm-password': './modules/acceso-seguridad/pages/ConfirmPasswordPage.jsx',
+    'auth/forgot-password': './modules/acceso-seguridad/pages/ForgotPasswordPage.jsx',
+    'auth/login': './modules/acceso-seguridad/pages/SesionPage.jsx',
     'auth/register': './modules/registro-postulantes/pages/RegistroPage.jsx',
-    'auth/reset-password': './modules/autenticacion/pages/ResetPasswordPage.jsx',
-    'auth/verify-email': './modules/autenticacion/pages/VerifyEmailPage.jsx',
-    'admin/permisos': './modules/autenticacion/pages/PermisosPage.jsx',
-    'admin/roles': './modules/autenticacion/pages/RolesPage.jsx',
-    'admin/usuarios': './modules/autenticacion/pages/UsuariosPage.jsx',
+    'auth/reset-password': './modules/acceso-seguridad/pages/ResetPasswordPage.jsx',
+    'auth/verify-email': './modules/acceso-seguridad/pages/VerifyEmailPage.jsx',
+    'admin/permisos': './modules/acceso-seguridad/pages/PermisosPage.jsx',
+    'admin/roles': './modules/acceso-seguridad/pages/RolesPage.jsx',
+    'admin/usuarios': './modules/acceso-seguridad/pages/UsuariosPage.jsx',
     'examenes/historial': './modules/examenes/pages/HistorialAcademicoPage.jsx',
     'examenes/notas': './modules/examenes/pages/NotasPage.jsx',
-    'gestion-academica/admision-cupos': './modules/gestion-academica/pages/AdmisionCuposPage.jsx',
+    'registro-postulantes/admision-cupos': './modules/registro-postulantes/pages/AdmisionCuposPage.jsx',
     'gestion-academica/asignaciones': './modules/gestion-academica/pages/AsignacionesAcademicasPage.jsx',
+    'gestion-academica/aulas': './modules/gestion-academica/pages/AulasPage.jsx',
     'gestion-academica/grupos': './modules/gestion-academica/pages/GruposAcademicosPage.jsx',
+    'gestion-academica/horarios': './modules/gestion-academica/pages/HorariosPage.jsx',
     'gestion-academica/docentes': './modules/gestion-academica/pages/DocentesPage.jsx',
     'gestion-academica/materias': './modules/gestion-academica/pages/MateriasCupPage.jsx',
     'registro-postulantes/postulantes': './modules/registro-postulantes/pages/PostulantesPage.jsx',
+    'registro-postulantes/solicitudes': './modules/registro-postulantes/pages/SolicitudesPostulantesPage.jsx',
+    'registro-postulantes/pago': './modules/registro-postulantes/pages/PagoPostulantePage.jsx',
     'reportes-monitoreo/reportes': './modules/reportes-monitoreo/pages/ReportesPage.jsx',
-    'reportes-monitoreo/bitacora': './modules/reportes-monitoreo/pages/BitacoraPage.jsx',
-    'settings/appearance': './modules/autenticacion/pages/AparienciaPage.jsx',
-    'settings/profile': './modules/autenticacion/pages/PerfilPage.jsx',
-    'settings/security': './modules/autenticacion/pages/SeguridadPage.jsx',
+    'acceso-seguridad/bitacora': './modules/acceso-seguridad/pages/BitacoraPage.jsx',
+    'settings/appearance': './modules/acceso-seguridad/pages/AparienciaPage.jsx',
+    'settings/profile': './modules/acceso-seguridad/pages/PerfilPage.jsx',
+    'settings/security': './modules/acceso-seguridad/pages/SeguridadPage.jsx',
 };
 createInertiaApp({
     resolve: async (name) => {

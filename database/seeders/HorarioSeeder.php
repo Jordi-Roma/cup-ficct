@@ -37,7 +37,16 @@ class HorarioSeeder extends Seeder
                     'dia' => $dia,
                     'hora_inicio' => $inicio,
                     'hora_fin' => $fin,
+                    'activo' => true,
                 ]);
+            } else {
+                DB::table('horario')
+                    ->where([
+                        'dia' => $dia,
+                        'hora_inicio' => $inicio,
+                        'hora_fin' => $fin,
+                    ])
+                    ->update(['activo' => true]);
             }
         }
     }

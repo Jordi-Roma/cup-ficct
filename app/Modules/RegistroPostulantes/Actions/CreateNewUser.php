@@ -2,20 +2,18 @@
 
 namespace App\Modules\RegistroPostulantes\Actions;
 
-use App\Modules\Autenticacion\Models\User;
-use App\Modules\Autenticacion\Concerns\PasswordValidationRules;
-use App\Modules\Autenticacion\Models\Rol;
+use App\Modules\AccesoSeguridad\Models\User;
+use App\Modules\AccesoSeguridad\Models\Rol;
 use App\Modules\RegistroPostulantes\Models\Postulacion;
 use App\Modules\RegistroPostulantes\Models\Postulante;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
 class CreateNewUser implements CreatesNewUsers
 {
-    use PasswordValidationRules;
-
     /**
      * Validate and create a newly registered user.
      *
@@ -27,16 +25,15 @@ class CreateNewUser implements CreatesNewUsers
             'ci' => ['required', 'string', 'max:20', Rule::unique('usuario', 'ci')],
             'nombre' => ['required', 'string', 'max:100'],
             'apellido' => ['required', 'string', 'max:100'],
-            'username' => ['required', 'string', 'max:50', Rule::unique('usuario', 'username')],
             'correo' => ['required', 'string', 'email', 'max:150', Rule::unique('usuario', 'correo')],
-            'password' => $this->passwordRules(),
             'telefono' => ['nullable', 'string', 'max:20'],
             'sexo' => ['required', Rule::in(['M', 'F', 'O'])],
             'fecha_nacimiento' => ['required', 'date'],
             'direccion' => ['nullable', 'string'],
             'colegio_procedencia' => ['nullable', 'string', 'max:150'],
             'ciudad' => ['nullable', 'string', 'max:80'],
-            'documentacion_completa' => ['required', 'boolean'],
+            'presento_titulo_bachiller' => ['nullable', 'boolean'],
+            'presento_fotocopia_carnet' => ['nullable', 'boolean'],
             'id_gestion' => ['required', 'integer', Rule::exists('gestion_academica', 'id_gestion')],
             'id_carrera_opcion1' => ['required', 'integer', Rule::exists('carrera', 'id_carrera')],
             'id_carrera_opcion2' => [
@@ -52,13 +49,13 @@ class CreateNewUser implements CreatesNewUsers
                 'ci' => $input['ci'],
                 'nombre' => $input['nombre'],
                 'apellido' => $input['apellido'],
-                'username' => $input['username'],
+                'username' => 'SOL'.$input['ci'],
                 'correo' => $input['correo'],
-                'password_hash' => $input['password'],
+                'password_hash' => Str::random(32),
                 'telefono' => $input['telefono'] ?? null,
                 'sexo' => $input['sexo'],
-                'estado_acceso' => 'HABILITADO',
-                'activo' => true,
+                'estado_acceso' => 'BLOQUEADO',
+                'activo' => false,
             ]);
 
             $postulante = Postulante::create([
@@ -67,7 +64,12 @@ class CreateNewUser implements CreatesNewUsers
                 'direccion' => $input['direccion'] ?? null,
                 'colegio_procedencia' => $input['colegio_procedencia'] ?? null,
                 'ciudad' => $input['ciudad'] ?? null,
-                'documentacion_completa' => filter_var($input['documentacion_completa'], FILTER_VALIDATE_BOOL),
+                'documentacion_completa' => false,
+                'presento_titulo_bachiller' => filter_var($input['presento_titulo_bachiller'] ?? false, FILTER_VALIDATE_BOOL),
+                'presento_fotocopia_carnet' => filter_var($input['presento_fotocopia_carnet'] ?? false, FILTER_VALIDATE_BOOL),
+                'documentacion_validada' => false,
+                'creado_por_admin' => false,
+                'requiere_pago' => true,
             ]);
 
             Postulacion::create([
@@ -76,6 +78,7 @@ class CreateNewUser implements CreatesNewUsers
                 'id_carrera_opcion1' => $input['id_carrera_opcion1'],
                 'id_carrera_opcion2' => $input['id_carrera_opcion2'] ?? null,
                 'estado_admision' => 'PENDIENTE',
+                'estado_proceso' => 'PENDIENTE_VALIDACION',
             ]);
 
             $postulanteRole = Rol::where('nombre', 'POSTULANTE')->first();

@@ -12,7 +12,7 @@ class AulaSeeder extends Seeder
         foreach (['Aula 1', 'Aula 2', 'Aula 3'] as $nombre) {
             DB::table('aula')->updateOrInsert(
                 ['nombre' => $nombre],
-                ['capacidad' => 70],
+                ['capacidad' => 70, 'activo' => true],
             );
         }
     }

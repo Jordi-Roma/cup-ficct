@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\GestionAcademica;
 
-use App\Modules\Autenticacion\Models\Permiso;
-use App\Modules\Autenticacion\Models\Rol;
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\Permiso;
+use App\Modules\AccesoSeguridad\Models\Rol;
+use App\Modules\AccesoSeguridad\Models\User;
 use App\Modules\GestionAcademica\Models\Docente;
 use App\Modules\GestionAcademica\Models\GestionAcademica;
 use App\Modules\GestionAcademica\Models\GrupoAcademico;
@@ -95,11 +95,9 @@ class DocenteTest extends TestCase
         $this->actingAs($user)
             ->post('/academico/docentes', $this->validDocentePayload([
                 'contratado' => true,
-                'profesional_area' => true,
-                'maestria' => false,
-                'diplomado_educacion_superior' => true,
+                'maestria_educacion_superior' => false,
             ]))
-            ->assertSessionHasErrors('contratado');
+            ->assertSessionHasErrors('maestria_educacion_superior');
 
         $this->assertDatabaseMissing('docente', [
             'contratado' => true,
@@ -264,6 +262,7 @@ class DocenteTest extends TestCase
             'profesional_area' => $overrides['profesional_area'] ?? true,
             'maestria' => $overrides['maestria'] ?? true,
             'diplomado_educacion_superior' => $overrides['diplomado_educacion_superior'] ?? true,
+            'maestria_educacion_superior' => $overrides['maestria_educacion_superior'] ?? true,
             'contratado' => $overrides['contratado'] ?? false,
             'activo' => $overrides['activo'] ?? true,
         ])->load('usuario');
@@ -271,6 +270,11 @@ class DocenteTest extends TestCase
 
     private function validDocentePayload(array $overrides = []): array
     {
+        $materia = MateriaCup::create([
+            'nombre' => 'Materia '.Str::upper(Str::random(6)),
+            'activo' => true,
+        ]);
+
         return array_merge([
             'ci' => fake()->unique()->numerify('########'),
             'nombre' => 'Docente',
@@ -286,6 +290,12 @@ class DocenteTest extends TestCase
             'profesional_area' => true,
             'maestria' => true,
             'diplomado_educacion_superior' => true,
+            'maestria_educacion_superior' => true,
+            'habilitaciones' => [
+                'PROFESIONAL_AREA' => [$materia->id_materia],
+                'DIPLOMADO' => [],
+                'MAESTRIA' => [],
+            ],
             'contratado' => false,
             'activo' => true,
         ], $overrides);

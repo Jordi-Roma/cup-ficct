@@ -10,7 +10,7 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
-use App\Modules\ReportesMonitoreo\Models\LogAuditoria;
+use App\Modules\AccesoSeguridad\Models\LogAuditoria;
 
 class AppServiceProvider extends ServiceProvider
 {

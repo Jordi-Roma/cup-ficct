@@ -2,13 +2,14 @@
 
 namespace App\Providers;
 
-use App\Modules\Autenticacion\Actions\ResetUserPassword;
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Actions\ResetUserPassword;
+use App\Modules\AccesoSeguridad\Models\User;
 use App\Modules\GestionAcademica\Models\Carrera;
 use App\Modules\GestionAcademica\Models\GestionAcademica;
 use App\Modules\RegistroPostulantes\Actions\CreateNewUser;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -16,6 +17,8 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
 use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -25,7 +28,54 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(RegisterResponseContract::class, function () {
+            return new class implements RegisterResponseContract
+            {
+                public function toResponse($request)
+                {
+                    Auth::guard()->logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+
+                    return redirect()->route('login')
+                        ->with('status', 'La solicitud fue enviada y queda pendiente de validacion administrativa.');
+                }
+            };
+        });
+
+        $this->app->singleton(LoginResponseContract::class, function () {
+            return new class implements LoginResponseContract
+            {
+                public function toResponse($request)
+                {
+                    $user = $request->user();
+
+                    if (! $user?->hasRole('POSTULANTE')) {
+                        return redirect()->intended(route('dashboard', absolute: false));
+                    }
+
+                    $postulante = $user->postulante()
+                        ->with(['postulaciones' => fn ($query) => $query->orderByDesc('fecha_postulacion')])
+                        ->first();
+                    $postulacion = $postulante?->postulaciones->first();
+
+                    if ($postulacion?->estado_proceso === 'VALIDADO_PENDIENTE_PAGO') {
+                        return redirect()->intended('/postulante/pago');
+                    }
+
+                    if ($postulacion?->estado_proceso === 'HABILITADO_CUP') {
+                        return redirect()->intended(route('dashboard', absolute: false));
+                    }
+
+                    Auth::guard()->logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+
+                    return redirect()->route('login')
+                        ->with('status', 'Tu solicitud aun no esta habilitada para acceder al sistema.');
+                }
+            };
+        });
     }
 
     /**

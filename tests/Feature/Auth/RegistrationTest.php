@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\User;
 use App\Modules\GestionAcademica\Models\Carrera;
 use App\Modules\GestionAcademica\Models\GestionAcademica;
 use App\Modules\RegistroPostulantes\Models\Postulacion;
@@ -47,7 +47,6 @@ class RegistrationTest extends TestCase
             'ci' => '12345678',
             'nombre' => 'Jordi',
             'apellido' => 'Rivera',
-            'username' => 'jrivera',
             'correo' => 'jordi@example.com',
             'telefono' => '70000000',
             'sexo' => 'M',
@@ -55,27 +54,32 @@ class RegistrationTest extends TestCase
             'direccion' => 'Av. Principal',
             'colegio_procedencia' => 'Colegio Central',
             'ciudad' => 'Santa Cruz',
-            'documentacion_completa' => true,
+            'presento_titulo_bachiller' => true,
+            'presento_fotocopia_carnet' => true,
             'id_gestion' => $gestion->id_gestion,
             'id_carrera_opcion1' => $carreraPrincipal->id_carrera,
             'id_carrera_opcion2' => $carreraSecundaria->id_carrera,
-            'password' => 'password',
-            'password_confirmation' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $this->assertGuest();
+        $response->assertRedirect(route('login', absolute: false));
 
-        $user = User::where('username', 'jrivera')->first();
+        $user = User::where('ci', '12345678')->first();
         $this->assertNotNull($user);
         $this->assertSame('12345678', $user->ci);
+        $this->assertSame('SOL12345678', $user->username);
         $this->assertSame('jordi@example.com', $user->correo);
+        $this->assertFalse($user->activo);
+        $this->assertSame('BLOQUEADO', $user->estado_acceso);
         $this->assertTrue($user->hasRole('POSTULANTE'));
 
         $postulante = Postulante::where('id_usuario', $user->id_usuario)->first();
         $this->assertNotNull($postulante);
         $this->assertSame('Santa Cruz', $postulante->ciudad);
-        $this->assertTrue($postulante->documentacion_completa);
+        $this->assertFalse($postulante->documentacion_completa);
+        $this->assertTrue($postulante->presento_titulo_bachiller);
+        $this->assertTrue($postulante->presento_fotocopia_carnet);
+        $this->assertFalse($postulante->documentacion_validada);
 
         $postulacion = Postulacion::where('id_postulante', $postulante->id_postulante)->first();
         $this->assertNotNull($postulacion);
@@ -83,9 +87,10 @@ class RegistrationTest extends TestCase
         $this->assertSame($carreraPrincipal->id_carrera, $postulacion->id_carrera_opcion1);
         $this->assertSame($carreraSecundaria->id_carrera, $postulacion->id_carrera_opcion2);
         $this->assertSame('PENDIENTE', $postulacion->estado_admision);
+        $this->assertSame('PENDIENTE_VALIDACION', $postulacion->estado_proceso);
     }
 
-    public function test_duplicate_ci_username_and_correo_are_rejected()
+    public function test_duplicate_ci_and_correo_are_rejected()
     {
         $this->seed(CupCatalogSeeder::class);
 
@@ -102,19 +107,15 @@ class RegistrationTest extends TestCase
             'ci' => '12345678',
             'nombre' => 'Jordi',
             'apellido' => 'Rivera',
-            'username' => 'jrivera',
             'correo' => 'jordi@example.com',
             'sexo' => 'M',
             'fecha_nacimiento' => '2005-05-20',
-            'documentacion_completa' => true,
             'id_gestion' => $gestion->id_gestion,
             'id_carrera_opcion1' => $carrera->id_carrera,
-            'password' => 'password',
-            'password_confirmation' => 'password',
         ]);
 
         $response->assertRedirect(route('register'));
-        $response->assertSessionHasErrors(['ci', 'username', 'correo']);
+        $response->assertSessionHasErrors(['ci', 'correo']);
     }
 
     public function test_second_career_must_be_different_from_first_career()
@@ -128,23 +129,19 @@ class RegistrationTest extends TestCase
             'ci' => '87654321',
             'nombre' => 'Ana',
             'apellido' => 'Suarez',
-            'username' => 'asuarez',
             'correo' => 'ana@example.com',
             'sexo' => 'F',
             'fecha_nacimiento' => '2004-03-12',
-            'documentacion_completa' => true,
             'id_gestion' => $gestion->id_gestion,
             'id_carrera_opcion1' => $carrera->id_carrera,
             'id_carrera_opcion2' => $carrera->id_carrera,
-            'password' => 'password',
-            'password_confirmation' => 'password',
         ]);
 
         $response->assertRedirect(route('register'));
         $response->assertSessionHasErrors(['id_carrera_opcion2']);
     }
 
-    public function test_documentacion_completa_is_required()
+    public function test_document_flags_are_optional_and_default_to_false()
     {
         $this->seed(CupCatalogSeeder::class);
 
@@ -155,17 +152,19 @@ class RegistrationTest extends TestCase
             'ci' => '11223344',
             'nombre' => 'Luis',
             'apellido' => 'Mendoza',
-            'username' => 'lmendoza',
             'correo' => 'luis@example.com',
             'sexo' => 'M',
             'fecha_nacimiento' => '2004-11-10',
             'id_gestion' => $gestion->id_gestion,
             'id_carrera_opcion1' => $carrera->id_carrera,
-            'password' => 'password',
-            'password_confirmation' => 'password',
         ]);
 
-        $response->assertRedirect(route('register'));
-        $response->assertSessionHasErrors(['documentacion_completa']);
+        $response->assertRedirect(route('login', absolute: false));
+
+        $postulante = User::where('ci', '11223344')->firstOrFail()->postulante;
+
+        $this->assertFalse($postulante->presento_titulo_bachiller);
+        $this->assertFalse($postulante->presento_fotocopia_carnet);
+        $this->assertFalse($postulante->documentacion_completa);
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Modules\Autenticacion\Models\Permiso;
-use App\Modules\Autenticacion\Models\Rol;
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\Permiso;
+use App\Modules\AccesoSeguridad\Models\Rol;
+use App\Modules\AccesoSeguridad\Models\User;
 use Illuminate\Database\Seeder;
 
 class AccessControlSeeder extends Seeder
@@ -29,8 +29,9 @@ class AccessControlSeeder extends Seeder
         }
 
         $permissions = [
-            'Autenticacion' => [
+            'AccesoSeguridad' => [
                 'usuarios:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar usuarios'],
+                'usuarios:create' => ['accion' => 'CREAR', 'descripcion' => 'Crear usuarios por tipo'],
                 'usuarios:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Actualizar acceso y roles de usuarios'],
                 'roles:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar roles'],
                 'roles:create' => ['accion' => 'CREAR', 'descripcion' => 'Crear roles'],
@@ -40,12 +41,16 @@ class AccessControlSeeder extends Seeder
                 'permisos:create' => ['accion' => 'CREAR', 'descripcion' => 'Crear permisos'],
                 'permisos:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Actualizar permisos'],
                 'permisos:delete' => ['accion' => 'ELIMINAR', 'descripcion' => 'Desactivar permisos'],
+                'bitacora:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar bitácora del sistema'],
             ],
             'RegistroPostulantes' => [
                 'postulantes:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar postulantes'],
                 'postulantes:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Actualizar postulantes'],
                 'pagos:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar pagos de inscripción'],
                 'pagos:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Actualizar pagos de inscripción'],
+                'admision:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar admisión por cupos'],
+                'admision:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Configurar cupos por carrera'],
+                'admision:process' => ['accion' => 'EJECUTAR', 'descripcion' => 'Procesar admisión por cupos'],
             ],
             'GestionAcademica' => [
                 'materias:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar materias CUP'],
@@ -64,9 +69,14 @@ class AccessControlSeeder extends Seeder
                 'asignaciones:create' => ['accion' => 'CREAR', 'descripcion' => 'Crear asignaciones academicas'],
                 'asignaciones:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Actualizar asignaciones academicas'],
                 'asignaciones:delete' => ['accion' => 'ELIMINAR', 'descripcion' => 'Desactivar asignaciones academicas'],
-                'admision:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar admision por cupos'],
-                'admision:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Configurar cupos por carrera'],
-                'admision:process' => ['accion' => 'EJECUTAR', 'descripcion' => 'Procesar admision por cupos'],
+                'aulas:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar aulas'],
+                'aulas:create' => ['accion' => 'CREAR', 'descripcion' => 'Crear aulas'],
+                'aulas:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Actualizar aulas'],
+                'aulas:delete' => ['accion' => 'ELIMINAR', 'descripcion' => 'Desactivar aulas'],
+                'horarios:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar horarios'],
+                'horarios:create' => ['accion' => 'CREAR', 'descripcion' => 'Crear horarios'],
+                'horarios:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Actualizar horarios'],
+                'horarios:delete' => ['accion' => 'ELIMINAR', 'descripcion' => 'Desactivar horarios'],
             ],
             'Examenes' => [
                 'notas:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar notas'],
@@ -80,7 +90,6 @@ class AccessControlSeeder extends Seeder
                 'dashboard:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar dashboard administrativo'],
                 'reportes:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar reportes'],
                 'reportes:export' => ['accion' => 'EJECUTAR', 'descripcion' => 'Exportar reportes'],
-                'bitacora:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar bitácora del sistema'],
             ],
         ];
 
@@ -104,14 +113,14 @@ class AccessControlSeeder extends Seeder
 
     private function syncRolePermissions(): void
     {
-        $allPermissionIds = Permiso::query()->pluck('id_permiso')->all();
+        $allPermissionIds = Permiso::query()->pluck('id_permiso');
 
-        Rol::where('nombre', 'ADMINISTRADOR')->first()?->permisos()->syncWithPivotValues($allPermissionIds, [
-            'activo' => true,
-            'fecha_asignacion' => now(),
-        ]);
+        Rol::where('nombre', 'ADMINISTRADOR')->first()?->permisos()->sync($this->pivotRecords($allPermissionIds));
 
         $administrativo = [
+            'usuarios:read',
+            'usuarios:create',
+            'usuarios:update',
             'dashboard:read',
             'postulantes:read',
             'postulantes:update',
@@ -133,7 +142,15 @@ class AccessControlSeeder extends Seeder
             'asignaciones:create',
             'asignaciones:update',
             'asignaciones:delete',
-            'admision:read',
+            'aulas:read',
+            'aulas:create',
+            'aulas:update',
+            'aulas:delete',
+            'horarios:read',
+            'horarios:create',
+            'horarios:update',
+            'horarios:delete',
+                'admision:read',
             'admision:update',
             'admision:process',
             'notas:read',
@@ -166,12 +183,19 @@ class AccessControlSeeder extends Seeder
     private function syncByNames(string $roleName, array $permissionNames): void
     {
         $role = Rol::where('nombre', $roleName)->first();
-        $permissionIds = Permiso::whereIn('nombre', $permissionNames)->pluck('id_permiso')->all();
+        $permissionIds = Permiso::whereIn('nombre', $permissionNames)->pluck('id_permiso');
 
-        $role?->permisos()->syncWithPivotValues($permissionIds, [
-            'activo' => true,
-            'fecha_asignacion' => now(),
-        ]);
+        $role?->permisos()->sync($this->pivotRecords($permissionIds));
+    }
+
+    private function pivotRecords($ids): array
+    {
+        return collect($ids)->mapWithKeys(fn ($id) => [
+            $id => [
+                'activo' => true,
+                'fecha_asignacion' => now(),
+            ],
+        ])->all();
     }
 
     private function assignAdminToTestUser(): void
@@ -180,12 +204,7 @@ class AccessControlSeeder extends Seeder
         $testUser = User::where('username', 'testuser')->first();
 
         if ($admin && $testUser) {
-            $testUser->roles()->syncWithoutDetaching([
-                $admin->id_rol => [
-                    'activo' => true,
-                    'fecha_asignacion' => now(),
-                ],
-            ]);
+            $testUser->roles()->syncWithoutDetaching($this->pivotRecords([$admin->id_rol]));
         }
     }
 }

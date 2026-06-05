@@ -4,6 +4,7 @@ namespace App\Modules\GestionAcademica\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\GestionAcademica\Models\Docente;
+use App\Modules\GestionAcademica\Models\MateriaCup;
 use App\Modules\GestionAcademica\Requests\StoreDocenteRequest;
 use App\Modules\GestionAcademica\Requests\UpdateDocenteRequest;
 use App\Modules\GestionAcademica\Services\DocenteService;
@@ -24,14 +25,16 @@ class DocenteController extends Controller
             'search',
             'contratado',
             'activo',
-            'profesional_area',
-            'maestria',
-            'diplomado_educacion_superior',
+            'maestria_educacion_superior',
         ]);
 
         return Inertia::render('gestion-academica/docentes', [
             'docentes' => $this->docenteService->list($filters),
             'filters' => $filters,
+            'materias' => MateriaCup::query()
+                ->where('activo', true)
+                ->orderBy('nombre')
+                ->get(['id_materia', 'nombre']),
         ]);
     }
 

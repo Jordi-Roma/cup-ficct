@@ -2,9 +2,10 @@
 
 namespace App\Modules\GestionAcademica\Services;
 
-use App\Modules\Autenticacion\Models\Rol;
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\Rol;
+use App\Modules\AccesoSeguridad\Models\User;
 use App\Modules\GestionAcademica\Models\Docente;
+use App\Modules\GestionAcademica\Models\DocenteHabilitacionMateria;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,7 @@ class DocenteService
     public function list(array $filters): Collection
     {
         return Docente::query()
-            ->with('usuario')
+            ->with(['usuario', 'habilitaciones.materia'])
             ->when($filters['search'] ?? null, function (Builder $query, string $search): void {
                 $query->whereHas('usuario', function (Builder $userQuery) use ($search): void {
                     $userQuery
@@ -29,9 +30,7 @@ class DocenteService
             })
             ->when(isset($filters['contratado']) && $filters['contratado'] !== '', fn (Builder $query) => $query->where('contratado', filter_var($filters['contratado'], FILTER_VALIDATE_BOOLEAN)))
             ->when(isset($filters['activo']) && $filters['activo'] !== '', fn (Builder $query) => $query->where('activo', filter_var($filters['activo'], FILTER_VALIDATE_BOOLEAN)))
-            ->when(isset($filters['profesional_area']) && $filters['profesional_area'] !== '', fn (Builder $query) => $query->where('profesional_area', filter_var($filters['profesional_area'], FILTER_VALIDATE_BOOLEAN)))
-            ->when(isset($filters['maestria']) && $filters['maestria'] !== '', fn (Builder $query) => $query->where('maestria', filter_var($filters['maestria'], FILTER_VALIDATE_BOOLEAN)))
-            ->when(isset($filters['diplomado_educacion_superior']) && $filters['diplomado_educacion_superior'] !== '', fn (Builder $query) => $query->where('diplomado_educacion_superior', filter_var($filters['diplomado_educacion_superior'], FILTER_VALIDATE_BOOLEAN)))
+            ->when(isset($filters['maestria_educacion_superior']) && $filters['maestria_educacion_superior'] !== '', fn (Builder $query) => $query->where('maestria_educacion_superior', filter_var($filters['maestria_educacion_superior'], FILTER_VALIDATE_BOOLEAN)))
             ->whereHas('usuario')
             ->get()
             ->sortBy(fn (Docente $docente) => $docente->usuario?->apellido.' '.$docente->usuario?->nombre)
@@ -41,7 +40,7 @@ class DocenteService
 
     public function create(array $data): Docente
     {
-        $data['contratado'] = $data['contratado'] ?? false;
+        $data = $this->normalizeAcademicData($data);
         $this->validateContractRequirements($data);
 
         return DB::transaction(function () use ($data): Docente {
@@ -63,18 +62,21 @@ class DocenteService
                 'profesional_area' => $data['profesional_area'],
                 'maestria' => $data['maestria'],
                 'diplomado_educacion_superior' => $data['diplomado_educacion_superior'],
+                'maestria_educacion_superior' => $data['maestria_educacion_superior'],
                 'contratado' => $data['contratado'],
                 'activo' => true,
             ]);
 
+            $this->syncHabilitaciones($docente, $data['habilitaciones']);
             $this->assignDocenteRole($user);
 
-            return $docente;
+            return $docente->load(['usuario', 'habilitaciones.materia']);
         });
     }
 
     public function update(Docente $docente, array $data): Docente
     {
+        $data = $this->normalizeAcademicData($data);
         $this->validateContractRequirements($data);
 
         return DB::transaction(function () use ($docente, $data): Docente {
@@ -99,11 +101,13 @@ class DocenteService
                 'profesional_area' => $data['profesional_area'],
                 'maestria' => $data['maestria'],
                 'diplomado_educacion_superior' => $data['diplomado_educacion_superior'],
+                'maestria_educacion_superior' => $data['maestria_educacion_superior'],
                 'contratado' => $data['contratado'],
                 'activo' => $data['activo'],
             ]);
+            $this->syncHabilitaciones($docente, $data['habilitaciones']);
 
-            return $docente;
+            return $docente->load(['usuario', 'habilitaciones.materia']);
         });
     }
 
@@ -111,7 +115,7 @@ class DocenteService
     {
         if ($docente->activo && $this->hasActiveAcademicAssignments($docente)) {
             throw ValidationException::withMessages([
-                'docente' => 'No se puede desactivar un docente con asignaciones académicas activas.',
+                'docente' => 'No se puede desactivar un docente con asignaciones academicas activas.',
             ]);
         }
 
@@ -122,6 +126,7 @@ class DocenteService
 
     public function serialize(Docente $docente): array
     {
+        $docente->loadMissing(['usuario', 'habilitaciones.materia']);
         $user = $docente->usuario;
 
         return [
@@ -140,21 +145,119 @@ class DocenteService
             'profesional_area' => $docente->profesional_area,
             'maestria' => $docente->maestria,
             'diplomado_educacion_superior' => $docente->diplomado_educacion_superior,
+            'maestria_educacion_superior' => $docente->maestria_educacion_superior,
             'contratado' => $docente->contratado,
             'activo' => $docente->activo,
+            'habilitaciones' => $this->serializeHabilitaciones($docente),
+            'materias_habilitadas' => $this->serializeMateriasHabilitadas($docente),
         ];
     }
 
     public function validateContractRequirements(array $data): void
     {
-        if (
-            ($data['contratado'] ?? false)
-            && (! $data['profesional_area'] || ! $data['maestria'] || ! $data['diplomado_educacion_superior'])
-        ) {
+        if (! ($data['contratado'] ?? false)) {
+            return;
+        }
+
+        if (! ($data['maestria_educacion_superior'] ?? false)) {
             throw ValidationException::withMessages([
-                'contratado' => 'El docente debe cumplir profesional en área, maestría y diplomado para ser contratado.',
+                'maestria_educacion_superior' => 'El docente debe tener maestria en educacion superior para ser contratado.',
             ]);
         }
+
+        if ($this->countHabilitaciones($data['habilitaciones'] ?? []) === 0) {
+            throw ValidationException::withMessages([
+                'habilitaciones' => 'El docente debe estar habilitado en al menos una materia para ser contratado.',
+            ]);
+        }
+    }
+
+    public function syncHabilitaciones(Docente $docente, array $habilitaciones): void
+    {
+        $normalized = $this->normalizeHabilitaciones($habilitaciones);
+        $docente->habilitaciones()->update(['activo' => false]);
+
+        foreach ($normalized as $tipo => $materiaIds) {
+            foreach ($materiaIds as $materiaId) {
+                DocenteHabilitacionMateria::updateOrCreate(
+                    [
+                        'id_docente' => $docente->id_docente,
+                        'id_materia' => $materiaId,
+                        'tipo_habilitacion' => $tipo,
+                    ],
+                    ['activo' => true],
+                );
+            }
+        }
+
+        $docente->update([
+            'profesional_area' => count($normalized[DocenteHabilitacionMateria::PROFESIONAL_AREA]) > 0,
+            'diplomado_educacion_superior' => count($normalized[DocenteHabilitacionMateria::DIPLOMADO]) > 0,
+            'maestria' => count($normalized[DocenteHabilitacionMateria::MAESTRIA]) > 0,
+        ]);
+    }
+
+    private function normalizeAcademicData(array $data): array
+    {
+        $habilitaciones = $this->normalizeHabilitaciones($data['habilitaciones'] ?? []);
+
+        $data['habilitaciones'] = $habilitaciones;
+        $data['maestria_educacion_superior'] = filter_var($data['maestria_educacion_superior'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $data['contratado'] = filter_var($data['contratado'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $data['profesional_area'] = count($habilitaciones[DocenteHabilitacionMateria::PROFESIONAL_AREA]) > 0;
+        $data['diplomado_educacion_superior'] = count($habilitaciones[DocenteHabilitacionMateria::DIPLOMADO]) > 0;
+        $data['maestria'] = count($habilitaciones[DocenteHabilitacionMateria::MAESTRIA]) > 0;
+
+        return $data;
+    }
+
+    private function normalizeHabilitaciones(array $habilitaciones): array
+    {
+        $normalized = [];
+
+        foreach (DocenteHabilitacionMateria::TIPOS as $tipo) {
+            $normalized[$tipo] = collect($habilitaciones[$tipo] ?? [])
+                ->filter(fn ($id) => $id !== null && $id !== '')
+                ->map(fn ($id) => (int) $id)
+                ->unique()
+                ->values()
+                ->all();
+        }
+
+        return $normalized;
+    }
+
+    private function countHabilitaciones(array $habilitaciones): int
+    {
+        return collect($this->normalizeHabilitaciones($habilitaciones))->flatten()->unique()->count();
+    }
+
+    private function serializeHabilitaciones(Docente $docente): array
+    {
+        $result = [];
+
+        foreach (DocenteHabilitacionMateria::TIPOS as $tipo) {
+            $result[$tipo] = $docente->habilitaciones
+                ->where('tipo_habilitacion', $tipo)
+                ->where('activo', true)
+                ->map(fn (DocenteHabilitacionMateria $habilitacion) => [
+                    'id_materia' => $habilitacion->id_materia,
+                    'nombre' => $habilitacion->materia?->nombre,
+                ])
+                ->values()
+                ->all();
+        }
+
+        return $result;
+    }
+
+    private function serializeMateriasHabilitadas(Docente $docente): array
+    {
+        return collect($this->serializeHabilitaciones($docente))
+            ->flatten(1)
+            ->unique('id_materia')
+            ->values()
+            ->all();
     }
 
     private function assignDocenteRole(User $user): void

@@ -2,12 +2,12 @@
 
 namespace App\Modules\Examenes\Models;
 
-use App\Modules\Autenticacion\Models\User;
+use App\Modules\AccesoSeguridad\Models\User;
 use App\Modules\GestionAcademica\Models\MateriaCup;
 use App\Modules\RegistroPostulantes\Models\Postulacion;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Modules\ReportesMonitoreo\Traits\Auditable;
+use App\Modules\AccesoSeguridad\Traits\Auditable;
 
 class Nota extends Model
 {
