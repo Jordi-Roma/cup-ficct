@@ -20,6 +20,7 @@ const pageAliases = {
     'admin/permisos': './modules/acceso-seguridad/pages/PermisosPage.jsx',
     'admin/roles': './modules/acceso-seguridad/pages/RolesPage.jsx',
     'admin/usuarios': './modules/acceso-seguridad/pages/UsuariosPage.jsx',
+    'examenes/mis-asignaciones': './modules/examenes/pages/MisAsignacionesPage.jsx',
     'examenes/historial': './modules/examenes/pages/HistorialAcademicoPage.jsx',
     'examenes/notas': './modules/examenes/pages/NotasPage.jsx',
     'registro-postulantes/admision-cupos': './modules/registro-postulantes/pages/AdmisionCuposPage.jsx',

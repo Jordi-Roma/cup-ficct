@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\Examenes\Controllers\HistorialAcademicoController;
+use App\Modules\Examenes\Controllers\MisAsignacionesController;
 use App\Modules\Examenes\Controllers\NotaController;
 use Illuminate\Support\Facades\Route;
 
@@ -8,6 +9,10 @@ Route::middleware(['auth', 'verified'])
     ->prefix('examenes')
     ->name('examenes.')
     ->group(function () {
+        Route::get('mis-asignaciones', [MisAsignacionesController::class, 'index'])
+            ->middleware('permission:mis-asignaciones:read')
+            ->name('mis-asignaciones.index');
+
         Route::get('historial', [HistorialAcademicoController::class, 'index'])
             ->middleware('permission:historial:read-own')
             ->name('historial.index');

@@ -141,6 +141,12 @@ const mainNavGroups = [
         icon: BookMarked,
         items: [
             {
+                title: 'Mis asignaciones',
+                href: '/examenes/mis-asignaciones',
+                icon: CalendarCheck,
+                permission: 'mis-asignaciones:read',
+            },
+            {
                 title: 'Notas',
                 href: '/examenes/notas',
                 icon: BookCheck,

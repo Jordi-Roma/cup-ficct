@@ -79,6 +79,7 @@ class AccessControlSeeder extends Seeder
                 'horarios:delete' => ['accion' => 'ELIMINAR', 'descripcion' => 'Desactivar horarios'],
             ],
             'Examenes' => [
+                'mis-asignaciones:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar mis asignaciones academicas'],
                 'notas:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar notas'],
                 'notas:create' => ['accion' => 'CREAR', 'descripcion' => 'Registrar notas'],
                 'notas:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Actualizar notas'],
@@ -163,6 +164,7 @@ class AccessControlSeeder extends Seeder
         ];
 
         $docente = [
+            'mis-asignaciones:read',
             'notas:read',
             'notas:create',
             'notas:update',
