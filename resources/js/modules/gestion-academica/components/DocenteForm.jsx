@@ -8,9 +8,9 @@ import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 
 const habilitacionTipos = [
-    ['PROFESIONAL_AREA', 'Profesional en el area'],
+    ['PROFESIONAL_AREA', 'Profesional en el área'],
     ['DIPLOMADO', 'Diplomado en'],
-    ['MAESTRIA', 'Maestria en'],
+    ['MAESTRIA', 'Maestría en'],
 ];
 
 export default function DocenteForm({ docente, materias = [], canSubmit, onSuccess }) {
@@ -104,12 +104,12 @@ export default function DocenteForm({ docente, materias = [], canSubmit, onSucce
 
             <div className="grid gap-4 sm:grid-cols-2">
                 <div className="grid gap-2">
-                    <Label>{docente ? 'Nueva contrasena' : 'Contrasena'}</Label>
+                    <Label>{docente ? 'Nueva contraseña' : 'Contraseña'}</Label>
                     <PasswordInput value={data.password} onChange={(event) => setData('password', event.target.value)} />
                     <InputError message={errors.password} />
                 </div>
                 <div className="grid gap-2">
-                    <Label>Confirmar contrasena</Label>
+                    <Label>Confirmar contraseña</Label>
                     <PasswordInput value={data.password_confirmation} onChange={(event) => setData('password_confirmation', event.target.value)} />
                 </div>
             </div>
@@ -117,7 +117,7 @@ export default function DocenteForm({ docente, materias = [], canSubmit, onSucce
             <div className="space-y-4 rounded-md border p-4">
                 <Label className="flex items-center gap-3">
                     <Checkbox checked={data.maestria_educacion_superior} onCheckedChange={(checked) => setData('maestria_educacion_superior', checked === true)} />
-                    Maestria en educacion superior
+                    Maestría en educación superior
                 </Label>
                 {habilitacionTipos.map(([tipo, label]) => (
                     <MateriaChecklist key={tipo} label={label} materias={materias} selected={data.habilitaciones[tipo] ?? []} onChange={(id, checked) => toggleMateria(tipo, id, checked)} />
@@ -126,7 +126,7 @@ export default function DocenteForm({ docente, materias = [], canSubmit, onSucce
                     <Checkbox checked={data.contratado} disabled={!canContract} onCheckedChange={(checked) => setData('contratado', checked === true)} />
                     Docente contratado
                 </Label>
-                {!canContract && data.contratado && <p className="text-sm text-destructive">Para contratar debe tener maestria en educacion superior y al menos una materia habilitada.</p>}
+                {!canContract && data.contratado && <p className="text-sm text-destructive">Para contratar debe tener maestría en educación superior y al menos una materia habilitada.</p>}
                 <InputError message={errors.maestria_educacion_superior} />
                 <InputError message={errors.habilitaciones} />
                 <InputError message={errors.contratado} />

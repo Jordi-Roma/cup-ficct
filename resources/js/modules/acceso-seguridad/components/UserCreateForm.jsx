@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import InputError from '@/shared/components/input-error';
 import PasswordInput from '@/shared/components/password-input';
 import { Button } from '@/shared/components/ui/button';
@@ -109,12 +109,12 @@ export default function UserCreateForm({ materias, gestiones, carreras, canSubmi
 
             <div className="grid gap-4 sm:grid-cols-2">
                 <div className="grid gap-2">
-                    <Label>Contrasena</Label>
+                    <Label>Contraseña</Label>
                     <PasswordInput value={data.password} onChange={(event) => setData('password', event.target.value)} />
                     <InputError message={errors.password} />
                 </div>
                 <div className="grid gap-2">
-                    <Label>Confirmar contrasena</Label>
+                    <Label>Confirmar Contraseña</Label>
                     <PasswordInput value={data.password_confirmation} onChange={(event) => setData('password_confirmation', event.target.value)} />
                 </div>
             </div>

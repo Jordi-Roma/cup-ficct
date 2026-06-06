@@ -197,8 +197,8 @@ const sidebarMenuButtonVariants = cva(
                     'data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground ' +
                     /* Light: coral→cream gradient when active */
                     'data-[active=true]:[background:linear-gradient(135deg,#F4747A_0%,#FFE8D6_55%,#FFF9F0_100%)] data-[active=true]:text-[#7A2020] data-[active=true]:font-semibold data-[active=true]:shadow-sm ' +
-                    /* Dark: soft blue-violet glow when active */
-                    'dark:data-[active=true]:[background:linear-gradient(135deg,#2A1F5A_0%,#1E2D5E_100%)] dark:data-[active=true]:text-[#C8B8F8] dark:data-[active=true]:shadow-[0_0_12px_0_rgba(120,90,220,0.18)]',
+                    /* Dark: celeste-blue glow when active */
+                    'dark:data-[active=true]:[background:linear-gradient(135deg,#0D2B5A_0%,#1A3A6E_100%)] dark:data-[active=true]:text-[#A8D4F0] dark:data-[active=true]:shadow-[0_0_12px_0_rgba(80,160,220,0.2)]',
                 outline:
                     'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
             },

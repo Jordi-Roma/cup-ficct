@@ -10,7 +10,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 export default function ForgotPassword({ status }) {
     return (<>
-            <Head title="Olvidaste tu contrasena"/>
+            <Head title="Olvidaste tu contraseña"/>
 
             {status && (<div className="mb-4 text-center text-sm font-medium text-green-600">
                     {status}
@@ -20,8 +20,8 @@ export default function ForgotPassword({ status }) {
                 <Form {...email.form()}>
                     {({ processing, errors }) => (<>
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Correo electronico</Label>
-                                <Input id="email" type="email" name="email" autoComplete="off" autoFocus placeholder="email@example.com"/>
+                                <Label htmlFor="email">Correo electrónico</Label>
+                                <Input id="email" type="email" name="email" autoComplete="off" autoFocus placeholder="correo@example.com"/>
 
                                 <InputError message={errors.email}/>
                             </div>
@@ -29,7 +29,7 @@ export default function ForgotPassword({ status }) {
                             <div className="my-6 flex items-center justify-start">
                                 <Button className="w-full" disabled={processing} data-test="email-password-reset-link-button">
                                     {processing && (<LoaderCircle className="h-4 w-4 animate-spin"/>)}
-                                    Enviar enlace para restablecer contrasena
+                                    Enviar enlace para restablecer contraseña
                                 </Button>
                             </div>
                         </>)}
@@ -37,12 +37,12 @@ export default function ForgotPassword({ status }) {
 
                 <div className="space-x-1 text-center text-sm text-muted-foreground">
                     <span>O vuelve a</span>
-                    <TextLink href={login()}>iniciar sesion</TextLink>
+                    <TextLink href={login()}>iniciar sesión</TextLink>
                 </div>
             </div>
         </>);
 }
 ForgotPassword.layout = {
-    title: 'Olvidaste tu contrasena',
-    description: 'Ingresa tu correo para recibir un enlace de recuperacion',
+    title: 'Olvidaste tu contraseña',
+    description: 'Ingresa tu correo para recibir un enlace de recuperación',
 };

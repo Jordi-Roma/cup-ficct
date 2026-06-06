@@ -62,113 +62,113 @@
 }
 
 /* ============================================================
-   MODO CLARO — Elegante: blanco/gris claro, azul corporativo,
-   rosa coral y celeste pastel
+   MODO CLARO — Rosa suave elegante: #FEF0F2 fondo general,
+   #FCCFD5 sidebar, #FDF5F6 tarjetas, azul corporativo #0D2B85
    ============================================================ */
 :root {
-    /* Fondo general y superficie */
-    --background: oklch(0.98 0.003 240);       /* Blanco ligeramente azulado */
-    --foreground: oklch(0.18 0.06 255);        /* Azul corporativo oscuro ≈ #0D2B85 */
+    /* Fondo general — Rosa muy suave ≈ #FEF0F2 */
+    --background: oklch(0.96 0.016 10);
+    --foreground: oklch(0.18 0.06 255);        /* Azul corporativo ≈ #0D2B85 */
 
-    /* Tarjetas */
-    --card: oklch(1 0 0);                      /* Blanco puro */
-    --card-foreground: oklch(0.18 0.06 255);   /* Azul corporativo */
+    /* Tarjetas — Rosa blancuzco ≈ #FDF5F6 */
+    --card: oklch(0.975 0.01 10);
+    --card-foreground: oklch(0.18 0.06 255);
 
     /* Popover */
-    --popover: oklch(1 0 0);
+    --popover: oklch(0.975 0.01 10);
     --popover-foreground: oklch(0.18 0.06 255);
 
     /* Primario — Azul corporativo */
-    --primary: oklch(0.3 0.12 255);            /* Azul corporativo #0D2B85 aprox */
-    --primary-foreground: oklch(0.98 0.005 240);
+    --primary: oklch(0.3 0.12 255);
+    --primary-foreground: oklch(0.97 0.008 10);
 
-    /* Secundario — Rosa coral muy suave */
-    --secondary: oklch(0.95 0.025 10);         /* Rosa coral tenue */
+    /* Secundario — Rosa coral ≈ #FCCFD5 */
+    --secondary: oklch(0.93 0.025 10);
     --secondary-foreground: oklch(0.25 0.08 255);
 
-    /* Muted — Gris azulado muy claro */
-    --muted: oklch(0.96 0.005 240);
-    --muted-foreground: oklch(0.5 0.04 255);
+    /* Muted — Rosa pálido para fondos de tablas/headers */
+    --muted: oklch(0.94 0.02 10);
+    --muted-foreground: oklch(0.45 0.05 255);
 
     /* Acento — Celeste pastel */
-    --accent: oklch(0.93 0.04 215);            /* Celeste pastel suave */
-    --accent-foreground: oklch(0.2 0.08 255);  /* Azul oscuro */
+    --accent: oklch(0.93 0.04 215);
+    --accent-foreground: oklch(0.2 0.08 255);
 
     /* Destructivo */
     --destructive: oklch(0.52 0.18 25);
-    --destructive-foreground: oklch(0.98 0 0);
+    --destructive-foreground: oklch(0.97 0.008 10);
 
-    /* Bordes y anillos */
-    --border: oklch(0.91 0.01 240);
-    --input: oklch(0.93 0.01 240);
+    /* Bordes y anillos — rosados suaves */
+    --border: oklch(0.90 0.025 10);
+    --input: oklch(0.92 0.02 10);
     --ring: oklch(0.6 0.06 255);
 
-    /* Gráficos — degradados rosa → celeste */
-    --chart-1: oklch(0.65 0.15 340);          /* Rosa coral */
-    --chart-2: oklch(0.65 0.12 220);          /* Celeste pastel */
-    --chart-3: oklch(0.4 0.1 255);            /* Azul medio */
-    --chart-4: oklch(0.7 0.1 280);            /* Lila suave */
-    --chart-5: oklch(0.75 0.08 200);          /* Celeste claro */
+    /* Gráficos */
+    --chart-1: oklch(0.65 0.15 340);
+    --chart-2: oklch(0.65 0.12 220);
+    --chart-3: oklch(0.4 0.1 255);
+    --chart-4: oklch(0.7 0.1 280);
+    --chart-5: oklch(0.75 0.08 200);
 
     --radius: 0.75rem;
 
-    /* Sidebar — Blanco limpio */
-    --sidebar: oklch(0.99 0.002 240);
+    /* Sidebar — Rosa coral ≈ #FCCFD5 */
+    --sidebar: oklch(0.915 0.035 10);
     --sidebar-foreground: oklch(0.22 0.07 255);
     --sidebar-primary: oklch(0.3 0.12 255);
-    --sidebar-primary-foreground: oklch(0.98 0 0);
-    --sidebar-accent: oklch(0.93 0.04 215);
+    --sidebar-primary-foreground: oklch(0.97 0.008 10);
+    --sidebar-accent: oklch(0.88 0.03 10);
     --sidebar-accent-foreground: oklch(0.2 0.08 255);
-    --sidebar-border: oklch(0.92 0.01 240);
+    --sidebar-border: oklch(0.87 0.03 10);
     --sidebar-ring: oklch(0.6 0.06 255);
 
-    /* Custom — colores específicos del sistema */
+    /* Custom */
     --cup-coral: #F4747A;
     --cup-coral-light: #FDDDE0;
     --cup-sky: #B8DFF5;
     --cup-sky-light: #E8F5FE;
     --cup-blue: #0D2B85;
-    --cup-cream: #FFF9F0;
+    --cup-cream: #FFF0F2;
     --cup-status-active-bg: #E8F5FE;
     --cup-status-active-text: #1A4FA3;
-    --cup-status-inactive-bg: #F0F0F8;
-    --cup-status-inactive-text: #5A6A9A;
+    --cup-status-inactive-bg: #F5E8EE;
+    --cup-status-inactive-text: #7A4A60;
     --cup-status-pending-bg: #EEF0FF;
     --cup-status-pending-text: #3D52B0;
 }
 
 /* ============================================================
-   MODO OSCURO — Dashboard moderno: azul marino profundo,
-   rosa suave desaturado, lila/lavanda para estados
+   MODO OSCURO — Azul marino profundo, sin blancos puros.
+   Textos y superficies en celeste apagado suave.
    ============================================================ */
 .dark {
-    /* Fondo general — Azul marino profundo */
-    --background: oklch(0.12 0.03 255);        /* ≈ #0B1220 */
-    --foreground: oklch(0.88 0.025 355);       /* Rosa suave desaturado */
+    /* Fondo general ≈ #0B1220 */
+    --background: oklch(0.12 0.03 255);
+    --foreground: oklch(0.82 0.03 215);        /* Celeste apagado — reemplaza blanco */
 
-    /* Tarjetas — superficie ligeramente más clara */
-    --card: oklch(0.15 0.035 255);             /* ≈ #111A2E */
-    --card-foreground: oklch(0.88 0.025 355);
+    /* Tarjetas ≈ #111A2E */
+    --card: oklch(0.15 0.035 255);
+    --card-foreground: oklch(0.82 0.03 215);
 
-    /* Popover */
-    --popover: oklch(0.17 0.035 255);          /* ≈ #16213A */
-    --popover-foreground: oklch(0.88 0.025 355);
+    /* Popover ≈ #16213A */
+    --popover: oklch(0.17 0.035 255);
+    --popover-foreground: oklch(0.82 0.03 215);
 
-    /* Primario — Rosa suave apagado */
-    --primary: oklch(0.78 0.04 355);           /* Rosa suave modo oscuro */
+    /* Primario — Celeste apagado para botones/acciones en oscuro */
+    --primary: oklch(0.72 0.06 215);
     --primary-foreground: oklch(0.12 0.04 255);
 
     /* Secundario */
-    --secondary: oklch(0.2 0.04 255);          /* Superficie #16213A */
-    --secondary-foreground: oklch(0.82 0.03 355);
+    --secondary: oklch(0.2 0.04 255);
+    --secondary-foreground: oklch(0.78 0.04 215);
 
     /* Muted */
     --muted: oklch(0.19 0.035 255);
-    --muted-foreground: oklch(0.62 0.03 280);
+    --muted-foreground: oklch(0.58 0.04 230);  /* Celeste grisáceo */
 
-    /* Acento — Azul violáceo suave */
+    /* Acento */
     --accent: oklch(0.25 0.06 265);
-    --accent-foreground: oklch(0.85 0.03 355);
+    --accent-foreground: oklch(0.8 0.04 215);
 
     /* Destructivo */
     --destructive: oklch(0.38 0.12 25);
@@ -179,28 +179,28 @@
     --input: oklch(0.22 0.04 255);
     --ring: oklch(0.45 0.06 265);
 
-    /* Gráficos — azules con leve toque rosa */
-    --chart-1: oklch(0.55 0.12 260);          /* Azul medio */
-    --chart-2: oklch(0.45 0.1 250);           /* Azul oscuro */
-    --chart-3: oklch(0.65 0.06 355);          /* Rosa suave — destacado */
-    --chart-4: oklch(0.5 0.1 270);            /* Azul violáceo */
-    --chart-5: oklch(0.6 0.08 240);           /* Azul grisáceo */
+    /* Gráficos */
+    --chart-1: oklch(0.55 0.12 260);
+    --chart-2: oklch(0.45 0.1 250);
+    --chart-3: oklch(0.65 0.08 210);          /* Celeste destacado */
+    --chart-4: oklch(0.5 0.1 270);
+    --chart-5: oklch(0.6 0.08 240);
 
-    /* Sidebar — Azul marino oscuro */
+    /* Sidebar */
     --sidebar: oklch(0.14 0.03 255);
-    --sidebar-foreground: oklch(0.85 0.025 355);
-    --sidebar-primary: oklch(0.78 0.04 355);
+    --sidebar-foreground: oklch(0.80 0.04 215);
+    --sidebar-primary: oklch(0.72 0.06 215);
     --sidebar-primary-foreground: oklch(0.12 0.03 255);
     --sidebar-accent: oklch(0.22 0.05 260);
-    --sidebar-accent-foreground: oklch(0.85 0.03 355);
+    --sidebar-accent-foreground: oklch(0.80 0.04 215);
     --sidebar-border: oklch(0.2 0.04 255);
     --sidebar-ring: oklch(0.45 0.06 265);
 
-    /* Custom — colores específicos modo oscuro */
+    /* Custom */
     --cup-status-active-bg: #1E2D5E;
     --cup-status-active-text: #A8C4F0;
-    --cup-status-inactive-bg: #221E3E;
-    --cup-status-inactive-text: #B0A8D8;
+    --cup-status-inactive-bg: #1A2535;
+    --cup-status-inactive-text: #90B0C8;
     --cup-status-pending-bg: #1A1E42;
     --cup-status-pending-text: #9BA8E0;
 }

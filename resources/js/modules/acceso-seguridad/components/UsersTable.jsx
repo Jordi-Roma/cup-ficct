@@ -1,4 +1,4 @@
-import { Edit2, Shield } from 'lucide-react';
+﻿import { Edit2, Shield } from 'lucide-react';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 export default function UsersTable({ usuarios, onEditAccess, onEditRoles, canUpdate, }) {

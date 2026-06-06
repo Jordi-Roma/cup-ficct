@@ -1,4 +1,4 @@
-import { Form, Head, usePage } from '@inertiajs/react';
+﻿import { Form, Head, usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import ProfileController from '@/actions/App/Modules/AccesoSeguridad/Controllers/ProfileController';
 import DeleteUser from '@/modules/acceso-seguridad/components/DeleteUser';
@@ -12,12 +12,12 @@ import { Label } from '@/shared/components/ui/label';
 export default function Profile({ mustVerifyEmail, status, }) {
     const { auth } = usePage().props;
     return (<>
-            <Head title="Configuracion de perfil"/>
+            <Head title="Configuración de perfil"/>
 
-            <h1 className="sr-only">Configuracion de perfil</h1>
+            <h1 className="sr-only">Configuración de perfil</h1>
 
             <div className="space-y-6">
-                <Heading variant="small" title="Perfil" description="Actualiza tu nombre y correo electronico"/>
+                <Heading variant="small" title="Perfil" description="Actualiza tu nombre y correo electrónico"/>
 
                 <Form {...ProfileController.update.form()} options={{
             preserveScroll: true,
@@ -32,9 +32,9 @@ export default function Profile({ mustVerifyEmail, status, }) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Correo electronico</Label>
+                                <Label htmlFor="email">Correo electrónico</Label>
 
-                                <Input id="email" type="email" className="mt-1 block w-full" defaultValue={auth.user.email} name="email" required autoComplete="username" placeholder="Correo electronico"/>
+                                <Input id="email" type="email" className="mt-1 block w-full" defaultValue={auth.user.email} name="email" required autoComplete="username" placeholder="Correo electrónico"/>
 
                                 <InputError className="mt-2" message={errors.email}/>
                             </div>
@@ -42,17 +42,17 @@ export default function Profile({ mustVerifyEmail, status, }) {
                             {mustVerifyEmail &&
                 auth.user.email_verified_at === null && (<div>
                                         <p className="-mt-4 text-sm text-muted-foreground">
-                                            Tu correo electronico no esta verificado.{' '}
+                                            Tu correo electrónico no está verificado.{' '}
                                             <Link href={send()} as="button" className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500">
-                                                Haz clic aqui para reenviar el
-                                                correo de verificacion.
+                                                Haz clic aquí para reenviar el
+                                                correo de verificación.
                                             </Link>
                                         </p>
 
                                         {status ===
                     'verification-link-sent' && (<div className="mt-2 text-sm font-medium text-green-600">
-                                                Se envio un nuevo enlace de
-                                                verificacion a tu correo.
+                                                Se envió un nuevo enlace de
+                                                verificación a tu correo.
                                             </div>)}
                                     </div>)}
 
@@ -71,7 +71,7 @@ export default function Profile({ mustVerifyEmail, status, }) {
 Profile.layout = {
     breadcrumbs: [
         {
-            title: 'Configuracion de perfil',
+            title: 'Configuración de perfil',
             href: edit(),
         },
     ],

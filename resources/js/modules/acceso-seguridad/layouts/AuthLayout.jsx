@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+﻿import { Link } from '@inertiajs/react';
 import { GraduationCap, ShieldCheck, UsersRound } from 'lucide-react';
 import { home } from '@/routes';
 import AppLogoIcon from '@/shared/components/app-logo-icon';

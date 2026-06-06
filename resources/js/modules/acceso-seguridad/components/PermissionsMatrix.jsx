@@ -1,4 +1,4 @@
-import { Checkbox } from '@/shared/components/ui/checkbox';
+﻿import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Label } from '@/shared/components/ui/label';
 export default function PermissionsMatrix({ permisosPorModulo, selectedIds, onToggle, }) {
     return (<div className="max-h-80 space-y-4 overflow-y-auto rounded-md border p-4">

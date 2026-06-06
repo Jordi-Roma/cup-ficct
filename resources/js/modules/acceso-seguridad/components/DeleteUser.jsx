@@ -1,4 +1,4 @@
-import { Form } from '@inertiajs/react';
+﻿import { Form } from '@inertiajs/react';
 import { useRef } from 'react';
 import ProfileController from '@/actions/App/Modules/AccesoSeguridad/Controllers/ProfileController';
 import Heading from '@/shared/components/heading';
@@ -15,7 +15,7 @@ export default function DeleteUser() {
                 <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
                     <p className="font-medium">Advertencia</p>
                     <p className="text-sm">
-                        Procede con cuidado. Esta accion no se puede deshacer.
+                        Procede con cuidado. Esta acción no se puede deshacer.
                     </p>
                 </div>
 
@@ -27,12 +27,12 @@ export default function DeleteUser() {
                     </DialogTrigger>
                     <DialogContent>
                         <DialogTitle>
-                            Estas seguro de que deseas eliminar tu cuenta?
+                            ¿Estás seguro de que deseas eliminar tu cuenta?
                         </DialogTitle>
                         <DialogDescription>
-                            Una vez eliminada la cuenta, sus datos se eliminaran
-                            de forma permanente. Ingresa tu contrasena para
-                            confirmar esta accion.
+                            Una vez eliminada la cuenta, sus datos se eliminarán
+                            de forma permanente. Ingresa tu contraseña para
+                            confirmar esta acción.
                         </DialogDescription>
 
                         <Form {...ProfileController.destroy.form()} options={{
@@ -41,10 +41,10 @@ export default function DeleteUser() {
                             {({ resetAndClearErrors, processing, errors }) => (<>
                                     <div className="grid gap-2">
                                         <Label htmlFor="password" className="sr-only">
-                                            Contrasena
+                                            Contraseña
                                         </Label>
 
-                                        <PasswordInput id="password" name="password" ref={passwordInput} placeholder="Contrasena" autoComplete="current-password"/>
+                                        <PasswordInput id="password" name="password" ref={passwordInput} placeholder="Contraseña" autoComplete="current-password"/>
 
                                         <InputError message={errors.password}/>
                                     </div>

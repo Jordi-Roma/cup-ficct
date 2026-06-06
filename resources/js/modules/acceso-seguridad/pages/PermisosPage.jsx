@@ -1,4 +1,4 @@
-import { Head, useForm, usePage } from '@inertiajs/react';
+﻿import { Head, useForm, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import InputError from '@/shared/components/input-error';
 import { Badge } from '@/shared/components/ui/badge';
@@ -82,7 +82,7 @@ export default function PermisosPage({ permisosPorModulo }) {
                             </CardHeader>
                             <CardContent>
                                 <div className="grid gap-2 md:grid-cols-2">
-                                    {modulePermissions.map((permiso) => (<button key={permiso.id_permiso} type="button" onClick={() => openEdit(permiso)} disabled={!canUpdate} className="rounded-md border p-3 text-left hover:bg-slate-50 disabled:cursor-default disabled:hover:bg-transparent">
+                                    {modulePermissions.map((permiso) => (<button key={permiso.id_permiso} type="button" onClick={() => openEdit(permiso)} disabled={!canUpdate} className="rounded-xl border border-sidebar-border p-3 text-left transition-colors hover:bg-muted disabled:cursor-default disabled:hover:bg-transparent">
                                             <div className="flex items-start justify-between gap-3">
                                                 <div>
                                                     <div className="font-medium">
@@ -93,12 +93,8 @@ export default function PermisosPage({ permisosPorModulo }) {
                     permiso.accion}
                                                     </div>
                                                 </div>
-                                                <Badge variant={permiso.activo
-                    ? 'default'
-                    : 'secondary'}>
-                                                    {permiso.activo
-                    ? 'Activo'
-                    : 'Inactivo'}
+                                                <Badge variant={permiso.activo ? 'active' : 'inactive'}>
+                                                    {permiso.activo ? 'Activo' : 'Inactivo'}
                                                 </Badge>
                                             </div>
                                         </button>))}

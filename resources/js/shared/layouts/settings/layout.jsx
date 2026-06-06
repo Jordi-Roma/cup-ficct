@@ -14,7 +14,7 @@ const sidebarNavItems = [
         icon: null,
     },
     {
-        title: 'Seguridad',
+        title: 'Cambiar contraseña',
         href: editSecurity(),
         icon: null,
     },
@@ -27,11 +27,11 @@ const sidebarNavItems = [
 export default function SettingsLayout({ children }) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
     return (<div className="px-4 py-6">
-            <Heading title="Configuracion" description="Administra tu perfil y la configuracion de tu cuenta"/>
+            <Heading title="Configuración" description="Administra tu perfil y la configuración de tu cuenta"/>
 
             <div className="flex flex-col lg:flex-row lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
-                    <nav className="flex flex-col space-y-1 space-x-0" aria-label="Configuracion">
+                    <nav className="flex flex-col space-y-1 space-x-0" aria-label="Configuración">
                         {sidebarNavItems.map((item, index) => (<Button key={`${toUrl(item.href)}-${index}`} size="sm" variant="ghost" asChild className={cn('w-full justify-start', {
                 'bg-muted': isCurrentOrParentUrl(item.href),
             })}>

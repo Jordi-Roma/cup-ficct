@@ -1,4 +1,4 @@
-import { router } from '@inertiajs/react';
+﻿import { router } from '@inertiajs/react';
 import { Edit2, Power, Shield } from 'lucide-react';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';

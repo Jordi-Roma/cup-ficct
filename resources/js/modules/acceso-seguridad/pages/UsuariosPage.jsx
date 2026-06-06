@@ -1,4 +1,4 @@
-import { Head, useForm, usePage } from '@inertiajs/react';
+﻿import { Head, useForm, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import UserCreateForm from '@/modules/acceso-seguridad/components/UserCreateForm';
 import UserRolesForm from '@/modules/acceso-seguridad/components/UserRolesForm';
@@ -101,7 +101,7 @@ export default function UsuariosPage({ usuarios, roles, materias = [], gestiones
                         <div>
                             <CardTitle>Listado de usuarios</CardTitle>
                             <CardDescription>
-                                Administra acceso, roles y creacion de usuarios.
+                                Administra acceso, roles y creación de usuarios.
                             </CardDescription>
                         </div>
                         <div className="flex flex-col gap-2 sm:flex-row">

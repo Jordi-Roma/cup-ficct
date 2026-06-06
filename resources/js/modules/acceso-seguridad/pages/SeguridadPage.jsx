@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+﻿import { Form, Head } from '@inertiajs/react';
 import { useRef } from 'react';
 import SecurityController from '@/actions/App/Modules/AccesoSeguridad/Controllers/SecurityController';
 import { edit } from '@/routes/security';
@@ -11,12 +11,12 @@ export default function Security(props) {
     const passwordInput = useRef(null);
     const currentPasswordInput = useRef(null);
     return (<>
-            <Head title="Configuracion de seguridad"/>
+            <Head title="Cambiar contraseña"/>
 
-            <h1 className="sr-only">Configuracion de seguridad</h1>
+            <h1 className="sr-only">Cambiar contraseña</h1>
 
             <div className="space-y-6">
-                <Heading variant="small" title="Actualizar contrasena" description="Usa una contrasena segura para proteger tu cuenta"/>
+                <Heading variant="small" title="Actualizar contraseña" description="Usa una contraseña segura para proteger tu cuenta"/>
 
                 <Form {...SecurityController.update.form()} options={{
             preserveScroll: true,
@@ -35,28 +35,28 @@ export default function Security(props) {
                     {({ errors, processing }) => (<>
                             <div className="grid gap-2">
                                 <Label htmlFor="current_password">
-                                    Contrasena actual
+                                    Contraseña actual
                                 </Label>
 
-                                <PasswordInput id="current_password" ref={currentPasswordInput} name="current_password" className="mt-1 block w-full" autoComplete="current-password" placeholder="Contrasena actual"/>
+                                <PasswordInput id="current_password" ref={currentPasswordInput} name="current_password" className="mt-1 block w-full" autoComplete="current-password" placeholder="Contraseña actual"/>
 
                                 <InputError message={errors.current_password}/>
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Nueva contrasena</Label>
+                                <Label htmlFor="password">Nueva contraseña</Label>
 
-                                <PasswordInput id="password" ref={passwordInput} name="password" className="mt-1 block w-full" autoComplete="new-password" placeholder="Nueva contrasena" passwordrules={props.passwordRules}/>
+                                <PasswordInput id="password" ref={passwordInput} name="password" className="mt-1 block w-full" autoComplete="new-password" placeholder="Nueva contraseña" passwordrules={props.passwordRules}/>
 
                                 <InputError message={errors.password}/>
                             </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password_confirmation">
-                                    Confirmar contrasena
+                                    Confirmar contraseña
                                 </Label>
 
-                                <PasswordInput id="password_confirmation" name="password_confirmation" className="mt-1 block w-full" autoComplete="new-password" placeholder="Confirmar contrasena" passwordrules={props.passwordRules}/>
+                                <PasswordInput id="password_confirmation" name="password_confirmation" className="mt-1 block w-full" autoComplete="new-password" placeholder="Confirmar contraseña" passwordrules={props.passwordRules}/>
 
                                 <InputError message={errors.password_confirmation}/>
                             </div>
@@ -75,7 +75,7 @@ export default function Security(props) {
 Security.layout = {
     breadcrumbs: [
         {
-            title: 'Configuracion de seguridad',
+            title: 'Cambiar contraseña',
             href: edit(),
         },
     ],

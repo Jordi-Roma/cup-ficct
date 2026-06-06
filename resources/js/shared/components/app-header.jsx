@@ -158,7 +158,7 @@ export function AppHeader({ breadcrumbs = [] }) {
                                             src={auth.user?.avatar}
                                             alt={auth.user?.name}
                                         />
-                                        <AvatarFallback className="rounded-full bg-gradient-to-br from-[#F4747A] to-[#B8DFF5] text-[#0D2B85] font-semibold dark:from-[#2A1F5A] dark:to-[#1E2D5E] dark:text-[#C8B8F8]">
+                                        <AvatarFallback className="rounded-full bg-gradient-to-br from-[#F4747A] to-[#B8DFF5] text-[#0D2B85] font-semibold dark:from-[#0D2B5A] dark:to-[#1A3A6E] dark:text-[#A8D4F0]">
                                             {getInitials(auth.user?.name ?? '')}
                                         </AvatarFallback>
                                     </Avatar>

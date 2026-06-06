@@ -42,7 +42,7 @@ export default function Register({ gestiones, carreras }) {
                                     <InputError message={errors.correo} />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="telefono">Telefono</Label>
+                                    <Label htmlFor="telefono">Teléfono</Label>
                                     <Input id="telefono" type="tel" tabIndex={5} autoComplete="tel" name="telefono" placeholder="70000000" />
                                     <InputError message={errors.telefono} />
                                 </div>
@@ -67,8 +67,8 @@ export default function Register({ gestiones, carreras }) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="direccion">Direccion</Label>
-                                <Input id="direccion" type="text" tabIndex={8} name="direccion" placeholder="Direccion" />
+                                <Label htmlFor="direccion">Dirección</Label>
+                                <Input id="direccion" type="text" tabIndex={8} name="direccion" placeholder="Dirección" />
                                 <InputError message={errors.direccion} />
                             </div>
 
@@ -85,31 +85,31 @@ export default function Register({ gestiones, carreras }) {
                                 </div>
                             </div>
 
-                            <div className="grid gap-3 rounded-md border p-4">
+                            <div className="grid gap-3 rounded-xl border p-4">
                                 <div>
                                     <Label>Documentos declarados</Label>
                                     <p className="text-sm text-muted-foreground">
-                                        Marca lo que entregaste. La administracion validara la documentacion antes de generar tus credenciales.
+                                        Marca lo que entregaste. La administración validará la documentación antes de generar tus credenciales.
                                     </p>
                                 </div>
                                 <label className="flex items-center gap-3 text-sm">
                                     <input type="hidden" name="presento_titulo_bachiller" value="0" />
-                                    <input type="checkbox" name="presento_titulo_bachiller" value="1" tabIndex={11} className="size-4 rounded border-slate-300" />
-                                    Presento titulo de bachiller
+                                    <input type="checkbox" name="presento_titulo_bachiller" value="1" tabIndex={11} className="size-4 rounded border-sidebar-border" />
+                                    Presentó título de bachiller
                                 </label>
                                 <InputError message={errors.presento_titulo_bachiller} />
                                 <label className="flex items-center gap-3 text-sm">
                                     <input type="hidden" name="presento_fotocopia_carnet" value="0" />
-                                    <input type="checkbox" name="presento_fotocopia_carnet" value="1" tabIndex={12} className="size-4 rounded border-slate-300" />
-                                    Presento fotocopia de carnet
+                                    <input type="checkbox" name="presento_fotocopia_carnet" value="1" tabIndex={12} className="size-4 rounded border-sidebar-border" />
+                                    Presentó fotocopia de carnet
                                 </label>
                                 <InputError message={errors.presento_fotocopia_carnet} />
                             </div>
 
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="id_gestion">Gestion</Label>
-                                    <select id="id_gestion" name="id_gestion" required tabIndex={13} className="h-9 rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20" defaultValue={gestiones[0]?.id.toString() ?? ''}>
+                                    <Label htmlFor="id_gestion">Gestión</Label>
+                                    <select id="id_gestion" name="id_gestion" required tabIndex={13} className="h-9 rounded-md border border-sidebar-border bg-card px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20" defaultValue={gestiones[0]?.id.toString() ?? ''}>
                                         <option value="">Seleccione</option>
                                         {gestiones.map((gestion) => (
                                             <option key={gestion.id} value={gestion.id}>{gestion.nombre}</option>
@@ -119,7 +119,7 @@ export default function Register({ gestiones, carreras }) {
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="id_carrera_opcion1">Carrera principal</Label>
-                                    <select id="id_carrera_opcion1" name="id_carrera_opcion1" required tabIndex={14} className="h-9 rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20">
+                                    <select id="id_carrera_opcion1" name="id_carrera_opcion1" required tabIndex={14} className="h-9 rounded-md border border-sidebar-border bg-card px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20">
                                         <option value="">Seleccione</option>
                                         {carreras.map((carrera) => (
                                             <option key={carrera.id} value={carrera.id}>{carrera.nombre}</option>
@@ -131,8 +131,8 @@ export default function Register({ gestiones, carreras }) {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="id_carrera_opcion2">Carrera secundaria</Label>
-                                <select id="id_carrera_opcion2" name="id_carrera_opcion2" tabIndex={15} className="h-9 rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20">
-                                    <option value="">Sin segunda opcion</option>
+                                <select id="id_carrera_opcion2" name="id_carrera_opcion2" tabIndex={15} className="h-9 rounded-md border border-sidebar-border bg-card px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20">
+                                    <option value="">Sin segunda opción</option>
                                     {carreras.map((carrera) => (
                                         <option key={carrera.id} value={carrera.id}>{carrera.nombre}</option>
                                     ))}
@@ -147,9 +147,9 @@ export default function Register({ gestiones, carreras }) {
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
-                            Ya tienes una cuenta?{' '}
+                            ¿Ya tienes una cuenta?{' '}
                             <TextLink href={login()} tabIndex={17} className="text-[#0D2B85] hover:text-[#0a2270]">
-                                Iniciar sesion
+                                Iniciar sesión
                             </TextLink>
                         </div>
                     </>
@@ -161,5 +161,5 @@ export default function Register({ gestiones, carreras }) {
 
 Register.layout = {
     title: 'Solicitud de registro',
-    description: 'Envia tus datos para validacion administrativa',
+    description: 'Envía tus datos para validación administrativa',
 };

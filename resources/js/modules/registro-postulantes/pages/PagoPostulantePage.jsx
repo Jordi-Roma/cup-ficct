@@ -13,13 +13,13 @@ export default function PagoPostulantePage({ postulante, postulacion, puede_paga
 
     return (
         <>
-            <Head title="Pago de inscripcion" />
+            <Head title="Pago de inscripción" />
 
             <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground">Pago de inscripcion</h1>
+                    <h1 className="text-2xl font-bold text-foreground">Pago de inscripción</h1>
                     <p className="text-sm text-muted-foreground">
-                        Completa el pago de inscripcion al CUP-FICCT mediante Stripe Checkout en modo prueba.
+                        Completa el pago de inscripción al CUP-FICCT mediante Stripe Checkout en modo prueba.
                     </p>
                 </div>
 
@@ -29,18 +29,18 @@ export default function PagoPostulantePage({ postulante, postulacion, puede_paga
                         <CardDescription>CI {postulante.ci} - {postulante.correo}</CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-4">
-                        <div className="grid gap-3 rounded-md border p-4 sm:grid-cols-2">
+                        <div className="grid gap-3 rounded-xl border p-4 sm:grid-cols-2">
                             <Info label="Monto" value={`${monto?.valor ?? '50.00'} ${monto?.moneda ?? 'USD'}`} />
                             <Info label="Carrera principal" value={postulacion.carrera_opcion1 ?? '-'} />
                             <Info label="Carrera secundaria" value={postulacion.carrera_opcion2 ?? '-'} />
-                            <Info label="Estado de admision" value={postulacion.estado_admision} />
+                            <Info label="Estado de admisión" value={postulacion.estado_admision} />
                             <div>
                                 <p className="text-xs text-muted-foreground">Estado del proceso</p>
-                                <Badge variant="secondary">{postulacion.estado_proceso}</Badge>
+                                <Badge variant="pending">{postulacion.estado_proceso}</Badge>
                             </div>
                         </div>
 
-                        <div className="rounded-md bg-slate-50 p-4 text-sm text-muted-foreground">
+                        <div className="rounded-xl bg-muted p-4 text-sm text-muted-foreground">
                             Puedes usar tarjetas de prueba de Stripe durante el entorno de desarrollo.
                         </div>
 

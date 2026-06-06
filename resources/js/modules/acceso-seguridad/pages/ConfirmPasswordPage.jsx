@@ -7,13 +7,13 @@ import { Label } from '@/shared/components/ui/label';
 import { Spinner } from '@/shared/components/ui/spinner';
 export default function ConfirmPassword() {
     return (<>
-            <Head title="Confirmar contrasena"/>
+            <Head title="Confirmar contraseña"/>
 
             <Form {...store.form()} resetOnSuccess={['password']}>
                 {({ processing, errors }) => (<div className="space-y-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="password">Contrasena</Label>
-                            <PasswordInput id="password" name="password" placeholder="Contrasena" autoComplete="current-password" autoFocus/>
+                            <Label htmlFor="password">Contraseña</Label>
+                            <PasswordInput id="password" name="password" placeholder="Contraseña" autoComplete="current-password" autoFocus/>
 
                             <InputError message={errors.password}/>
                         </div>
@@ -21,7 +21,7 @@ export default function ConfirmPassword() {
                         <div className="flex items-center">
                             <Button className="w-full" disabled={processing} data-test="confirm-password-button">
                                 {processing && <Spinner />}
-                                Confirmar contrasena
+                                Confirmar contraseña
                             </Button>
                         </div>
                     </div>)}
@@ -29,6 +29,6 @@ export default function ConfirmPassword() {
         </>);
 }
 ConfirmPassword.layout = {
-    title: 'Confirmar contrasena',
-    description: 'Esta es un area segura de la aplicacion. Confirma tu contrasena antes de continuar.',
+    title: 'Confirmar contraseña',
+    description: 'Esta es un área segura de la aplicación. Confirma tu contraseña antes de continuar.',
 };
