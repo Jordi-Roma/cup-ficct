@@ -11,7 +11,7 @@ export default function MateriasCupTable({ materias, canUpdate, canToggle, onEdi
     return (<div className="overflow-hidden rounded-md border">
             <div className="hidden md:block">
                 <table className="w-full text-sm">
-                    <thead className="bg-slate-50 text-left">
+                    <thead className="bg-slate-100 text-left text-slate-700 dark:bg-slate-700/60 dark:text-slate-100">
                         <tr>
                             <th className="px-4 py-3">Materia</th>
                             <th className="px-4 py-3">Estado</th>

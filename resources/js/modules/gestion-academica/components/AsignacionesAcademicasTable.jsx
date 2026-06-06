@@ -9,7 +9,7 @@ export default function AsignacionesAcademicasTable({ asignaciones, canUpdate, c
     return (<div className="overflow-hidden rounded-md border">
             <div className="hidden overflow-x-auto lg:block">
                 <table className="w-full min-w-[900px] text-sm">
-                    <thead className="bg-slate-50 text-left">
+                    <thead className="bg-slate-100 text-left text-slate-700 dark:bg-slate-700/60 dark:text-slate-100">
                         <tr>
                             <th className="px-4 py-3">Grupo</th>
                             <th className="px-4 py-3">Materia</th>
@@ -106,5 +106,5 @@ function formatHorarioSemanal(horario) {
         return '-';
     }
 
-    return `${horario.dias_label ?? 'Lunes a sabado'} · ${horario.hora_inicio}-${horario.hora_fin}`;
+    return `${horario.dias_label ?? 'Lunes a sábado'} · ${horario.hora_inicio}-${horario.hora_fin}`;
 }

@@ -14,7 +14,7 @@ class GrupoAcademicoService
     private const GROUP_CAPACITY = 70;
 
     public const TURNOS = [
-        'MANANA' => ['label' => 'Manana', 'prefix' => 'M'],
+        'MANANA' => ['label' => 'Mañana', 'prefix' => 'M'],
         'TARDE' => ['label' => 'Tarde', 'prefix' => 'T'],
         'NOCHE' => ['label' => 'Noche', 'prefix' => 'N'],
     ];

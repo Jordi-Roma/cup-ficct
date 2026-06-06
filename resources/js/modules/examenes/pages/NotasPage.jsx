@@ -282,7 +282,7 @@ function NotasTable({ postulantes, notas, canEdit, canSave, onChange }) {
         <div className="overflow-hidden rounded-md border">
             <div className="hidden overflow-x-auto lg:block">
                 <table className="w-full min-w-[980px] text-sm">
-                    <thead className="bg-slate-50 text-left">
+                    <thead className="bg-slate-100 text-left text-slate-700 dark:bg-slate-700/60 dark:text-slate-100">
                         <tr>
                             <th className="px-4 py-3">CI</th>
                             <th className="px-4 py-3">Nombre completo</th>

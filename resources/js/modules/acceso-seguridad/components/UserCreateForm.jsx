@@ -1,4 +1,4 @@
-﻿import { useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import InputError from '@/shared/components/input-error';
 import PasswordInput from '@/shared/components/password-input';
 import { Button } from '@/shared/components/ui/button';
@@ -8,9 +8,9 @@ import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 
 const habilitacionTipos = [
-    ['PROFESIONAL_AREA', 'Profesional en el area'],
+    ['PROFESIONAL_AREA', 'Profesional en el área'],
     ['DIPLOMADO', 'Diplomado en'],
-    ['MAESTRIA', 'Maestria en'],
+    ['MAESTRIA', 'Maestría en'],
 ];
 const turnos = [
     { value: 'MANANA', label: 'Mañana' },
@@ -73,7 +73,7 @@ export default function UserCreateForm({ materias, gestiones, carreras, canSubmi
                     <SelectContent>
                         <SelectItem value="POSTULANTE">Postulante</SelectItem>
                         <SelectItem value="DOCENTE">Docente</SelectItem>
-                        <SelectItem value="COORDINADOR_ACADEMICO">Coordinador academico</SelectItem>
+                        <SelectItem value="COORDINADOR_ACADEMICO">Coordinador académico</SelectItem>
                         <SelectItem value="ADMINISTRADOR">Administrador</SelectItem>
                     </SelectContent>
                 </Select>
@@ -86,7 +86,7 @@ export default function UserCreateForm({ materias, gestiones, carreras, canSubmi
                 <Field label="Nombre" value={data.nombre} onChange={(value) => setData('nombre', value)} error={errors.nombre} />
                 <Field label="Apellido" value={data.apellido} onChange={(value) => setData('apellido', value)} error={errors.apellido} />
                 <Field label="Correo" value={data.correo} onChange={(value) => setData('correo', value)} error={errors.correo} />
-                <Field label="Telefono" value={data.telefono} onChange={(value) => setData('telefono', value)} error={errors.telefono} />
+                <Field label="Teléfono" value={data.telefono} onChange={(value) => setData('telefono', value)} error={errors.telefono} />
                 <div className="grid gap-2">
                     <Label>Sexo</Label>
                     <Select value={data.sexo} onValueChange={(value) => setData('sexo', value)}>
@@ -129,7 +129,7 @@ export default function UserCreateForm({ materias, gestiones, carreras, canSubmi
                 <div className="space-y-4 rounded-md border p-4">
                     <Label className="flex items-center gap-3">
                         <Checkbox checked={data.maestria_educacion_superior} onCheckedChange={(checked) => setData('maestria_educacion_superior', checked === true)} />
-                        Maestria en educacion superior
+                        Maestría en educación superior
                     </Label>
                     {habilitacionTipos.map(([tipo, label]) => (
                         <MateriaChecklist key={tipo} label={label} materias={materias} selected={data.habilitaciones[tipo] ?? []} onChange={(id, checked) => toggleMateria(tipo, id, checked)} />
@@ -149,14 +149,14 @@ export default function UserCreateForm({ materias, gestiones, carreras, canSubmi
                     <Field label="Fecha de nacimiento" type="date" value={data.fecha_nacimiento} onChange={(value) => setData('fecha_nacimiento', value)} error={errors.fecha_nacimiento} />
                     <Field label="Ciudad" value={data.ciudad} onChange={(value) => setData('ciudad', value)} error={errors.ciudad} />
                     <Field label="Colegio de procedencia" value={data.colegio_procedencia} onChange={(value) => setData('colegio_procedencia', value)} error={errors.colegio_procedencia} />
-                    <Field label="Direccion" value={data.direccion} onChange={(value) => setData('direccion', value)} error={errors.direccion} />
-                    <SelectField label="Gestion" value={data.id_gestion} onChange={(value) => setData('id_gestion', value)} items={gestiones} idKey="id_gestion" labelKey="nombre" error={errors.id_gestion} />
+                    <Field label="Dirección" value={data.direccion} onChange={(value) => setData('direccion', value)} error={errors.direccion} />
+                    <SelectField label="Gestión" value={data.id_gestion} onChange={(value) => setData('id_gestion', value)} items={gestiones} idKey="id_gestion" labelKey="nombre" error={errors.id_gestion} />
                     <SelectField label="Turno preferido" value={data.turno_preferido} onChange={(value) => setData('turno_preferido', value)} items={turnos} idKey="value" labelKey="label" error={errors.turno_preferido} />
-                    <SelectField label="Carrera opcion 1" value={data.id_carrera_opcion1} onChange={(value) => setData('id_carrera_opcion1', value)} items={carreras} idKey="id_carrera" labelKey="nombre" error={errors.id_carrera_opcion1} />
-                    <SelectField label="Carrera opcion 2" value={data.id_carrera_opcion2 || 'none'} onChange={(value) => setData('id_carrera_opcion2', value === 'none' ? '' : value)} items={[{ id_carrera: 'none', nombre: 'Sin segunda opcion' }, ...carreras]} idKey="id_carrera" labelKey="nombre" error={errors.id_carrera_opcion2} />
+                    <SelectField label="Carrera opción 1" value={data.id_carrera_opcion1} onChange={(value) => setData('id_carrera_opcion1', value)} items={carreras} idKey="id_carrera" labelKey="nombre" error={errors.id_carrera_opcion1} />
+                    <SelectField label="Carrera opción 2" value={data.id_carrera_opcion2 || 'none'} onChange={(value) => setData('id_carrera_opcion2', value === 'none' ? '' : value)} items={[{ id_carrera: 'none', nombre: 'Sin segunda opción' }, ...carreras]} idKey="id_carrera" labelKey="nombre" error={errors.id_carrera_opcion2} />
                     <Label className="flex items-center gap-3">
                         <Checkbox checked={data.documentacion_completa} onCheckedChange={(checked) => setData('documentacion_completa', checked === true)} />
-                        Documentacion completa
+                        Documentación completa
                     </Label>
                 </div>
             )}

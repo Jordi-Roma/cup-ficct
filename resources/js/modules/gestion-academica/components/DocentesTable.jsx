@@ -16,12 +16,12 @@ export default function DocentesTable({ docentes, canUpdate, canToggle, onEdit }
         <div className="overflow-hidden rounded-md border">
             <div className="hidden overflow-x-auto xl:block">
                 <table className="w-full min-w-[1000px] text-sm">
-                    <thead className="bg-slate-50 text-left">
+                    <thead className="bg-slate-100 text-left text-slate-700 dark:bg-slate-700/60 dark:text-slate-100">
                         <tr>
                             <th className="px-4 py-3">CI</th>
                             <th className="px-4 py-3">Docente</th>
-                            <th className="px-4 py-3">Telefono</th>
-                            <th className="px-4 py-3">Habilitacion</th>
+                            <th className="px-4 py-3">Teléfono</th>
+                            <th className="px-4 py-3">Habilitación</th>
                             <th className="px-4 py-3">Contratado</th>
                             <th className="px-4 py-3">Activo</th>
                             <th className="px-4 py-3 text-right">Acciones</th>
@@ -38,7 +38,7 @@ export default function DocentesTable({ docentes, canUpdate, canToggle, onEdit }
                                 <td className="px-4 py-3">{docente.telefono ?? '-'}</td>
                                 <td className="px-4 py-3">
                                     <div className="flex flex-wrap gap-1">
-                                        {requirementBadge(docente.maestria_educacion_superior, 'Maestria superior')}
+                                        {requirementBadge(docente.maestria_educacion_superior, 'Maestría superior')}
                                         <Badge variant="outline">{materias(docente)}</Badge>
                                     </div>
                                 </td>
@@ -79,7 +79,7 @@ export default function DocentesTable({ docentes, canUpdate, canToggle, onEdit }
                             <Badge variant={docente.contratado ? 'default' : 'secondary'}>{docente.contratado ? 'Contratado' : 'No contratado'}</Badge>
                         </div>
                         <div className="flex flex-wrap gap-1">
-                            {requirementBadge(docente.maestria_educacion_superior, 'Maestria superior')}
+                            {requirementBadge(docente.maestria_educacion_superior, 'Maestría superior')}
                             <Badge variant="outline">{materias(docente)}</Badge>
                         </div>
                         <div className="flex gap-2">

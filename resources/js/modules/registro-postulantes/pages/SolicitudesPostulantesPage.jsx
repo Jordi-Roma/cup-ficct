@@ -42,7 +42,7 @@ export default function SolicitudesPostulantesPage({ solicitudes }) {
                     <Card>
                         <CardHeader>
                             <CardTitle>{solicitudes.filter((item) => item.presento_titulo_bachiller).length}</CardTitle>
-                            <CardDescription>Con titulo declarado</CardDescription>
+                            <CardDescription>Con título declarado</CardDescription>
                         </CardHeader>
                     </Card>
                     <Card>
@@ -61,7 +61,7 @@ export default function SolicitudesPostulantesPage({ solicitudes }) {
                     <CardContent>
                         <div className="hidden overflow-x-auto xl:block">
                             <table className="w-full min-w-[1100px] text-sm">
-                                <thead className="bg-slate-50 text-left">
+                                <thead className="bg-slate-100 text-left text-slate-700 dark:bg-slate-700/60 dark:text-slate-100">
                                     <tr>
                                         <th className="px-4 py-3">CI</th>
                                         <th className="px-4 py-3">Postulante</th>
@@ -69,7 +69,7 @@ export default function SolicitudesPostulantesPage({ solicitudes }) {
                                         <th className="px-4 py-3">Carrera 1</th>
                                         <th className="px-4 py-3">Carrera 2</th>
                                         <th className="px-4 py-3">Turno</th>
-                                        <th className="px-4 py-3">Titulo</th>
+                                        <th className="px-4 py-3">Título</th>
                                         <th className="px-4 py-3">Carnet</th>
                                         <th className="px-4 py-3">Estado</th>
                                         <th className="px-4 py-3 text-right">Acciones</th>

@@ -24,9 +24,10 @@ class CupCatalogSeeder extends Seeder
         );
 
         foreach ([
-            'Ingeniería de Sistemas',
+            'Ingeniería en Sistemas',
             'Ingeniería Informática',
-            'Redes y Telecomunicaciones',
+            'Ingeniería en Redes y Telecomunicaciones',
+            'Ingeniería en Robótica',
         ] as $nombreCarrera) {
             $carrera = Carrera::updateOrCreate(
                 ['nombre' => $nombreCarrera],
