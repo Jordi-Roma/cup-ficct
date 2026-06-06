@@ -38,7 +38,7 @@ export default function MisAsignacionesPage({ asignaciones = [], resumen = {} })
 
             <div className="space-y-6 p-4 md:p-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#001f3f]">
+                    <h1 className="text-2xl font-bold text-foreground">
                         Mis asignaciones
                     </h1>
                     <p className="text-sm text-muted-foreground">

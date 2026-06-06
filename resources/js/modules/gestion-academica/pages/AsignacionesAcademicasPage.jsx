@@ -37,7 +37,7 @@ export default function AsignacionesAcademicasPage({ asignaciones, options, }) {
             <div className="space-y-6 p-4 md:p-6">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#001f3f]">
+                        <h1 className="text-2xl font-bold text-foreground">
                             Asignacion academica
                         </h1>
                         <p className="text-sm text-muted-foreground">
@@ -45,7 +45,7 @@ export default function AsignacionesAcademicasPage({ asignaciones, options, }) {
                             grupos del CUP.
                         </p>
                     </div>
-                    {canCreate && (<Button type="button" onClick={openCreate} className="bg-[#e30613] text-white hover:bg-[#bb0710]">
+                    {canCreate && (<Button type="button" onClick={openCreate} className="bg-[#0D2B85] text-white hover:bg-[#0a2270]">
                             <Plus className="size-4"/>
                             Crear asignacion
                         </Button>)}

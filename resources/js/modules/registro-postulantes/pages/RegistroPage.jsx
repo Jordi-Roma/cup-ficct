@@ -51,7 +51,7 @@ export default function Register({ gestiones, carreras }) {
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="grid gap-2">
                                     <Label htmlFor="sexo">Sexo</Label>
-                                    <select id="sexo" name="sexo" required tabIndex={6} className="h-9 rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#e30613] focus-visible:ring-[3px] focus-visible:ring-[#e30613]/20">
+                                    <select id="sexo" name="sexo" required tabIndex={6} className="h-9 rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20">
                                         <option value="">Seleccione</option>
                                         <option value="M">Masculino</option>
                                         <option value="F">Femenino</option>
@@ -109,7 +109,7 @@ export default function Register({ gestiones, carreras }) {
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="grid gap-2">
                                     <Label htmlFor="id_gestion">Gestion</Label>
-                                    <select id="id_gestion" name="id_gestion" required tabIndex={13} className="h-9 rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#e30613] focus-visible:ring-[3px] focus-visible:ring-[#e30613]/20" defaultValue={gestiones[0]?.id.toString() ?? ''}>
+                                    <select id="id_gestion" name="id_gestion" required tabIndex={13} className="h-9 rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20" defaultValue={gestiones[0]?.id.toString() ?? ''}>
                                         <option value="">Seleccione</option>
                                         {gestiones.map((gestion) => (
                                             <option key={gestion.id} value={gestion.id}>{gestion.nombre}</option>
@@ -119,7 +119,7 @@ export default function Register({ gestiones, carreras }) {
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="id_carrera_opcion1">Carrera principal</Label>
-                                    <select id="id_carrera_opcion1" name="id_carrera_opcion1" required tabIndex={14} className="h-9 rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#e30613] focus-visible:ring-[3px] focus-visible:ring-[#e30613]/20">
+                                    <select id="id_carrera_opcion1" name="id_carrera_opcion1" required tabIndex={14} className="h-9 rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20">
                                         <option value="">Seleccione</option>
                                         {carreras.map((carrera) => (
                                             <option key={carrera.id} value={carrera.id}>{carrera.nombre}</option>
@@ -131,7 +131,7 @@ export default function Register({ gestiones, carreras }) {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="id_carrera_opcion2">Carrera secundaria</Label>
-                                <select id="id_carrera_opcion2" name="id_carrera_opcion2" tabIndex={15} className="h-9 rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#e30613] focus-visible:ring-[3px] focus-visible:ring-[#e30613]/20">
+                                <select id="id_carrera_opcion2" name="id_carrera_opcion2" tabIndex={15} className="h-9 rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20">
                                     <option value="">Sin segunda opcion</option>
                                     {carreras.map((carrera) => (
                                         <option key={carrera.id} value={carrera.id}>{carrera.nombre}</option>
@@ -140,7 +140,7 @@ export default function Register({ gestiones, carreras }) {
                                 <InputError message={errors.id_carrera_opcion2} />
                             </div>
 
-                            <Button type="submit" className="mt-2 w-full bg-[#e30613] text-white hover:bg-[#bb0710]" tabIndex={16} data-test="register-user-button">
+                            <Button type="submit" className="mt-2 w-full bg-[#0D2B85] text-white hover:bg-[#0a2270]" tabIndex={16} data-test="register-user-button">
                                 {processing && <Spinner />}
                                 Enviar solicitud
                             </Button>
@@ -148,7 +148,7 @@ export default function Register({ gestiones, carreras }) {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Ya tienes una cuenta?{' '}
-                            <TextLink href={login()} tabIndex={17} className="text-[#e30613] hover:text-[#bb0710]">
+                            <TextLink href={login()} tabIndex={17} className="text-[#0D2B85] hover:text-[#0a2270]">
                                 Iniciar sesion
                             </TextLink>
                         </div>

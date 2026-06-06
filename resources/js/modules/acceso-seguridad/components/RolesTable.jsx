@@ -8,23 +8,23 @@ export default function RolesTable({ roles, onEdit, canUpdate, canToggle, }) {
             preserveScroll: true,
         });
     };
-    return (<div className="overflow-hidden rounded-md border">
+    return (<div className="overflow-hidden rounded-xl border">
             <div className="hidden md:block">
                 <table className="w-full text-sm">
-                    <thead className="bg-slate-50 text-left">
+                    <thead className="bg-muted/40 text-left border-b">
                         <tr>
-                            <th className="px-4 py-3">Rol</th>
-                            <th className="px-4 py-3">Descripción</th>
-                            <th className="px-4 py-3">Permisos</th>
-                            <th className="px-4 py-3">Estado</th>
-                            <th className="px-4 py-3 text-right">Acciones</th>
+                            <th className="px-4 py-3 font-medium text-muted-foreground">Rol</th>
+                            <th className="px-4 py-3 font-medium text-muted-foreground">Descripción</th>
+                            <th className="px-4 py-3 font-medium text-muted-foreground">Permisos</th>
+                            <th className="px-4 py-3 font-medium text-muted-foreground">Estado</th>
+                            <th className="px-4 py-3 font-medium text-muted-foreground text-right">Acciones</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y">
                         {roles.map((role) => (<tr key={role.id_rol}>
                                 <td className="px-4 py-3 font-medium">
                                     <span className="inline-flex items-center gap-2">
-                                        <Shield className="size-4 text-[#e30613]"/>
+                                        <Shield className="size-4 text-[#0D2B85] dark:text-[#9BA8E0]"/>
                                         {role.nombre}
                                     </span>
                                 </td>
@@ -35,9 +35,7 @@ export default function RolesTable({ roles, onEdit, canUpdate, canToggle, }) {
                                     {role.permisos.length}
                                 </td>
                                 <td className="px-4 py-3">
-                                    <Badge variant={role.activo
-                ? 'default'
-                : 'secondary'}>
+                                    <Badge variant={role.activo ? 'active' : 'inactive'}>
                                         {role.activo ? 'Activo' : 'Inactivo'}
                                     </Badge>
                                 </td>
@@ -65,7 +63,7 @@ export default function RolesTable({ roles, onEdit, canUpdate, canToggle, }) {
                                     {role.descripcion ?? 'Sin descripción'}
                                 </p>
                             </div>
-                            <Badge variant={role.activo ? 'default' : 'secondary'}>
+                            <Badge variant={role.activo ? 'active' : 'inactive'}>
                                 {role.activo ? 'Activo' : 'Inactivo'}
                             </Badge>
                         </div>

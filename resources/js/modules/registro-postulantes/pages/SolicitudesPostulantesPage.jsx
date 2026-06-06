@@ -26,7 +26,7 @@ export default function SolicitudesPostulantesPage({ solicitudes }) {
 
             <div className="space-y-6 p-4 md:p-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#001f3f]">Solicitudes pendientes</h1>
+                    <h1 className="text-2xl font-bold text-foreground">Solicitudes pendientes</h1>
                     <p className="text-sm text-muted-foreground">
                         Revisa solicitudes de registro antes de generar credenciales de acceso.
                     </p>

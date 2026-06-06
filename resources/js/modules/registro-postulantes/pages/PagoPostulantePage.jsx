@@ -17,7 +17,7 @@ export default function PagoPostulantePage({ postulante, postulacion, puede_paga
 
             <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#001f3f]">Pago de inscripcion</h1>
+                    <h1 className="text-2xl font-bold text-foreground">Pago de inscripcion</h1>
                     <p className="text-sm text-muted-foreground">
                         Completa el pago de inscripcion al CUP-FICCT mediante Stripe Checkout en modo prueba.
                     </p>
@@ -44,7 +44,7 @@ export default function PagoPostulantePage({ postulante, postulacion, puede_paga
                             Puedes usar tarjetas de prueba de Stripe durante el entorno de desarrollo.
                         </div>
 
-                        <Button type="button" disabled={!puede_pagar} onClick={pagar} className="bg-[#e30613] text-white hover:bg-[#bb0710]">
+                        <Button type="button" disabled={!puede_pagar} onClick={pagar} className="bg-[#0D2B85] text-white hover:bg-[#0a2270]">
                             <CreditCard className="size-4" />
                             Pagar 50 USD con Stripe
                         </Button>

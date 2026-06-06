@@ -26,7 +26,7 @@ export default function Login({ status, canResetPassword }) {
                             <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Contraseña</Label>
-                                    {canResetPassword && (<TextLink href={request()} className="ml-auto text-sm text-[#e30613] hover:text-[#bb0710]" tabIndex={5}>
+                                    {canResetPassword && (<TextLink href={request()} className="ml-auto text-sm text-[#0D2B85] hover:text-[#0a2270]" tabIndex={5}>
                                             ¿Olvidaste tu contraseña?
                                         </TextLink>)}
                                 </div>
@@ -47,8 +47,8 @@ export default function Login({ status, canResetPassword }) {
 
                         <div className="text-center text-sm text-slate-600">
                             ¿Postulas al CUP-FICCT?{' '}
-                            <TextLink href={register()} tabIndex={5} className="text-[#e30613] hover:text-[#bb0710]">
-                                Regístrate aquí
+                            <TextLink href={register()} tabIndex={5} className="text-[#0D2B85] hover:text-[#0a2270]">
+                                Solicita un cupo aquí
                             </TextLink>
                         </div>
                     </>)}

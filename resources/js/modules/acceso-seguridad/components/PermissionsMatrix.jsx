@@ -4,7 +4,7 @@ export default function PermissionsMatrix({ permisosPorModulo, selectedIds, onTo
     return (<div className="max-h-80 space-y-4 overflow-y-auto rounded-md border p-4">
             {Object.entries(permisosPorModulo).map(([modulo, permisos]) => (<section key={modulo} className="space-y-3">
                     <div className="flex items-center justify-between rounded-md bg-slate-50 px-3 py-2">
-                        <h3 className="text-sm font-semibold text-[#001f3f]">
+                        <h3 className="text-sm font-semibold text-foreground">
                             {modulo}
                         </h3>
                         <span className="text-xs text-muted-foreground">

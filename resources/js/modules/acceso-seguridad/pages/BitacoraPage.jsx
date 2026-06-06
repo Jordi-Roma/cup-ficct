@@ -63,7 +63,7 @@ export default function BitacoraPage({ logs = { data: [], from: 0, to: 0, total:
             <div className="space-y-6 p-4 md:p-6">
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#001f3f]">
+                        <h1 className="text-2xl font-bold text-foreground">
                             Bitácora del Sistema
                         </h1>
                         <p className="text-sm text-muted-foreground">
@@ -159,12 +159,15 @@ export default function BitacoraPage({ logs = { data: [], from: 0, to: 0, total:
                                                 {log.usuario ? log.usuario.name : 'Sistema'}
                                             </td>
                                             <td className="px-4 py-3">
-                                                <Badge variant="outline" className={
-                                                    log.operacion === 'DELETE' ? 'bg-red-50 text-red-700 border-red-200' :
-                                                    log.operacion === 'INSERT' ? 'bg-green-50 text-green-700 border-green-200' :
-                                                    log.operacion === 'UPDATE' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                                                    'bg-gray-50 text-gray-700 border-gray-200'
-                                                }>
+                                                <Badge
+                                                    variant="outline"
+                                                    className={(
+                                                        log.operacion === 'DELETE'  ? 'badge-op-delete'  :
+                                                        log.operacion === 'INSERT'  ? 'badge-op-insert'  :
+                                                        log.operacion === 'UPDATE'  ? 'badge-op-update'  :
+                                                        'badge-op-auth'
+                                                    )}
+                                                >
                                                     {log.operacion}
                                                 </Badge>
                                             </td>

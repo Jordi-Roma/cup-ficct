@@ -63,7 +63,7 @@ export default function UsuariosPage({ usuarios, roles, materias = [], gestiones
 
             <div className="space-y-6 p-4 md:p-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#001f3f]">
+                    <h1 className="text-2xl font-bold text-foreground">
                         Usuarios
                     </h1>
                     <p className="text-sm text-muted-foreground">
@@ -105,7 +105,7 @@ export default function UsuariosPage({ usuarios, roles, materias = [], gestiones
                             </CardDescription>
                         </div>
                         <div className="flex flex-col gap-2 sm:flex-row">
-                            {canCreate && (<Button type="button" onClick={() => setCreateOpen(true)} className="bg-[#e30613] text-white hover:bg-[#bb0710]">Crear usuario</Button>)}
+                            {canCreate && (<Button type="button" onClick={() => setCreateOpen(true)}>Crear usuario</Button>)}
                             <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar usuario..." className="md:max-w-xs"/>
                         </div>
                     </CardHeader>
@@ -153,7 +153,7 @@ export default function UsuariosPage({ usuarios, roles, materias = [], gestiones
                             <Button type="button" variant="outline" onClick={() => setAccessUser(null)}>
                                 Cancelar
                             </Button>
-                            <Button type="submit" disabled={processing || !canUpdate} className="bg-[#e30613] text-white hover:bg-[#bb0710]">
+                            <Button type="submit" disabled={processing || !canUpdate}>
                                 Guardar acceso
                             </Button>
                         </div>

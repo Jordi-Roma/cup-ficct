@@ -147,7 +147,7 @@ export default function DocenteForm({ docente, materias = [], canSubmit, onSucce
 
             <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={onSuccess} disabled={processing}>Cancelar</Button>
-                <Button type="submit" disabled={processing || !canSubmit} className="bg-[#e30613] text-white hover:bg-[#bb0710]">
+                <Button type="submit" disabled={processing || !canSubmit} className="bg-[#0D2B85] text-white hover:bg-[#0a2270]">
                     {docente ? 'Guardar cambios' : 'Crear docente'}
                 </Button>
             </div>

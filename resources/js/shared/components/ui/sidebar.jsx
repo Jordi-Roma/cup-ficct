@@ -186,23 +186,34 @@ function SidebarMenu({ className, ...props }) {
 function SidebarMenuItem({ className, ...props }) {
     return (<li data-slot="sidebar-menu-item" data-sidebar="menu-item" className={cn('group/menu-item relative', className)} {...props}/>);
 }
-const sidebarMenuButtonVariants = cva('peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0', {
-    variants: {
-        variant: {
-            default: 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-            outline: 'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
+const sidebarMenuButtonVariants = cva(
+    'peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-lg p-2 text-left text-sm ring-sidebar-ring outline-hidden transition-all duration-200 group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
+    {
+        variants: {
+            variant: {
+                default:
+                    'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ' +
+                    'active:bg-sidebar-accent active:text-sidebar-accent-foreground ' +
+                    'data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground ' +
+                    /* Light: coral→cream gradient when active */
+                    'data-[active=true]:[background:linear-gradient(135deg,#F4747A_0%,#FFE8D6_55%,#FFF9F0_100%)] data-[active=true]:text-[#7A2020] data-[active=true]:font-semibold data-[active=true]:shadow-sm ' +
+                    /* Dark: soft blue-violet glow when active */
+                    'dark:data-[active=true]:[background:linear-gradient(135deg,#2A1F5A_0%,#1E2D5E_100%)] dark:data-[active=true]:text-[#C8B8F8] dark:data-[active=true]:shadow-[0_0_12px_0_rgba(120,90,220,0.18)]',
+                outline:
+                    'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
+            },
+            size: {
+                default: 'h-8 text-sm',
+                sm: 'h-7 text-xs',
+                lg: 'h-12 text-sm group-data-[collapsible=icon]:p-0!',
+            },
         },
-        size: {
-            default: 'h-8 text-sm',
-            sm: 'h-7 text-xs',
-            lg: 'h-12 text-sm group-data-[collapsible=icon]:p-0!',
+        defaultVariants: {
+            variant: 'default',
+            size: 'default',
         },
     },
-    defaultVariants: {
-        variant: 'default',
-        size: 'default',
-    },
-});
+);
 function SidebarMenuButton({ asChild = false, isActive = false, variant = 'default', size = 'default', tooltip, className, ...props }) {
     const Comp = asChild ? Slot : 'button';
     const { isMobile, state } = useSidebar();
@@ -249,6 +260,33 @@ function SidebarMenuSubItem({ className, ...props }) {
 }
 function SidebarMenuSubButton({ asChild = false, size = 'md', isActive = false, className, ...props }) {
     const Comp = asChild ? Slot : 'a';
-    return (<Comp data-slot="sidebar-menu-sub-button" data-sidebar="menu-sub-button" data-size={size} data-active={isActive} className={cn('flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground ring-sidebar-ring outline-hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground', 'data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground', size === 'sm' && 'text-xs', size === 'md' && 'text-sm', 'group-data-[collapsible=icon]:hidden', className)} {...props}/>);
+    return (
+        <Comp
+            data-slot="sidebar-menu-sub-button"
+            data-sidebar="menu-sub-button"
+            data-size={size}
+            data-active={isActive}
+            className={cn(
+                'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-lg px-2',
+                'text-sidebar-foreground ring-sidebar-ring outline-hidden',
+                'transition-all duration-150',
+                'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                'focus-visible:ring-2',
+                'active:bg-sidebar-accent active:text-sidebar-accent-foreground',
+                'disabled:pointer-events-none disabled:opacity-50',
+                'aria-disabled:pointer-events-none aria-disabled:opacity-50',
+                '[&>span:last-child]:truncate [&>svg]:size-3.5 [&>svg]:shrink-0',
+                /* Light: sky pastel when active */
+                'data-[active=true]:bg-[#E8F5FE] data-[active=true]:text-[#1A4FA3] data-[active=true]:font-medium',
+                /* Dark: soft lavender when active */
+                'dark:data-[active=true]:bg-[#1A1E42] dark:data-[active=true]:text-[#9BA8E0]',
+                size === 'sm' && 'text-xs',
+                size === 'md' && 'text-sm',
+                'group-data-[collapsible=icon]:hidden',
+                className,
+            )}
+            {...props}
+        />
+    );
 }
 export { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInput, SidebarInset, SidebarMenu, SidebarMenuAction, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarMenuSkeleton, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider, SidebarRail, SidebarSeparator, SidebarTrigger, useSidebar, };

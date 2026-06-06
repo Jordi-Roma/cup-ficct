@@ -86,7 +86,7 @@ export default function NotasPage({ postulantes, options, filters, resumen }) {
 
             <div className="space-y-6 p-4 md:p-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#001f3f]">
+                    <h1 className="text-2xl font-bold text-foreground">
                         Notas
                     </h1>
                     <p className="text-sm text-muted-foreground">
@@ -208,7 +208,7 @@ export default function NotasPage({ postulantes, options, filters, resumen }) {
                                 <Button
                                     type="submit"
                                     disabled={processing}
-                                    className="bg-[#e30613] text-white hover:bg-[#bb0710]"
+                                    className="bg-[#0D2B85] text-white hover:bg-[#0a2270]"
                                 >
                                     <Save className="size-4" />
                                     Guardar notas

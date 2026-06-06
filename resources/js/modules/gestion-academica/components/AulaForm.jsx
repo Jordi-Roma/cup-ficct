@@ -58,7 +58,7 @@ export default function AulaForm({ aula, canSubmit, onSuccess }) {
                 <Button
                     type="submit"
                     disabled={processing || !canSubmit}
-                    className="bg-[#e30613] text-white hover:bg-[#bb0710]"
+                    className="bg-[#0D2B85] text-white hover:bg-[#0a2270]"
                 >
                     {aula ? 'Guardar cambios' : 'Crear aula'}
                 </Button>

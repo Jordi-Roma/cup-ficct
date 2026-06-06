@@ -156,7 +156,7 @@ export default function UserCreateForm({ materias, gestiones, carreras, canSubmi
 
             <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={onSuccess} disabled={processing}>Cancelar</Button>
-                <Button type="submit" disabled={processing || !canSubmit} className="bg-[#e30613] text-white hover:bg-[#bb0710]">Crear usuario</Button>
+                <Button type="submit" disabled={processing || !canSubmit} className="bg-[#0D2B85] text-white hover:bg-[#0a2270]">Crear usuario</Button>
             </div>
         </form>
     );

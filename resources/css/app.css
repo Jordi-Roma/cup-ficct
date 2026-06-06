@@ -9,7 +9,7 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Inter', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 
@@ -61,75 +61,148 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ============================================================
+   MODO CLARO — Elegante: blanco/gris claro, azul corporativo,
+   rosa coral y celeste pastel
+   ============================================================ */
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
+    /* Fondo general y superficie */
+    --background: oklch(0.98 0.003 240);       /* Blanco ligeramente azulado */
+    --foreground: oklch(0.18 0.06 255);        /* Azul corporativo oscuro ≈ #0D2B85 */
+
+    /* Tarjetas */
+    --card: oklch(1 0 0);                      /* Blanco puro */
+    --card-foreground: oklch(0.18 0.06 255);   /* Azul corporativo */
+
+    /* Popover */
     --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+    --popover-foreground: oklch(0.18 0.06 255);
+
+    /* Primario — Azul corporativo */
+    --primary: oklch(0.3 0.12 255);            /* Azul corporativo #0D2B85 aprox */
+    --primary-foreground: oklch(0.98 0.005 240);
+
+    /* Secundario — Rosa coral muy suave */
+    --secondary: oklch(0.95 0.025 10);         /* Rosa coral tenue */
+    --secondary-foreground: oklch(0.25 0.08 255);
+
+    /* Muted — Gris azulado muy claro */
+    --muted: oklch(0.96 0.005 240);
+    --muted-foreground: oklch(0.5 0.04 255);
+
+    /* Acento — Celeste pastel */
+    --accent: oklch(0.93 0.04 215);            /* Celeste pastel suave */
+    --accent-foreground: oklch(0.2 0.08 255);  /* Azul oscuro */
+
+    /* Destructivo */
+    --destructive: oklch(0.52 0.18 25);
+    --destructive-foreground: oklch(0.98 0 0);
+
+    /* Bordes y anillos */
+    --border: oklch(0.91 0.01 240);
+    --input: oklch(0.93 0.01 240);
+    --ring: oklch(0.6 0.06 255);
+
+    /* Gráficos — degradados rosa → celeste */
+    --chart-1: oklch(0.65 0.15 340);          /* Rosa coral */
+    --chart-2: oklch(0.65 0.12 220);          /* Celeste pastel */
+    --chart-3: oklch(0.4 0.1 255);            /* Azul medio */
+    --chart-4: oklch(0.7 0.1 280);            /* Lila suave */
+    --chart-5: oklch(0.75 0.08 200);          /* Celeste claro */
+
+    --radius: 0.75rem;
+
+    /* Sidebar — Blanco limpio */
+    --sidebar: oklch(0.99 0.002 240);
+    --sidebar-foreground: oklch(0.22 0.07 255);
+    --sidebar-primary: oklch(0.3 0.12 255);
+    --sidebar-primary-foreground: oklch(0.98 0 0);
+    --sidebar-accent: oklch(0.93 0.04 215);
+    --sidebar-accent-foreground: oklch(0.2 0.08 255);
+    --sidebar-border: oklch(0.92 0.01 240);
+    --sidebar-ring: oklch(0.6 0.06 255);
+
+    /* Custom — colores específicos del sistema */
+    --cup-coral: #F4747A;
+    --cup-coral-light: #FDDDE0;
+    --cup-sky: #B8DFF5;
+    --cup-sky-light: #E8F5FE;
+    --cup-blue: #0D2B85;
+    --cup-cream: #FFF9F0;
+    --cup-status-active-bg: #E8F5FE;
+    --cup-status-active-text: #1A4FA3;
+    --cup-status-inactive-bg: #F0F0F8;
+    --cup-status-inactive-text: #5A6A9A;
+    --cup-status-pending-bg: #EEF0FF;
+    --cup-status-pending-text: #3D52B0;
 }
 
+/* ============================================================
+   MODO OSCURO — Dashboard moderno: azul marino profundo,
+   rosa suave desaturado, lila/lavanda para estados
+   ============================================================ */
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.396 0.141 25.723);
-    --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.985 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    /* Fondo general — Azul marino profundo */
+    --background: oklch(0.12 0.03 255);        /* ≈ #0B1220 */
+    --foreground: oklch(0.88 0.025 355);       /* Rosa suave desaturado */
+
+    /* Tarjetas — superficie ligeramente más clara */
+    --card: oklch(0.15 0.035 255);             /* ≈ #111A2E */
+    --card-foreground: oklch(0.88 0.025 355);
+
+    /* Popover */
+    --popover: oklch(0.17 0.035 255);          /* ≈ #16213A */
+    --popover-foreground: oklch(0.88 0.025 355);
+
+    /* Primario — Rosa suave apagado */
+    --primary: oklch(0.78 0.04 355);           /* Rosa suave modo oscuro */
+    --primary-foreground: oklch(0.12 0.04 255);
+
+    /* Secundario */
+    --secondary: oklch(0.2 0.04 255);          /* Superficie #16213A */
+    --secondary-foreground: oklch(0.82 0.03 355);
+
+    /* Muted */
+    --muted: oklch(0.19 0.035 255);
+    --muted-foreground: oklch(0.62 0.03 280);
+
+    /* Acento — Azul violáceo suave */
+    --accent: oklch(0.25 0.06 265);
+    --accent-foreground: oklch(0.85 0.03 355);
+
+    /* Destructivo */
+    --destructive: oklch(0.38 0.12 25);
+    --destructive-foreground: oklch(0.78 0.08 25);
+
+    /* Bordes y anillos */
+    --border: oklch(0.22 0.04 255);
+    --input: oklch(0.22 0.04 255);
+    --ring: oklch(0.45 0.06 265);
+
+    /* Gráficos — azules con leve toque rosa */
+    --chart-1: oklch(0.55 0.12 260);          /* Azul medio */
+    --chart-2: oklch(0.45 0.1 250);           /* Azul oscuro */
+    --chart-3: oklch(0.65 0.06 355);          /* Rosa suave — destacado */
+    --chart-4: oklch(0.5 0.1 270);            /* Azul violáceo */
+    --chart-5: oklch(0.6 0.08 240);           /* Azul grisáceo */
+
+    /* Sidebar — Azul marino oscuro */
+    --sidebar: oklch(0.14 0.03 255);
+    --sidebar-foreground: oklch(0.85 0.025 355);
+    --sidebar-primary: oklch(0.78 0.04 355);
+    --sidebar-primary-foreground: oklch(0.12 0.03 255);
+    --sidebar-accent: oklch(0.22 0.05 260);
+    --sidebar-accent-foreground: oklch(0.85 0.03 355);
+    --sidebar-border: oklch(0.2 0.04 255);
+    --sidebar-ring: oklch(0.45 0.06 265);
+
+    /* Custom — colores específicos modo oscuro */
+    --cup-status-active-bg: #1E2D5E;
+    --cup-status-active-text: #A8C4F0;
+    --cup-status-inactive-bg: #221E3E;
+    --cup-status-inactive-text: #B0A8D8;
+    --cup-status-pending-bg: #1A1E42;
+    --cup-status-pending-text: #9BA8E0;
 }
 
 @layer base {
@@ -139,5 +212,106 @@
 
     body {
         @apply bg-background text-foreground;
+        font-feature-settings: 'cv11', 'ss01';
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* ============================================================
+   UTILIDADES GLOBALES
+   ============================================================ */
+@layer utilities {
+    /* Degradado activo del sidebar */
+    .sidebar-active-gradient {
+        background: linear-gradient(135deg, #F4747A 0%, #FFE8D6 60%, #FFF9F0 100%);
+        color: #7A2020 !important;
+    }
+
+    /* Sombra suave para tarjetas */
+    .card-shadow {
+        box-shadow: 0 2px 12px 0 rgba(13, 43, 133, 0.07), 0 1px 3px 0 rgba(13, 43, 133, 0.04);
+    }
+
+    .dark .card-shadow {
+        box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.3), 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    /* Gradiente de encabezado para gráficos */
+    .chart-gradient-light {
+        background: linear-gradient(135deg, #F4747A 0%, #B8DFF5 100%);
+    }
+
+    .dark .chart-gradient-light {
+        background: linear-gradient(135deg, #1A3A7A 0%, #2D1B4E 100%);
+    }
+
+    /* Badge de estado — Activo */
+    .badge-status-active {
+        background-color: var(--cup-status-active-bg);
+        color: var(--cup-status-active-text);
+        border-color: transparent;
+    }
+
+    /* Badge de estado — Inactivo / Bloqueado */
+    .badge-status-inactive {
+        background-color: var(--cup-status-inactive-bg);
+        color: var(--cup-status-inactive-text);
+        border-color: transparent;
+    }
+
+    /* Badge de estado — Pendiente / Suspendido */
+    .badge-status-pending {
+        background-color: var(--cup-status-pending-bg);
+        color: var(--cup-status-pending-text);
+        border-color: transparent;
+    }
+
+    /* Badge de operación INSERT */
+    .badge-op-insert {
+        background-color: #E8F5FE;
+        color: #1A4FA3;
+        border-color: #C8E4F8;
+    }
+    .dark .badge-op-insert {
+        background-color: #1A2D5A;
+        color: #90BEF0;
+        border-color: #2A3D6A;
+    }
+
+    /* Badge de operación UPDATE */
+    .badge-op-update {
+        background-color: #EEF0FF;
+        color: #3D52B0;
+        border-color: #D4D8F8;
+    }
+    .dark .badge-op-update {
+        background-color: #1E1E48;
+        color: #9AA8E0;
+        border-color: #2E2E58;
+    }
+
+    /* Badge de operación DELETE */
+    .badge-op-delete {
+        background-color: #F0E8FF;
+        color: #6030A0;
+        border-color: #DDD0F8;
+    }
+    .dark .badge-op-delete {
+        background-color: #220D3E;
+        color: #C090F0;
+        border-color: #320D5E;
+    }
+
+    /* Badge de operación LOGIN / LOGOUT */
+    .badge-op-auth {
+        background-color: #EDF0F8;
+        color: #4A5A90;
+        border-color: #D8DCF0;
+    }
+    .dark .badge-op-auth {
+        background-color: #181E3A;
+        color: #8090C0;
+        border-color: #282E4A;
     }
 }

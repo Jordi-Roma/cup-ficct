@@ -32,7 +32,7 @@ export default function PostulanteDetail({ postulante }) {
     ];
     return (<div className="space-y-5">
             <div>
-                <h3 className="text-lg font-semibold text-[#001f3f]">
+                <h3 className="text-lg font-semibold text-foreground">
                     {postulante.nombre_completo}
                 </h3>
                 <div className="mt-2 flex flex-wrap gap-2">
