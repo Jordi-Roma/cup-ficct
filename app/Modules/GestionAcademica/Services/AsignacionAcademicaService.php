@@ -121,6 +121,10 @@ class AsignacionAcademicaService
             throw ValidationException::withMessages(['id_horario' => 'Solo se pueden usar horarios activos.']);
         }
 
+        if ($horario->turno !== $grupo->turno) {
+            throw ValidationException::withMessages(['id_horario' => 'El horario seleccionado no corresponde al turno del grupo.']);
+        }
+
         if ($this->existsConflict('id_grupo', $data['id_grupo'], 'id_materia', $data['id_materia'], $ignore)) {
             throw ValidationException::withMessages(['id_materia' => 'El grupo ya tiene asignada esa materia.']);
         }
@@ -151,6 +155,8 @@ class AsignacionAcademicaService
                 ->map(fn (GrupoAcademico $grupo) => [
                     'id_grupo' => $grupo->id_grupo,
                     'nombre' => $grupo->nombre,
+                    'turno' => $grupo->turno,
+                    'turno_label' => GrupoAcademicoService::TURNOS[$grupo->turno]['label'] ?? 'Sin turno',
                     'capacidad_maxima' => $grupo->capacidad_maxima,
                 ]),
             'materias' => MateriaCup::query()
@@ -193,14 +199,16 @@ class AsignacionAcademicaService
                 ]),
             'horarios' => Horario::query()
                 ->where('activo', true)
-                ->orderByRaw("array_position(ARRAY['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'], dia)")
+                ->orderByRaw("array_position(ARRAY['MANANA','TARDE','NOCHE'], turno)")
                 ->orderBy('hora_inicio')
                 ->get()
                 ->map(fn (Horario $horario) => [
                     'id_horario' => $horario->id_horario,
-                    'dia' => $horario->dia,
+                    'turno' => $horario->turno,
+                    'turno_label' => GrupoAcademicoService::TURNOS[$horario->turno]['label'] ?? 'Sin turno',
                     'hora_inicio' => substr((string) $horario->hora_inicio, 0, 5),
                     'hora_fin' => substr((string) $horario->hora_fin, 0, 5),
+                    'dias_label' => 'Lunes a sabado',
                 ]),
         ];
     }
@@ -215,6 +223,8 @@ class AsignacionAcademicaService
             'grupo' => [
                 'id_grupo' => $asignacion->grupo?->id_grupo,
                 'nombre' => $asignacion->grupo?->nombre,
+                'turno' => $asignacion->grupo?->turno,
+                'turno_label' => GrupoAcademicoService::TURNOS[$asignacion->grupo?->turno]['label'] ?? 'Sin turno',
                 'capacidad_maxima' => $asignacion->grupo?->capacidad_maxima,
             ],
             'materia' => [
@@ -233,11 +243,18 @@ class AsignacionAcademicaService
             ],
             'horario' => [
                 'id_horario' => $asignacion->horario?->id_horario,
-                'dia' => $asignacion->horario?->dia,
+                'turno' => $asignacion->horario?->turno,
+                'turno_label' => GrupoAcademicoService::TURNOS[$asignacion->horario?->turno]['label'] ?? 'Sin turno',
                 'hora_inicio' => substr((string) $asignacion->horario?->hora_inicio, 0, 5),
                 'hora_fin' => substr((string) $asignacion->horario?->hora_fin, 0, 5),
+                'dias_label' => 'Lunes a sabado',
             ],
         ];
+    }
+
+    public function assignPostulantes(): int
+    {
+        return app(GrupoAcademicoService::class)->assignPostulantes();
     }
 
     private function activeGestion(): GestionAcademica
@@ -294,4 +311,5 @@ class AsignacionAcademicaService
             ->where('postulacion.id_gestion', $gestion->id_gestion)
             ->exists();
     }
+
 }

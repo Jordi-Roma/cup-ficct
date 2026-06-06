@@ -22,6 +22,10 @@ export default function PostulanteDetail({ postulante }) {
             postulante.postulacion?.carrera_opcion2?.nombre ?? 'Sin carrera',
         ],
         [
+            'Turno preferido',
+            postulante.postulacion?.turno_preferido_label ?? 'Sin turno',
+        ],
+        [
             'Grupo',
             postulante.postulacion?.grupo?.nombre ?? 'Sin grupo asignado',
         ],

@@ -27,6 +27,7 @@ class UpdatePostulanteRequest extends FormRequest
             'documentacion_completa' => ['required', 'boolean'],
             'id_carrera_opcion1' => ['required', 'integer', Rule::exists('carrera', 'id_carrera')],
             'id_carrera_opcion2' => ['nullable', 'integer', Rule::exists('carrera', 'id_carrera'), 'different:id_carrera_opcion1'],
+            'turno_preferido' => ['required', Rule::in(['MANANA', 'TARDE', 'NOCHE'])],
         ];
     }
 }

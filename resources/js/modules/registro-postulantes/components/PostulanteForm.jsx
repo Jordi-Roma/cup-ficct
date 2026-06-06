@@ -5,6 +5,13 @@ import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/shared/components/ui/select';
+
+const turnos = [
+    { value: 'MANANA', label: 'Mañana' },
+    { value: 'TARDE', label: 'Tarde' },
+    { value: 'NOCHE', label: 'Noche' },
+];
+
 export default function PostulanteForm({ postulante, carreras, canSubmit, onSuccess, }) {
     const { data, setData, put, processing, errors } = useForm({
         correo: postulante.correo ?? '',
@@ -18,6 +25,7 @@ export default function PostulanteForm({ postulante, carreras, canSubmit, onSucc
             '',
         id_carrera_opcion2: postulante.postulacion?.carrera_opcion2?.id_carrera?.toString() ??
             '',
+        turno_preferido: postulante.postulacion?.turno_preferido ?? '',
     });
     const submit = (event) => {
         event.preventDefault();
@@ -99,6 +107,23 @@ export default function PostulanteForm({ postulante, carreras, canSubmit, onSucc
                     </Select>
                     <InputError message={errors.id_carrera_opcion2}/>
                 </div>
+            </div>
+
+            <div className="grid gap-2">
+                <Label>Turno preferido</Label>
+                <Select value={data.turno_preferido} onValueChange={(value) => setData('turno_preferido', value)}>
+                    <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Selecciona turno"/>
+                    </SelectTrigger>
+                    <SelectContent>
+                        {turnos.map((turno) => (
+                            <SelectItem key={turno.value} value={turno.value}>
+                                {turno.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <InputError message={errors.turno_preferido}/>
             </div>
 
             <Label className="flex items-center gap-3 rounded-md border p-3">

@@ -28,6 +28,7 @@ class Postulacion extends Model
         'id_grupo',
         'estado_admision',
         'estado_proceso',
+        'turno_preferido',
         'fecha_postulacion',
     ];
 

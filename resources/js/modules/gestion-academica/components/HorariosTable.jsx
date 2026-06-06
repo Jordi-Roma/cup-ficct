@@ -16,7 +16,7 @@ export default function HorariosTable({ horarios, canUpdate, canToggle, onEdit }
                 <table className="w-full text-sm">
                     <thead className="bg-slate-50 text-left">
                         <tr>
-                            <th className="px-4 py-3">Dia</th>
+                            <th className="px-4 py-3">Turno</th>
                             <th className="px-4 py-3">Hora inicio</th>
                             <th className="px-4 py-3">Hora fin</th>
                             <th className="px-4 py-3">Asignaciones activas</th>
@@ -27,7 +27,7 @@ export default function HorariosTable({ horarios, canUpdate, canToggle, onEdit }
                     <tbody className="divide-y">
                         {horarios.map((horario) => (
                             <tr key={horario.id_horario}>
-                                <td className="px-4 py-3 font-medium">{horario.dia}</td>
+                                <td className="px-4 py-3 font-medium">{horario.turno_label}</td>
                                 <td className="px-4 py-3">{horario.hora_inicio}</td>
                                 <td className="px-4 py-3">{horario.hora_fin}</td>
                                 <td className="px-4 py-3">{horario.asignaciones_activas}</td>
@@ -61,7 +61,7 @@ export default function HorariosTable({ horarios, canUpdate, canToggle, onEdit }
                     <div key={horario.id_horario} className="space-y-3 rounded-md border p-4">
                         <div className="flex items-start justify-between gap-3">
                             <div>
-                                <h3 className="font-semibold">{horario.dia}</h3>
+                                <h3 className="font-semibold">{horario.turno_label}</h3>
                                 <p className="text-sm text-muted-foreground">
                                     {horario.hora_inicio} - {horario.hora_fin}
                                 </p>

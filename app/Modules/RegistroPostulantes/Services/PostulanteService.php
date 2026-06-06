@@ -3,11 +3,13 @@
 namespace App\Modules\RegistroPostulantes\Services;
 
 use App\Modules\GestionAcademica\Models\GestionAcademica;
+use App\Modules\GestionAcademica\Models\GrupoAcademico;
 use App\Modules\RegistroPostulantes\Models\Postulacion;
 use App\Modules\RegistroPostulantes\Models\Postulante;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class PostulanteService
 {
@@ -89,9 +91,18 @@ class PostulanteService
             $postulacion = $this->currentPostulacion($postulante);
 
             if ($postulacion) {
+                $newTurno = $data['turno_preferido'];
+
+                if ($postulacion->id_grupo && $postulacion->turno_preferido !== $newTurno) {
+                    $this->ensureAvailableGroupForTurno($postulacion->id_gestion, $newTurno);
+                    $postulacion->id_grupo = null;
+                }
+
                 $postulacion->update([
                     'id_carrera_opcion1' => $data['id_carrera_opcion1'],
                     'id_carrera_opcion2' => $data['id_carrera_opcion2'] ?? null,
+                    'turno_preferido' => $newTurno,
+                    'id_grupo' => $postulacion->id_grupo,
                 ]);
             }
 
@@ -140,6 +151,8 @@ class PostulanteService
                 'id_postulacion' => $postulacion->id_postulacion,
                 'estado_admision' => $postulacion->estado_admision,
                 'estado_proceso' => $postulacion->estado_proceso,
+                'turno_preferido' => $postulacion->turno_preferido,
+                'turno_preferido_label' => $this->turnoLabel($postulacion->turno_preferido),
                 'carrera_opcion1' => $postulacion->carreraOpcion1 ? [
                     'id_carrera' => $postulacion->carreraOpcion1->id_carrera,
                     'nombre' => $postulacion->carreraOpcion1->nombre,
@@ -151,9 +164,26 @@ class PostulanteService
                 'grupo' => $postulacion->grupo ? [
                     'id_grupo' => $postulacion->grupo->id_grupo,
                     'nombre' => $postulacion->grupo->nombre,
+                    'turno' => $postulacion->grupo->turno,
                 ] : null,
             ] : null,
         ];
+    }
+
+    private function ensureAvailableGroupForTurno(int $gestionId, string $turno): void
+    {
+        $hasCapacity = GrupoAcademico::query()
+            ->where('id_gestion', $gestionId)
+            ->where('turno', $turno)
+            ->where('activo', true)
+            ->whereRaw('capacidad_maxima > (SELECT COUNT(*) FROM postulacion WHERE postulacion.id_grupo = grupo_academico.id_grupo)')
+            ->exists();
+
+        if (! $hasCapacity) {
+            throw ValidationException::withMessages([
+                'turno_preferido' => 'No hay cupos disponibles en grupos activos del turno seleccionado.',
+            ]);
+        }
     }
 
     private function currentPostulacion(Postulante $postulante): ?Postulacion
@@ -168,5 +198,14 @@ class PostulanteService
 
         return $postulaciones->firstWhere('id_gestion', $activeGestionId)
             ?? $postulaciones->sortByDesc('fecha_postulacion')->first();
+    }
+
+    private function turnoLabel(?string $turno): string
+    {
+        return [
+            'MANANA' => 'Mañana',
+            'TARDE' => 'Tarde',
+            'NOCHE' => 'Noche',
+        ][$turno] ?? 'Sin turno';
     }
 }

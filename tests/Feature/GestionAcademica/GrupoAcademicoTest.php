@@ -43,6 +43,7 @@ class GrupoAcademicoTest extends TestCase
         GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => 'Grupo A',
+            'turno' => 'MANANA',
             'capacidad_maxima' => 70,
             'activo' => true,
         ]);
@@ -58,6 +59,7 @@ class GrupoAcademicoTest extends TestCase
         $grupo = GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => 'Grupo A',
+            'turno' => 'MANANA',
             'capacidad_maxima' => 70,
             'activo' => true,
         ]);
@@ -98,12 +100,14 @@ class GrupoAcademicoTest extends TestCase
         $this->actingAs($user)
             ->post('/academico/grupos', [
                 'nombre' => 'Grupo Manual',
+                'turno' => 'MANANA',
                 'capacidad_maxima' => 60,
             ])
             ->assertRedirect();
 
         $this->assertDatabaseHas('grupo_academico', [
             'nombre' => 'Grupo Manual',
+            'turno' => 'MANANA',
             'capacidad_maxima' => 60,
             'activo' => true,
         ]);
@@ -117,6 +121,7 @@ class GrupoAcademicoTest extends TestCase
         $this->actingAs($user)
             ->post('/academico/grupos', [
                 'nombre' => 'Grupo Grande',
+                'turno' => 'MANANA',
                 'capacidad_maxima' => 71,
             ])
             ->assertSessionHasErrors('capacidad_maxima');
@@ -128,6 +133,7 @@ class GrupoAcademicoTest extends TestCase
         GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => 'Grupo A',
+            'turno' => 'MANANA',
             'capacidad_maxima' => 70,
             'activo' => true,
         ]);
@@ -136,6 +142,7 @@ class GrupoAcademicoTest extends TestCase
         $this->actingAs($user)
             ->post('/academico/grupos', [
                 'nombre' => 'Grupo A',
+                'turno' => 'MANANA',
                 'capacidad_maxima' => 70,
             ])
             ->assertSessionHasErrors('nombre');
@@ -147,7 +154,8 @@ class GrupoAcademicoTest extends TestCase
         $this->createEligiblePostulaciones($gestion, 141);
         GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
-            'nombre' => 'Grupo A',
+            'nombre' => 'M001',
+            'turno' => 'MANANA',
             'capacidad_maxima' => 70,
             'activo' => true,
         ]);
@@ -157,9 +165,9 @@ class GrupoAcademicoTest extends TestCase
             ->post('/academico/grupos/generar')
             ->assertRedirect();
 
-        $this->assertDatabaseHas('grupo_academico', ['nombre' => 'Grupo A']);
-        $this->assertDatabaseHas('grupo_academico', ['nombre' => 'Grupo B']);
-        $this->assertDatabaseHas('grupo_academico', ['nombre' => 'Grupo C']);
+        $this->assertDatabaseHas('grupo_academico', ['nombre' => 'M001']);
+        $this->assertDatabaseHas('grupo_academico', ['nombre' => 'M002']);
+        $this->assertDatabaseHas('grupo_academico', ['nombre' => 'M003']);
         $this->assertSame(3, GrupoAcademico::where('id_gestion', $gestion->id_gestion)->count());
     }
 
@@ -169,6 +177,7 @@ class GrupoAcademicoTest extends TestCase
         $grupo = GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => 'Grupo A',
+            'turno' => 'MANANA',
             'capacidad_maxima' => 70,
             'activo' => true,
         ]);
@@ -177,6 +186,7 @@ class GrupoAcademicoTest extends TestCase
         $this->actingAs($user)
             ->put("/academico/grupos/{$grupo->id_grupo}", [
                 'nombre' => 'Grupo Alfa',
+                'turno' => 'MANANA',
                 'capacidad_maxima' => 65,
             ])
             ->assertRedirect();
@@ -194,6 +204,7 @@ class GrupoAcademicoTest extends TestCase
         $grupo = GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => 'Grupo A',
+            'turno' => 'MANANA',
             'capacidad_maxima' => 70,
             'activo' => true,
         ]);
@@ -203,6 +214,7 @@ class GrupoAcademicoTest extends TestCase
         $this->actingAs($user)
             ->put("/academico/grupos/{$grupo->id_grupo}", [
                 'nombre' => 'Grupo A',
+                'turno' => 'MANANA',
                 'capacidad_maxima' => 1,
             ])
             ->assertSessionHasErrors('capacidad_maxima');
@@ -215,19 +227,21 @@ class GrupoAcademicoTest extends TestCase
         $grupoA = GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => 'Grupo A',
+            'turno' => 'MANANA',
             'capacidad_maxima' => 2,
             'activo' => true,
         ]);
         $grupoB = GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => 'Grupo B',
+            'turno' => 'MANANA',
             'capacidad_maxima' => 2,
             'activo' => true,
         ]);
-        $user = $this->userWithPermissions(['grupos:update']);
+        $user = $this->userWithPermissions(['asignaciones:update']);
 
         $this->actingAs($user)
-            ->post('/academico/grupos/asignar-postulantes')
+            ->post('/academico/asignaciones/asignar-postulantes')
             ->assertRedirect();
 
         $this->assertSame(3, DB::table('postulacion')->whereNotNull('id_grupo')->count());
@@ -241,6 +255,7 @@ class GrupoAcademicoTest extends TestCase
         $grupo = GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => 'Grupo A',
+            'turno' => 'MANANA',
             'capacidad_maxima' => 70,
             'activo' => true,
         ]);
@@ -263,6 +278,7 @@ class GrupoAcademicoTest extends TestCase
         $grupo = GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => 'Grupo A',
+            'turno' => 'MANANA',
             'capacidad_maxima' => 70,
             'activo' => true,
         ]);
@@ -341,6 +357,7 @@ class GrupoAcademicoTest extends TestCase
                 'id_gestion' => $gestion->id_gestion,
                 'id_carrera_opcion1' => $carreraId,
                 'id_grupo' => $grupo?->id_grupo,
+                'turno_preferido' => 'MANANA',
                 'estado_admision' => 'PENDIENTE',
                 'fecha_postulacion' => now()->addSeconds($index),
             ]);
@@ -375,6 +392,7 @@ class GrupoAcademicoTest extends TestCase
             'id_gestion' => $gestion->id_gestion,
             'id_carrera_opcion1' => $carreraId,
             'id_grupo' => $grupo->id_grupo,
+            'turno_preferido' => 'MANANA',
             'estado_admision' => 'PENDIENTE',
             'fecha_postulacion' => now(),
         ]);

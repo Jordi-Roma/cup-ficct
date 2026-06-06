@@ -14,6 +14,7 @@ export default function GruposAcademicosTable({ grupos, canUpdate, canToggle, ca
                     <thead className="bg-slate-50 text-left">
                         <tr>
                             <th className="px-4 py-3">Grupo</th>
+                            <th className="px-4 py-3">Turno</th>
                             <th className="px-4 py-3">Capacidad</th>
                             <th className="px-4 py-3">Asignados</th>
                             <th className="px-4 py-3">Disponibles</th>
@@ -25,6 +26,9 @@ export default function GruposAcademicosTable({ grupos, canUpdate, canToggle, ca
                         {grupos.map((grupo) => (<tr key={grupo.id_grupo}>
                                 <td className="px-4 py-3 font-medium">
                                     {grupo.nombre}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {grupo.turno_label ?? 'Sin turno'}
                                 </td>
                                 <td className="px-4 py-3">
                                     {grupo.capacidad_maxima}
@@ -68,7 +72,7 @@ export default function GruposAcademicosTable({ grupos, canUpdate, canToggle, ca
                                     {grupo.nombre}
                                 </h3>
                                 <p className="text-sm text-muted-foreground">
-                                    {grupo.postulantes_asignados}/
+                                    {grupo.turno_label ?? 'Sin turno'} · {grupo.postulantes_asignados}/
                                     {grupo.capacidad_maxima} postulantes
                                 </p>
                             </div>

@@ -14,7 +14,7 @@ class Horario extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'dia',
+        'turno',
         'hora_inicio',
         'hora_fin',
         'activo',

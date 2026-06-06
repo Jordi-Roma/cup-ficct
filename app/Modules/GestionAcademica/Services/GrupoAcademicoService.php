@@ -13,6 +13,12 @@ class GrupoAcademicoService
 {
     private const GROUP_CAPACITY = 70;
 
+    public const TURNOS = [
+        'MANANA' => ['label' => 'Manana', 'prefix' => 'M'],
+        'TARDE' => ['label' => 'Tarde', 'prefix' => 'T'],
+        'NOCHE' => ['label' => 'Noche', 'prefix' => 'N'],
+    ];
+
     public function activeGestion(): GestionAcademica
     {
         $gestion = GestionAcademica::query()
@@ -41,6 +47,7 @@ class GrupoAcademicoService
                 'postulaciones.carreraOpcion2',
             ])
             ->withCount('postulaciones')
+            ->orderByRaw("array_position(ARRAY['MANANA','TARDE','NOCHE'], turno)")
             ->orderBy('nombre')
             ->get()
             ->map(fn (GrupoAcademico $grupo) => $this->serialize($grupo));
@@ -60,18 +67,34 @@ class GrupoAcademicoService
     public function calculateRequiredGroups(): array
     {
         $gestion = $this->activeGestion();
-        $totalInscritos = $this->countEligiblePostulantes();
-        $gruposNecesarios = $this->calculateGroups($totalInscritos);
-        $gruposActivos = GrupoAcademico::query()
-            ->where('id_gestion', $gestion->id_gestion)
-            ->where('activo', true)
-            ->count();
+        $turnos = collect(self::TURNOS)
+            ->map(function (array $turnoConfig, string $turno) use ($gestion): array {
+                $totalInscritos = $this->countEligiblePostulantesByTurno($turno);
+                $gruposNecesarios = $this->calculateGroups($totalInscritos);
+                $gruposActivos = GrupoAcademico::query()
+                    ->where('id_gestion', $gestion->id_gestion)
+                    ->where('turno', $turno)
+                    ->where('activo', true)
+                    ->count();
+
+                return [
+                    'turno' => $turno,
+                    'label' => $turnoConfig['label'],
+                    'prefix' => $turnoConfig['prefix'],
+                    'total_inscritos' => $totalInscritos,
+                    'grupos_necesarios' => $gruposNecesarios,
+                    'grupos_activos' => $gruposActivos,
+                    'grupos_faltantes' => max($gruposNecesarios - $gruposActivos, 0),
+                ];
+            })
+            ->values();
 
         return [
-            'total_inscritos' => $totalInscritos,
-            'grupos_necesarios' => $gruposNecesarios,
-            'grupos_activos' => $gruposActivos,
-            'grupos_faltantes' => max($gruposNecesarios - $gruposActivos, 0),
+            'total_inscritos' => $turnos->sum('total_inscritos'),
+            'grupos_necesarios' => $turnos->sum('grupos_necesarios'),
+            'grupos_activos' => $turnos->sum('grupos_activos'),
+            'grupos_faltantes' => $turnos->sum('grupos_faltantes'),
+            'turnos' => $turnos,
             'gestion_activa' => [
                 'id_gestion' => $gestion->id_gestion,
                 'nombre' => $gestion->nombre,
@@ -87,6 +110,7 @@ class GrupoAcademicoService
         return GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => $data['nombre'],
+            'turno' => $data['turno'],
             'capacidad_maxima' => $data['capacidad_maxima'] ?? self::GROUP_CAPACITY,
             'activo' => true,
         ]);
@@ -106,6 +130,7 @@ class GrupoAcademicoService
 
         $grupo->update([
             'nombre' => $data['nombre'],
+            'turno' => $data['turno'],
             'capacidad_maxima' => $data['capacidad_maxima'],
         ]);
 
@@ -122,31 +147,42 @@ class GrupoAcademicoService
             return 0;
         }
 
-        $existingNames = GrupoAcademico::query()
-            ->where('id_gestion', $gestion->id_gestion)
-            ->pluck('nombre')
-            ->all();
-
         $created = 0;
-        $index = 0;
 
-        while ($created < $missing) {
-            $name = 'Grupo '.$this->groupLetter($index);
-            $index++;
+        foreach ($summary['turnos'] as $turnoSummary) {
+            $turno = $turnoSummary['turno'];
+            $turnoMissing = $turnoSummary['grupos_faltantes'];
 
-            if (in_array($name, $existingNames, true)) {
+            if ($turnoMissing === 0) {
                 continue;
             }
 
-            GrupoAcademico::create([
-                'id_gestion' => $gestion->id_gestion,
-                'nombre' => $name,
-                'capacidad_maxima' => self::GROUP_CAPACITY,
-                'activo' => true,
-            ]);
+            $existingNames = GrupoAcademico::query()
+                ->where('id_gestion', $gestion->id_gestion)
+                ->pluck('nombre')
+                ->all();
+            $index = 1;
 
-            $existingNames[] = $name;
-            $created++;
+            while ($turnoMissing > 0) {
+                $name = $this->groupCode($turno, $index);
+                $index++;
+
+                if (in_array($name, $existingNames, true)) {
+                    continue;
+                }
+
+                GrupoAcademico::create([
+                    'id_gestion' => $gestion->id_gestion,
+                    'nombre' => $name,
+                    'turno' => $turno,
+                    'capacidad_maxima' => self::GROUP_CAPACITY,
+                    'activo' => true,
+                ]);
+
+                $existingNames[] = $name;
+                $created++;
+                $turnoMissing--;
+            }
         }
 
         return $created;
@@ -159,10 +195,12 @@ class GrupoAcademicoService
             ->where('id_gestion', $gestion->id_gestion)
             ->where('activo', true)
             ->withCount('postulaciones')
+            ->orderByRaw("array_position(ARRAY['MANANA','TARDE','NOCHE'], turno)")
             ->orderBy('nombre')
             ->get()
             ->map(fn (GrupoAcademico $grupo) => [
                 'id_grupo' => $grupo->id_grupo,
+                'turno' => $grupo->turno,
                 'capacidad_maxima' => $grupo->capacidad_maxima,
                 'asignados' => $grupo->postulaciones_count,
             ])
@@ -178,23 +216,28 @@ class GrupoAcademicoService
             ->select('postulacion.*')
             ->get();
 
-        $availableCapacity = collect($groups)->sum(fn (array $group) => max($group['capacidad_maxima'] - $group['asignados'], 0));
+        foreach (self::TURNOS as $turno => $config) {
+            $postulacionesTurno = $postulaciones->where('turno_preferido', $turno)->count();
+            $availableCapacity = collect($groups)
+                ->where('turno', $turno)
+                ->sum(fn (array $group) => max($group['capacidad_maxima'] - $group['asignados'], 0));
 
-        if ($postulaciones->count() > $availableCapacity) {
-            throw ValidationException::withMessages([
-                'grupos' => 'No hay cupos suficientes en los grupos activos para asignar a todos los postulantes.',
-            ]);
+            if ($postulacionesTurno > $availableCapacity) {
+                throw ValidationException::withMessages([
+                    'grupos' => "No hay cupos suficientes en grupos del turno {$config['label']}.",
+                ]);
+            }
         }
 
         $assigned = 0;
 
         DB::transaction(function () use (&$groups, $postulaciones, &$assigned): void {
             foreach ($postulaciones as $postulacion) {
-                $groupIndex = $this->nextAvailableGroupIndex($groups);
+                $groupIndex = $this->nextAvailableGroupIndex($groups, $postulacion->turno_preferido);
 
                 if ($groupIndex === null) {
                     throw ValidationException::withMessages([
-                        'grupos' => 'No hay grupos activos con cupos disponibles.',
+                        'grupos' => 'No hay grupos activos con cupos disponibles para el turno del postulante.',
                     ]);
                 }
 
@@ -236,6 +279,8 @@ class GrupoAcademicoService
             'id_grupo' => $grupo->id_grupo,
             'id_gestion' => $grupo->id_gestion,
             'nombre' => $grupo->nombre,
+            'turno' => $grupo->turno,
+            'turno_label' => $this->turnoLabel($grupo->turno),
             'capacidad_maxima' => $grupo->capacidad_maxima,
             'activo' => $grupo->activo,
             'postulantes_asignados' => $assigned,
@@ -259,6 +304,8 @@ class GrupoAcademicoService
                         'colegio_procedencia' => $postulante?->colegio_procedencia,
                         'documentacion_completa' => $postulante?->documentacion_completa ?? false,
                         'estado_admision' => $postulacion->estado_admision,
+                        'turno_preferido' => $postulacion->turno_preferido,
+                        'turno_preferido_label' => $this->turnoLabel($postulacion->turno_preferido),
                         'carrera_opcion1' => $postulacion->carreraOpcion1?->nombre,
                         'carrera_opcion2' => $postulacion->carreraOpcion2?->nombre,
                     ];
@@ -274,6 +321,18 @@ class GrupoAcademicoService
         } catch (\Throwable) {
             return (int) ceil($totalInscritos / self::GROUP_CAPACITY);
         }
+    }
+
+    private function countEligiblePostulantesByTurno(string $turno): int
+    {
+        $gestion = $this->activeGestion();
+
+        return Postulacion::query()
+            ->join('postulante', 'postulacion.id_postulante', '=', 'postulante.id_postulante')
+            ->where('postulacion.id_gestion', $gestion->id_gestion)
+            ->where('postulacion.turno_preferido', $turno)
+            ->where('postulante.documentacion_completa', true)
+            ->count();
     }
 
     private function ensureUniqueName(int $gestionId, string $name, ?int $ignoreGroupId = null): void
@@ -306,23 +365,20 @@ class GrupoAcademicoService
             ->exists();
     }
 
-    private function groupLetter(int $index): string
+    private function groupCode(string $turno, int $index): string
     {
-        $letters = '';
-
-        do {
-            $letters = chr(65 + ($index % 26)).$letters;
-            $index = intdiv($index, 26) - 1;
-        } while ($index >= 0);
-
-        return $letters;
+        return self::TURNOS[$turno]['prefix'].str_pad((string) $index, 3, '0', STR_PAD_LEFT);
     }
 
-    private function nextAvailableGroupIndex(array $groups): ?int
+    private function nextAvailableGroupIndex(array $groups, string $turno): ?int
     {
         $available = null;
 
         foreach ($groups as $index => $group) {
+            if ($group['turno'] !== $turno) {
+                continue;
+            }
+
             if ($group['asignados'] >= $group['capacidad_maxima']) {
                 continue;
             }
@@ -333,5 +389,10 @@ class GrupoAcademicoService
         }
 
         return $available;
+    }
+
+    private function turnoLabel(?string $turno): string
+    {
+        return self::TURNOS[$turno]['label'] ?? 'Sin turno';
     }
 }

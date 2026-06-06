@@ -3,6 +3,7 @@
 namespace App\Modules\GestionAcademica\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateGrupoAcademicoRequest extends FormRequest
 {
@@ -15,6 +16,7 @@ class UpdateGrupoAcademicoRequest extends FormRequest
     {
         return [
             'nombre' => ['required', 'string', 'max:50'],
+            'turno' => ['required', Rule::in(['MANANA', 'TARDE', 'NOCHE'])],
             'capacidad_maxima' => ['required', 'integer', 'min:1', 'max:70'],
         ];
     }

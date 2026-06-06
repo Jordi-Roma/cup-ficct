@@ -324,9 +324,10 @@ class DocenteTest extends TestCase
             'capacidad' => 70,
         ], 'id_aula');
         $horarioId = DB::table('horario')->insertGetId([
-            'dia' => 'LUNES',
+            'turno' => 'MANANA',
             'hora_inicio' => '08:00',
             'hora_fin' => '10:00',
+            'activo' => true,
         ], 'id_horario');
 
         DB::table('asignacion_academica')->insert([

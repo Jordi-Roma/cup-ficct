@@ -21,6 +21,7 @@ class GrupoAcademico extends Model
     protected $fillable = [
         'id_gestion',
         'nombre',
+        'turno',
         'capacidad_maxima',
         'activo',
     ];

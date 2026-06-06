@@ -123,6 +123,7 @@ class UsuarioService
             'id_carrera_opcion2' => $data['id_carrera_opcion2'] ?? null,
             'estado_admision' => 'PENDIENTE',
             'estado_proceso' => 'HABILITADO_CUP',
+            'turno_preferido' => $data['turno_preferido'],
         ]);
 
         $this->assignRoleByName($user, 'POSTULANTE');

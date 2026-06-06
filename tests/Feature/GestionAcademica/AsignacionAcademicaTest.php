@@ -179,7 +179,7 @@ class AsignacionAcademicaTest extends TestCase
                 'id_materia' => $this->createMateria("Materia {$index}")->id_materia,
                 'id_docente' => $docente->id_docente,
                 'id_aula' => $this->createAula("Aula {$index}")->id_aula,
-                'id_horario' => $this->createHorario('LUNES', sprintf('%02d:00', 8 + $index), sprintf('%02d:00', 9 + $index))->id_horario,
+                'id_horario' => $this->createHorario('MANANA', sprintf('%02d:00', 8 + $index), sprintf('%02d:00', 9 + $index))->id_horario,
                 'activo' => true,
             ]);
         }
@@ -187,7 +187,7 @@ class AsignacionAcademicaTest extends TestCase
         $context = $this->createContext([
             'gestion' => $gestion,
             'docente' => $docente,
-            'horario' => $this->createHorario('MARTES', '08:00', '10:00'),
+            'horario' => $this->createHorario('MANANA', '12:00', '13:00'),
         ]);
 
         $this->actingAs($user)
@@ -339,6 +339,7 @@ class AsignacionAcademicaTest extends TestCase
         return GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => $nombre ?? 'Grupo '.Str::upper(Str::random(6)),
+            'turno' => $overrides['turno'] ?? 'MANANA',
             'capacidad_maxima' => $overrides['capacidad_maxima'] ?? 70,
             'activo' => $overrides['activo'] ?? true,
         ]);
@@ -347,7 +348,7 @@ class AsignacionAcademicaTest extends TestCase
     private function createMateria(?string $nombre = null, array $overrides = []): MateriaCup
     {
         return MateriaCup::create([
-            'nombre' => $nombre ?? 'Materia '.Str::upper(Str::random(6)),
+            'nombre' => $nombre ?? 'Materia '.Str::upper(Str::random(8)),
             'activo' => $overrides['activo'] ?? true,
         ]);
     }
@@ -387,13 +388,16 @@ class AsignacionAcademicaTest extends TestCase
         ]);
     }
 
-    private function createHorario(string $dia = 'LUNES', string $inicio = '08:00', string $fin = '10:00'): Horario
+    private function createHorario(string $turno = 'MANANA', string $inicio = '08:00', string $fin = '10:00'): Horario
     {
-        return Horario::create([
-            'dia' => $dia,
-            'hora_inicio' => $inicio,
-            'hora_fin' => $fin,
-        ]);
+        return Horario::firstOrCreate(
+            [
+                'turno' => $turno,
+                'hora_inicio' => $inicio,
+                'hora_fin' => $fin,
+            ],
+            ['activo' => true]
+        );
     }
 
     private function createNotaForAssignment(AsignacionAcademica $asignacion): void
@@ -416,6 +420,7 @@ class AsignacionAcademicaTest extends TestCase
             'id_gestion' => $asignacion->grupo->id_gestion,
             'id_carrera_opcion1' => $carreraId,
             'id_grupo' => $asignacion->id_grupo,
+            'turno_preferido' => $asignacion->grupo->turno,
             'estado_admision' => 'PENDIENTE',
             'fecha_postulacion' => now(),
         ], 'id_postulacion');

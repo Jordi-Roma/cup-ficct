@@ -2,12 +2,20 @@
 
 use App\Modules\AccesoSeguridad\Controllers\ProfileController;
 use App\Modules\AccesoSeguridad\Controllers\BitacoraController;
+use App\Modules\AccesoSeguridad\Controllers\PasswordResetController;
 use App\Modules\AccesoSeguridad\Controllers\PermisoController;
 use App\Modules\AccesoSeguridad\Controllers\RolController;
 use App\Modules\AccesoSeguridad\Controllers\SecurityController;
 use App\Modules\AccesoSeguridad\Controllers\UsuarioController;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
+
+Route::middleware(['guest'])->group(function () {
+    Route::get('forgot-password', [PasswordResetController::class, 'create'])->name('password.request');
+    Route::post('forgot-password', [PasswordResetController::class, 'store'])->name('password.email');
+    Route::get('reset-password/{token}', [PasswordResetController::class, 'edit'])->name('password.reset');
+    Route::post('reset-password', [PasswordResetController::class, 'update'])->name('password.update');
+});
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', '/settings/profile');

@@ -8,6 +8,12 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Spinner } from '@/shared/components/ui/spinner';
 
+const turnos = [
+    { value: 'MANANA', label: 'Mañana' },
+    { value: 'TARDE', label: 'Tarde' },
+    { value: 'NOCHE', label: 'Noche' },
+];
+
 export default function Register({ gestiones, carreras }) {
     return (
         <>
@@ -85,6 +91,17 @@ export default function Register({ gestiones, carreras }) {
                                 </div>
                             </div>
 
+                            <div className="grid gap-2">
+                                <Label htmlFor="turno_preferido">Turno preferido</Label>
+                                <select id="turno_preferido" name="turno_preferido" required tabIndex={13} className="h-9 rounded-md border border-sidebar-border bg-card px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20">
+                                    <option value="">Seleccione</option>
+                                    {turnos.map((turno) => (
+                                        <option key={turno.value} value={turno.value}>{turno.label}</option>
+                                    ))}
+                                </select>
+                                <InputError message={errors.turno_preferido} />
+                            </div>
+
                             <div className="grid gap-3 rounded-xl border p-4">
                                 <div>
                                     <Label>Documentos declarados</Label>
@@ -94,13 +111,13 @@ export default function Register({ gestiones, carreras }) {
                                 </div>
                                 <label className="flex items-center gap-3 text-sm">
                                     <input type="hidden" name="presento_titulo_bachiller" value="0" />
-                                    <input type="checkbox" name="presento_titulo_bachiller" value="1" tabIndex={11} className="size-4 rounded border-sidebar-border" />
+                                    <input type="checkbox" name="presento_titulo_bachiller" value="1" tabIndex={14} className="size-4 rounded border-sidebar-border" />
                                     Presentó título de bachiller
                                 </label>
                                 <InputError message={errors.presento_titulo_bachiller} />
                                 <label className="flex items-center gap-3 text-sm">
                                     <input type="hidden" name="presento_fotocopia_carnet" value="0" />
-                                    <input type="checkbox" name="presento_fotocopia_carnet" value="1" tabIndex={12} className="size-4 rounded border-sidebar-border" />
+                                    <input type="checkbox" name="presento_fotocopia_carnet" value="1" tabIndex={15} className="size-4 rounded border-sidebar-border" />
                                     Presentó fotocopia de carnet
                                 </label>
                                 <InputError message={errors.presento_fotocopia_carnet} />
@@ -109,7 +126,7 @@ export default function Register({ gestiones, carreras }) {
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="grid gap-2">
                                     <Label htmlFor="id_gestion">Gestión</Label>
-                                    <select id="id_gestion" name="id_gestion" required tabIndex={13} className="h-9 rounded-md border border-sidebar-border bg-card px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20" defaultValue={gestiones[0]?.id.toString() ?? ''}>
+                                    <select id="id_gestion" name="id_gestion" required tabIndex={16} className="h-9 rounded-md border border-sidebar-border bg-card px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20" defaultValue={gestiones[0]?.id.toString() ?? ''}>
                                         <option value="">Seleccione</option>
                                         {gestiones.map((gestion) => (
                                             <option key={gestion.id} value={gestion.id}>{gestion.nombre}</option>
@@ -119,7 +136,7 @@ export default function Register({ gestiones, carreras }) {
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="id_carrera_opcion1">Carrera principal</Label>
-                                    <select id="id_carrera_opcion1" name="id_carrera_opcion1" required tabIndex={14} className="h-9 rounded-md border border-sidebar-border bg-card px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20">
+                                    <select id="id_carrera_opcion1" name="id_carrera_opcion1" required tabIndex={17} className="h-9 rounded-md border border-sidebar-border bg-card px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20">
                                         <option value="">Seleccione</option>
                                         {carreras.map((carrera) => (
                                             <option key={carrera.id} value={carrera.id}>{carrera.nombre}</option>
@@ -131,7 +148,7 @@ export default function Register({ gestiones, carreras }) {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="id_carrera_opcion2">Carrera secundaria</Label>
-                                <select id="id_carrera_opcion2" name="id_carrera_opcion2" tabIndex={15} className="h-9 rounded-md border border-sidebar-border bg-card px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20">
+                                <select id="id_carrera_opcion2" name="id_carrera_opcion2" tabIndex={18} className="h-9 rounded-md border border-sidebar-border bg-card px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-[#0D2B85] focus-visible:ring-[3px] focus-visible:ring-[#0D2B85]/20">
                                     <option value="">Sin segunda opción</option>
                                     {carreras.map((carrera) => (
                                         <option key={carrera.id} value={carrera.id}>{carrera.nombre}</option>
@@ -140,7 +157,7 @@ export default function Register({ gestiones, carreras }) {
                                 <InputError message={errors.id_carrera_opcion2} />
                             </div>
 
-                            <Button type="submit" className="mt-2 w-full bg-[#0D2B85] text-white hover:bg-[#0a2270]" tabIndex={16} data-test="register-user-button">
+                            <Button type="submit" className="mt-2 w-full bg-[#0D2B85] text-white hover:bg-[#0a2270]" tabIndex={19} data-test="register-user-button">
                                 {processing && <Spinner />}
                                 Enviar solicitud
                             </Button>
@@ -148,7 +165,7 @@ export default function Register({ gestiones, carreras }) {
 
                         <div className="text-center text-sm text-muted-foreground">
                             ¿Ya tienes una cuenta?{' '}
-                            <TextLink href={login()} tabIndex={17} className="text-[#0D2B85] hover:text-[#0a2270]">
+                            <TextLink href={login()} tabIndex={20} className="text-[#0D2B85] hover:text-[#0a2270]">
                                 Iniciar sesión
                             </TextLink>
                         </div>

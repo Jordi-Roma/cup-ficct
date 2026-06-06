@@ -41,6 +41,7 @@ class StoreUsuarioRequest extends FormRequest
             'ciudad' => ['nullable', 'string', 'max:80'],
             'documentacion_completa' => ['nullable', 'boolean'],
             'id_gestion' => ['required_if:tipo_usuario,POSTULANTE', 'integer', Rule::exists('gestion_academica', 'id_gestion')],
+            'turno_preferido' => ['required_if:tipo_usuario,POSTULANTE', Rule::in(['MANANA', 'TARDE', 'NOCHE'])],
             'id_carrera_opcion1' => ['required_if:tipo_usuario,POSTULANTE', 'integer', Rule::exists('carrera', 'id_carrera')],
             'id_carrera_opcion2' => ['nullable', 'integer', 'different:id_carrera_opcion1', Rule::exists('carrera', 'id_carrera')],
         ];

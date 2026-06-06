@@ -1,5 +1,5 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import { Plus, Shuffle, Wand2 } from 'lucide-react';
+import { Plus, Wand2 } from 'lucide-react';
 import { useState } from 'react';
 import GrupoAcademicoForm from '@/modules/gestion-academica/components/GrupoAcademicoForm';
 import GrupoPostulantesDialog from '@/modules/gestion-academica/components/GrupoPostulantesDialog';
@@ -34,11 +34,6 @@ export default function GruposAcademicosPage({ grupos, resumen }) {
             preserveScroll: true,
         });
     };
-    const assignPostulantes = () => {
-        router.post('/academico/grupos/asignar-postulantes', undefined, {
-            preserveScroll: true,
-        });
-    };
     return (<>
             <Head title="Grupos académicos"/>
 
@@ -64,10 +59,6 @@ export default function GruposAcademicosPage({ grupos, resumen }) {
                                     Crear grupo
                                 </Button>
                             </>)}
-                        {canUpdate && (<Button type="button" className="bg-[#001f3f] text-white hover:bg-[#06345f]" onClick={assignPostulantes}>
-                                <Shuffle className="size-4"/>
-                                Asignar postulantes
-                            </Button>)}
                     </div>
                 </div>
 
@@ -111,6 +102,21 @@ export default function GruposAcademicosPage({ grupos, resumen }) {
                         </CardHeader>
                     </Card>
                 </div>
+
+                {resumen.turnos?.length > 0 && (
+                    <div className="grid gap-4 md:grid-cols-3">
+                        {resumen.turnos.map((turno) => (
+                            <Card key={turno.turno}>
+                                <CardHeader>
+                                    <CardTitle>{turno.label}</CardTitle>
+                                    <CardDescription>
+                                        {turno.total_inscritos} elegibles · {turno.grupos_necesarios} necesarios · {turno.grupos_faltantes} faltantes
+                                    </CardDescription>
+                                </CardHeader>
+                            </Card>
+                        ))}
+                    </div>
+                )}
 
                 <Card>
                     <CardHeader>

@@ -53,10 +53,4 @@ class GrupoAcademicoController extends Controller
         return back()->with('success', "Grupos generados: {$created}.");
     }
 
-    public function assignPostulantes(): RedirectResponse
-    {
-        $assigned = $this->grupoAcademicoService->assignPostulantes();
-
-        return back()->with('success', "Postulantes asignados: {$assigned}.");
-    }
 }

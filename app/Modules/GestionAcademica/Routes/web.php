@@ -20,6 +20,10 @@ Route::middleware(['auth'])
             ->middleware('permission:asignaciones:create')
             ->name('asignaciones.store');
 
+        Route::post('asignaciones/asignar-postulantes', [AsignacionAcademicaController::class, 'assignPostulantes'])
+            ->middleware('permission:asignaciones:update')
+            ->name('asignaciones.assign-postulantes');
+
         Route::put('asignaciones/{asignacion}', [AsignacionAcademicaController::class, 'update'])
             ->middleware('permission:asignaciones:update')
             ->name('asignaciones.update');
@@ -71,10 +75,6 @@ Route::middleware(['auth'])
         Route::post('grupos/generar', [GrupoAcademicoController::class, 'generate'])
             ->middleware('permission:grupos:create')
             ->name('grupos.generate');
-
-        Route::post('grupos/asignar-postulantes', [GrupoAcademicoController::class, 'assignPostulantes'])
-            ->middleware('permission:grupos:update')
-            ->name('grupos.assign-postulantes');
 
         Route::put('grupos/{grupo}', [GrupoAcademicoController::class, 'update'])
             ->middleware('permission:grupos:update')

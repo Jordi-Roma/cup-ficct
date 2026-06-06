@@ -18,7 +18,7 @@ export default function HorariosPage({ horarios }) {
     const summary = useMemo(() => ({
         active: horarios.filter((horario) => horario.activo).length,
         inactive: horarios.filter((horario) => !horario.activo).length,
-        days: new Set(horarios.map((horario) => horario.dia)).size,
+        turnos: new Set(horarios.map((horario) => horario.turno)).size,
     }), [horarios]);
 
     const openCreate = () => {
@@ -41,6 +41,7 @@ export default function HorariosPage({ horarios }) {
                         <h1 className="text-2xl font-bold text-foreground">Horarios</h1>
                         <p className="text-sm text-muted-foreground">
                             Administra los bloques horarios disponibles para las clases del CUP.
+                            Los horarios aplican de lunes a sábado.
                         </p>
                     </div>
                     {canCreate && (
@@ -55,7 +56,7 @@ export default function HorariosPage({ horarios }) {
                     <SummaryCard value={horarios.length} label="Total de horarios" />
                     <SummaryCard value={summary.active} label="Horarios activos" />
                     <SummaryCard value={summary.inactive} label="Horarios inactivos" />
-                    <SummaryCard value={summary.days} label="Dias configurados" />
+                    <SummaryCard value={summary.turnos} label="Turnos configurados" />
                 </div>
 
                 <Card>

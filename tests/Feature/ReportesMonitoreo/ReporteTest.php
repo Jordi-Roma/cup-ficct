@@ -234,9 +234,10 @@ class ReporteTest extends TestCase
             'capacidad' => 70,
         ]);
         $horario = Horario::create([
-            'dia' => 'LUNES',
+            'turno' => 'MANANA',
             'hora_inicio' => '08:00',
             'hora_fin' => '10:00',
+            'activo' => true,
         ]);
         AsignacionAcademica::create([
             'id_grupo' => $grupo->id_grupo,

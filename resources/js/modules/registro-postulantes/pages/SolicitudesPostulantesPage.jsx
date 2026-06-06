@@ -68,6 +68,7 @@ export default function SolicitudesPostulantesPage({ solicitudes }) {
                                         <th className="px-4 py-3">Correo</th>
                                         <th className="px-4 py-3">Carrera 1</th>
                                         <th className="px-4 py-3">Carrera 2</th>
+                                        <th className="px-4 py-3">Turno</th>
                                         <th className="px-4 py-3">Titulo</th>
                                         <th className="px-4 py-3">Carnet</th>
                                         <th className="px-4 py-3">Estado</th>
@@ -85,6 +86,7 @@ export default function SolicitudesPostulantesPage({ solicitudes }) {
                                             <td className="px-4 py-3">{solicitud.correo}</td>
                                             <td className="px-4 py-3">{solicitud.carrera_opcion1 ?? '-'}</td>
                                             <td className="px-4 py-3">{solicitud.carrera_opcion2 ?? '-'}</td>
+                                            <td className="px-4 py-3">{solicitud.turno_preferido_label ?? '-'}</td>
                                             <td className="px-4 py-3"><StatusBadge value={solicitud.presento_titulo_bachiller} /></td>
                                             <td className="px-4 py-3"><StatusBadge value={solicitud.presento_fotocopia_carnet} /></td>
                                             <td className="px-4 py-3"><Badge variant="secondary">{solicitud.estado_proceso}</Badge></td>
@@ -116,6 +118,7 @@ export default function SolicitudesPostulantesPage({ solicitudes }) {
                                         <p className="text-sm text-muted-foreground">{solicitud.ci} - {solicitud.correo}</p>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
+                                        <Badge variant="outline">{solicitud.turno_preferido_label ?? 'Sin turno'}</Badge>
                                         <StatusBadge label="Titulo" value={solicitud.presento_titulo_bachiller} />
                                         <StatusBadge label="Carnet" value={solicitud.presento_fotocopia_carnet} />
                                     </div>

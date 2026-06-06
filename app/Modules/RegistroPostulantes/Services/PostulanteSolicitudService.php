@@ -123,6 +123,8 @@ class PostulanteSolicitudService
             'documentacion_validada' => (bool) $postulante->documentacion_validada,
             'documentacion_completa' => (bool) $postulante->documentacion_completa,
             'estado_proceso' => $postulacion?->estado_proceso,
+            'turno_preferido' => $postulacion?->turno_preferido,
+            'turno_preferido_label' => $this->turnoLabel($postulacion?->turno_preferido),
             'carrera_opcion1' => $postulacion?->carreraOpcion1?->nombre,
             'carrera_opcion2' => $postulacion?->carreraOpcion2?->nombre,
         ];
@@ -186,5 +188,14 @@ class PostulanteSolicitudService
             $username,
             $password,
         ));
+    }
+
+    private function turnoLabel(?string $turno): string
+    {
+        return [
+            'MANANA' => 'Mañana',
+            'TARDE' => 'Tarde',
+            'NOCHE' => 'Noche',
+        ][$turno] ?? 'Sin turno';
     }
 }

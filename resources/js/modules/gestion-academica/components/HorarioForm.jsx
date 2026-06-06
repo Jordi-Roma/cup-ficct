@@ -5,11 +5,15 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 
-const dias = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'];
+const turnos = [
+    { value: 'MANANA', label: 'Mañana' },
+    { value: 'TARDE', label: 'Tarde' },
+    { value: 'NOCHE', label: 'Noche' },
+];
 
 export default function HorarioForm({ horario, canSubmit, onSuccess }) {
     const { data, setData, post, put, processing, errors } = useForm({
-        dia: horario?.dia ?? '',
+        turno: horario?.turno ?? '',
         hora_inicio: horario?.hora_inicio ?? '',
         hora_fin: horario?.hora_fin ?? '',
         activo: horario?.activo ?? true,
@@ -30,20 +34,20 @@ export default function HorarioForm({ horario, canSubmit, onSuccess }) {
     return (
         <form onSubmit={submit} className="space-y-5">
             <div className="grid gap-2">
-                <Label>Dia</Label>
-                <Select value={data.dia} onValueChange={(value) => setData('dia', value)}>
+                <Label>Turno</Label>
+                <Select value={data.turno} onValueChange={(value) => setData('turno', value)}>
                     <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecciona un dia" />
+                        <SelectValue placeholder="Selecciona turno" />
                     </SelectTrigger>
                     <SelectContent>
-                        {dias.map((dia) => (
-                            <SelectItem key={dia} value={dia}>
-                                {dia}
+                        {turnos.map((turno) => (
+                            <SelectItem key={turno.value} value={turno.value}>
+                                {turno.label}
                             </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
-                <InputError message={errors.dia} />
+                <InputError message={errors.turno} />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">

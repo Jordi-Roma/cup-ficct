@@ -36,70 +36,72 @@ class HorarioTest extends TestCase
 
     public function test_user_with_horarios_read_can_list_horarios(): void
     {
-        Horario::create(['dia' => 'LUNES', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'activo' => true]);
+        Horario::create(['turno' => 'MANANA', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'activo' => true]);
 
         $response = $this->actingAs($this->userWithPermissions(['horarios:read']))->get('/academico/horarios');
 
         $response->assertOk();
-        $this->assertSame('LUNES', $response->viewData('page')['props']['horarios'][0]['dia']);
+        $this->assertSame('MANANA', $response->viewData('page')['props']['horarios'][0]['turno']);
     }
 
     public function test_user_with_horarios_create_can_create_horario(): void
     {
         $this->actingAs($this->userWithPermissions(['horarios:create']))
-            ->post('/academico/horarios', ['dia' => 'MARTES', 'hora_inicio' => '08:00', 'hora_fin' => '10:00'])
-            ->assertRedirect();
+            ->post('/academico/horarios', ['turno' => 'TARDE', 'hora_inicio' => '14:00', 'hora_fin' => '15:00'])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('horario', [
-            'dia' => 'MARTES',
-            'hora_inicio' => '08:00',
-            'hora_fin' => '10:00',
+            'turno' => 'TARDE',
+            'hora_inicio' => '14:00',
+            'hora_fin' => '15:00',
             'activo' => true,
         ]);
     }
 
-    public function test_day_must_be_valid(): void
+    public function test_turno_must_be_valid(): void
     {
         $this->actingAs($this->userWithPermissions(['horarios:create']))
-            ->post('/academico/horarios', ['dia' => 'DOMINGO', 'hora_inicio' => '08:00', 'hora_fin' => '10:00'])
-            ->assertSessionHasErrors('dia');
+            ->post('/academico/horarios', ['turno' => 'MEDIO_DIA', 'hora_inicio' => '08:00', 'hora_fin' => '10:00'])
+            ->assertSessionHasErrors('turno');
     }
 
     public function test_end_time_must_be_after_start_time(): void
     {
         $this->actingAs($this->userWithPermissions(['horarios:create']))
-            ->post('/academico/horarios', ['dia' => 'LUNES', 'hora_inicio' => '10:00', 'hora_fin' => '08:00'])
+            ->post('/academico/horarios', ['turno' => 'MANANA', 'hora_inicio' => '10:00', 'hora_fin' => '08:00'])
             ->assertSessionHasErrors('hora_fin');
     }
 
-    public function test_cannot_duplicate_day_start_and_end_time(): void
+    public function test_cannot_duplicate_turno_start_and_end_time(): void
     {
-        Horario::create(['dia' => 'LUNES', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'activo' => true]);
+        Horario::create(['turno' => 'MANANA', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'activo' => true]);
 
         $this->actingAs($this->userWithPermissions(['horarios:create']))
-            ->post('/academico/horarios', ['dia' => 'LUNES', 'hora_inicio' => '08:00', 'hora_fin' => '10:00'])
+            ->post('/academico/horarios', ['turno' => 'MANANA', 'hora_inicio' => '08:00', 'hora_fin' => '10:00'])
             ->assertSessionHasErrors('hora_inicio');
     }
 
     public function test_user_with_horarios_update_can_update_horario(): void
     {
-        $horario = Horario::create(['dia' => 'LUNES', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'activo' => true]);
+        $horario = Horario::create(['turno' => 'MANANA', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'activo' => true]);
 
         $this->actingAs($this->userWithPermissions(['horarios:update']))
-            ->put("/academico/horarios/{$horario->id_horario}", ['dia' => 'MIERCOLES', 'hora_inicio' => '09:00', 'hora_fin' => '11:00'])
-            ->assertRedirect();
+            ->put("/academico/horarios/{$horario->id_horario}", ['turno' => 'TARDE', 'hora_inicio' => '14:00', 'hora_fin' => '15:00'])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('horario', [
             'id_horario' => $horario->id_horario,
-            'dia' => 'MIERCOLES',
-            'hora_inicio' => '09:00',
-            'hora_fin' => '11:00',
+            'turno' => 'TARDE',
+            'hora_inicio' => '14:00',
+            'hora_fin' => '15:00',
         ]);
     }
 
     public function test_user_with_horarios_delete_can_deactivate_without_physical_delete(): void
     {
-        $horario = Horario::create(['dia' => 'LUNES', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'activo' => true]);
+        $horario = Horario::create(['turno' => 'MANANA', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'activo' => true]);
 
         $this->actingAs($this->userWithPermissions(['horarios:delete']))
             ->patch("/academico/horarios/{$horario->id_horario}/toggle")
@@ -149,6 +151,7 @@ class HorarioTest extends TestCase
         $grupo = GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => 'Grupo '.Str::upper(Str::random(6)),
+            'turno' => 'MANANA',
             'capacidad_maxima' => 70,
             'activo' => true,
         ]);
@@ -169,7 +172,7 @@ class HorarioTest extends TestCase
             'activo' => true,
         ]);
         $aula = Aula::create(['nombre' => 'Aula '.Str::upper(Str::random(6)), 'capacidad' => 70, 'activo' => true]);
-        $horario = Horario::create(['dia' => 'LUNES', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'activo' => true]);
+        $horario = Horario::create(['turno' => 'MANANA', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'activo' => true]);
 
         return AsignacionAcademica::create([
             'id_grupo' => $grupo->id_grupo,

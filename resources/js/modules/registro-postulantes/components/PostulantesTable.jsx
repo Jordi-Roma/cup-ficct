@@ -19,6 +19,7 @@ export default function PostulantesTable({ postulantes, canUpdate, onView, onEdi
                             <th className="px-4 py-3">Colegio</th>
                             <th className="px-4 py-3">Documentación</th>
                             <th className="px-4 py-3">Carrera opción 1</th>
+                            <th className="px-4 py-3">Turno</th>
                             <th className="px-4 py-3">Estado</th>
                             <th className="px-4 py-3">Grupo</th>
                             <th className="px-4 py-3">Usuario</th>
@@ -54,6 +55,9 @@ export default function PostulantesTable({ postulantes, canUpdate, onView, onEdi
                                 <td className="px-4 py-3">
                                     {postulante.postulacion?.carrera_opcion1
                 ?.nombre ?? '-'}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {postulante.postulacion?.turno_preferido_label ?? '-'}
                                 </td>
                                 <td className="px-4 py-3">
                                     {postulante.postulacion?.estado_admision ??
@@ -111,6 +115,7 @@ export default function PostulantesTable({ postulantes, canUpdate, onView, onEdi
                         <div className="text-sm text-muted-foreground">
                             {postulante.postulacion?.carrera_opcion1?.nombre ??
                 'Sin carrera'}{' '}
+                            · {postulante.postulacion?.turno_preferido_label ?? 'Sin turno'}{' '}
                             · {postulante.postulacion?.grupo?.nombre ?? 'Sin grupo'}
                         </div>
                         <div className="flex flex-wrap gap-2">

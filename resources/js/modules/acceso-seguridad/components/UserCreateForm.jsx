@@ -12,6 +12,11 @@ const habilitacionTipos = [
     ['DIPLOMADO', 'Diplomado en'],
     ['MAESTRIA', 'Maestria en'],
 ];
+const turnos = [
+    { value: 'MANANA', label: 'Mañana' },
+    { value: 'TARDE', label: 'Tarde' },
+    { value: 'NOCHE', label: 'Noche' },
+];
 
 export default function UserCreateForm({ materias, gestiones, carreras, canSubmit, onSuccess }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -36,6 +41,7 @@ export default function UserCreateForm({ materias, gestiones, carreras, canSubmi
         ciudad: '',
         documentacion_completa: false,
         id_gestion: gestiones?.find((gestion) => gestion.activo)?.id_gestion?.toString() ?? '',
+        turno_preferido: '',
         id_carrera_opcion1: '',
         id_carrera_opcion2: '',
     });
@@ -145,6 +151,7 @@ export default function UserCreateForm({ materias, gestiones, carreras, canSubmi
                     <Field label="Colegio de procedencia" value={data.colegio_procedencia} onChange={(value) => setData('colegio_procedencia', value)} error={errors.colegio_procedencia} />
                     <Field label="Direccion" value={data.direccion} onChange={(value) => setData('direccion', value)} error={errors.direccion} />
                     <SelectField label="Gestion" value={data.id_gestion} onChange={(value) => setData('id_gestion', value)} items={gestiones} idKey="id_gestion" labelKey="nombre" error={errors.id_gestion} />
+                    <SelectField label="Turno preferido" value={data.turno_preferido} onChange={(value) => setData('turno_preferido', value)} items={turnos} idKey="value" labelKey="label" error={errors.turno_preferido} />
                     <SelectField label="Carrera opcion 1" value={data.id_carrera_opcion1} onChange={(value) => setData('id_carrera_opcion1', value)} items={carreras} idKey="id_carrera" labelKey="nombre" error={errors.id_carrera_opcion1} />
                     <SelectField label="Carrera opcion 2" value={data.id_carrera_opcion2 || 'none'} onChange={(value) => setData('id_carrera_opcion2', value === 'none' ? '' : value)} items={[{ id_carrera: 'none', nombre: 'Sin segunda opcion' }, ...carreras]} idKey="id_carrera" labelKey="nombre" error={errors.id_carrera_opcion2} />
                     <Label className="flex items-center gap-3">

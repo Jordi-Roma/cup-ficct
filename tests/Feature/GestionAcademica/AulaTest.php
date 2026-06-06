@@ -156,7 +156,7 @@ class AulaTest extends TestCase
             'activo' => true,
         ]);
         $aula = Aula::create(['nombre' => 'Aula '.Str::upper(Str::random(6)), 'capacidad' => 70, 'activo' => true]);
-        $horario = Horario::create(['dia' => 'LUNES', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'activo' => true]);
+        $horario = Horario::create(['turno' => 'MANANA', 'hora_inicio' => '08:00', 'hora_fin' => '10:00', 'activo' => true]);
 
         return AsignacionAcademica::create([
             'id_grupo' => $grupo->id_grupo,

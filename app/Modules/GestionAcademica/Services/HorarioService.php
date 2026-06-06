@@ -8,15 +8,13 @@ use Illuminate\Validation\ValidationException;
 
 class HorarioService
 {
-    private const DIAS_ORDER = "array_position(ARRAY['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'], dia)";
-
     public function list(): Collection
     {
         return Horario::query()
             ->withCount([
                 'asignaciones as asignaciones_activas' => fn ($query) => $query->where('activo', true),
             ])
-            ->orderByRaw(self::DIAS_ORDER)
+            ->orderByRaw("array_position(ARRAY['MANANA','TARDE','NOCHE'], turno)")
             ->orderBy('hora_inicio')
             ->get()
             ->map(fn (Horario $horario) => $this->serialize($horario));
@@ -27,7 +25,7 @@ class HorarioService
         $this->validateUnique($data);
 
         return Horario::create([
-            'dia' => $data['dia'],
+            'turno' => $data['turno'],
             'hora_inicio' => $data['hora_inicio'],
             'hora_fin' => $data['hora_fin'],
             'activo' => true,
@@ -39,7 +37,7 @@ class HorarioService
         $this->validateUnique($data, $horario);
 
         $horario->update([
-            'dia' => $data['dia'],
+            'turno' => $data['turno'],
             'hora_inicio' => $data['hora_inicio'],
             'hora_fin' => $data['hora_fin'],
             'activo' => $data['activo'] ?? $horario->activo,
@@ -65,7 +63,9 @@ class HorarioService
     {
         return [
             'id_horario' => $horario->id_horario,
-            'dia' => $horario->dia,
+            'dias_label' => 'Lunes a sabado',
+            'turno' => $horario->turno,
+            'turno_label' => GrupoAcademicoService::TURNOS[$horario->turno]['label'] ?? 'Sin turno',
             'hora_inicio' => substr((string) $horario->hora_inicio, 0, 5),
             'hora_fin' => substr((string) $horario->hora_fin, 0, 5),
             'activo' => (bool) $horario->activo,
@@ -76,7 +76,7 @@ class HorarioService
     private function validateUnique(array $data, ?Horario $ignore = null): void
     {
         $exists = Horario::query()
-            ->where('dia', $data['dia'])
+            ->where('turno', $data['turno'])
             ->where('hora_inicio', $data['hora_inicio'])
             ->where('hora_fin', $data['hora_fin'])
             ->when($ignore, fn ($query) => $query->whereKeyNot($ignore->id_horario))
@@ -84,7 +84,7 @@ class HorarioService
 
         if ($exists) {
             throw ValidationException::withMessages([
-                'hora_inicio' => 'Ya existe un horario con el mismo dia, hora de inicio y hora de fin.',
+                'hora_inicio' => 'Ya existe un horario con el mismo turno, hora de inicio y hora de fin.',
             ]);
         }
     }

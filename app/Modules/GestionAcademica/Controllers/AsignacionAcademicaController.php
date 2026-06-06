@@ -49,4 +49,11 @@ class AsignacionAcademicaController extends Controller
 
         return back()->with('success', 'Estado de la asignacion actualizado.');
     }
+
+    public function assignPostulantes(): RedirectResponse
+    {
+        $assigned = $this->asignacionService->assignPostulantes();
+
+        return back()->with('success', "Postulantes asignados: {$assigned}.");
+    }
 }

@@ -35,6 +35,7 @@ class CreateNewUser implements CreatesNewUsers
             'presento_titulo_bachiller' => ['nullable', 'boolean'],
             'presento_fotocopia_carnet' => ['nullable', 'boolean'],
             'id_gestion' => ['required', 'integer', Rule::exists('gestion_academica', 'id_gestion')],
+            'turno_preferido' => ['required', Rule::in(['MANANA', 'TARDE', 'NOCHE'])],
             'id_carrera_opcion1' => ['required', 'integer', Rule::exists('carrera', 'id_carrera')],
             'id_carrera_opcion2' => [
                 'nullable',
@@ -79,6 +80,7 @@ class CreateNewUser implements CreatesNewUsers
                 'id_carrera_opcion2' => $input['id_carrera_opcion2'] ?? null,
                 'estado_admision' => 'PENDIENTE',
                 'estado_proceso' => 'PENDIENTE_VALIDACION',
+                'turno_preferido' => $input['turno_preferido'],
             ]);
 
             $postulanteRole = Rol::where('nombre', 'POSTULANTE')->first();

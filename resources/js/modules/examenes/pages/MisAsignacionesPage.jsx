@@ -28,7 +28,7 @@ function formatHorario(horario) {
         return '-';
     }
 
-    return `${horario.hora_inicio} - ${horario.hora_fin}`;
+    return `${horario.dias_label ?? 'Lunes a sabado'} · ${horario.hora_inicio} - ${horario.hora_fin}`;
 }
 
 export default function MisAsignacionesPage({ asignaciones = [], resumen = {} }) {
@@ -85,7 +85,6 @@ export default function MisAsignacionesPage({ asignaciones = [], resumen = {} })
                                             <th className="px-4 py-3 font-medium">Grupo</th>
                                             <th className="px-4 py-3 font-medium">Materia</th>
                                             <th className="px-4 py-3 font-medium">Aula</th>
-                                            <th className="px-4 py-3 font-medium">Día</th>
                                             <th className="px-4 py-3 font-medium">Horario</th>
                                             <th className="px-4 py-3 font-medium">Estado</th>
                                         </tr>
@@ -107,9 +106,6 @@ export default function MisAsignacionesPage({ asignaciones = [], resumen = {} })
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     {asignacion.aula?.nombre ?? '-'}
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                    {asignacion.horario?.dia ?? '-'}
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     {formatHorario(asignacion.horario)}

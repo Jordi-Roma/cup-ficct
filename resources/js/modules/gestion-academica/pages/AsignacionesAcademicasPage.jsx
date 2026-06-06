@@ -1,5 +1,5 @@
-import { Head, usePage } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { Plus, Shuffle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import AsignacionAcademicaForm from '@/modules/gestion-academica/components/AsignacionAcademicaForm';
 import AsignacionesAcademicasTable from '@/modules/gestion-academica/components/AsignacionesAcademicasTable';
@@ -31,6 +31,11 @@ export default function AsignacionesAcademicasPage({ asignaciones, options, }) {
         setSelectedAsignacion(asignacion);
         setOpen(true);
     };
+    const assignPostulantes = () => {
+        router.post('/academico/asignaciones/asignar-postulantes', undefined, {
+            preserveScroll: true,
+        });
+    };
     return (<>
             <Head title="Asignacion academica"/>
 
@@ -45,10 +50,18 @@ export default function AsignacionesAcademicasPage({ asignaciones, options, }) {
                             grupos del CUP.
                         </p>
                     </div>
-                    {canCreate && (<Button type="button" onClick={openCreate} className="bg-[#0D2B85] text-white hover:bg-[#0a2270]">
-                            <Plus className="size-4"/>
-                            Crear asignacion
-                        </Button>)}
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                        {canUpdate && (
+                            <Button type="button" className="bg-[#001f3f] text-white hover:bg-[#06345f]" onClick={assignPostulantes}>
+                                <Shuffle className="size-4"/>
+                                Asignar postulantes
+                            </Button>
+                        )}
+                        {canCreate && (<Button type="button" onClick={openCreate} className="bg-[#0D2B85] text-white hover:bg-[#0a2270]">
+                                <Plus className="size-4"/>
+                                Crear asignacion
+                            </Button>)}
+                    </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-4">

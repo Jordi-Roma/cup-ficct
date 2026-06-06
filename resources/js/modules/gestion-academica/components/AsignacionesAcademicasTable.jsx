@@ -23,7 +23,8 @@ export default function AsignacionesAcademicasTable({ asignaciones, canUpdate, c
                     <tbody className="divide-y">
                         {asignaciones.map((asignacion) => (<tr key={asignacion.id_asignacion}>
                                 <td className="px-4 py-3">
-                                    {asignacion.grupo.nombre}
+                                    <div className="font-medium">{asignacion.grupo.nombre}</div>
+                                    <div className="text-xs text-muted-foreground">{asignacion.grupo.turno_label}</div>
                                 </td>
                                 <td className="px-4 py-3">
                                     {asignacion.materia.nombre}
@@ -40,9 +41,7 @@ export default function AsignacionesAcademicasTable({ asignaciones, canUpdate, c
                                     {asignacion.aula.nombre}
                                 </td>
                                 <td className="px-4 py-3">
-                                    {asignacion.horario.dia}{' '}
-                                    {asignacion.horario.hora_inicio}-
-                                    {asignacion.horario.hora_fin}
+                                    {formatHorarioSemanal(asignacion.horario)}
                                 </td>
                                 <td className="px-4 py-3">
                                     <Badge variant={asignacion.activo
@@ -77,7 +76,7 @@ export default function AsignacionesAcademicasTable({ asignaciones, canUpdate, c
                                     {asignacion.materia.nombre}
                                 </h3>
                                 <p className="text-sm text-muted-foreground">
-                                    {asignacion.docente.nombre_completo}
+                                    {asignacion.grupo.turno_label} · {asignacion.docente.nombre_completo}
                                 </p>
                             </div>
                             <Badge variant={asignacion.activo
@@ -87,9 +86,7 @@ export default function AsignacionesAcademicasTable({ asignaciones, canUpdate, c
                             </Badge>
                         </div>
                         <p className="text-sm">
-                            {asignacion.aula.nombre} - {asignacion.horario.dia}{' '}
-                            {asignacion.horario.hora_inicio}-
-                            {asignacion.horario.hora_fin}
+                            {asignacion.aula.nombre} - {formatHorarioSemanal(asignacion.horario)}
                         </p>
                         <div className="flex gap-2">
                             {canUpdate && (<Button type="button" variant="outline" size="sm" onClick={() => onEdit(asignacion)}>
@@ -102,4 +99,12 @@ export default function AsignacionesAcademicasTable({ asignaciones, canUpdate, c
                     </div>))}
             </div>
         </div>);
+}
+
+function formatHorarioSemanal(horario) {
+    if (!horario?.hora_inicio || !horario?.hora_fin) {
+        return '-';
+    }
+
+    return `${horario.dias_label ?? 'Lunes a sabado'} · ${horario.hora_inicio}-${horario.hora_fin}`;
 }

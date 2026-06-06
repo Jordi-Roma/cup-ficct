@@ -186,7 +186,7 @@ class ReporteService
                 'materia' => $asignacion->materia?->nombre,
                 'docente' => $asignacion->docente?->usuario?->name,
                 'horario' => $asignacion->horario
-                    ? "{$asignacion->horario->dia} {$asignacion->horario->hora_inicio}-{$asignacion->horario->hora_fin}"
+                    ? "Lunes a sabado {$asignacion->horario->hora_inicio}-{$asignacion->horario->hora_fin}"
                     : null,
                 'aula' => $asignacion->aula?->nombre,
                 'activo' => (bool) $asignacion->activo,

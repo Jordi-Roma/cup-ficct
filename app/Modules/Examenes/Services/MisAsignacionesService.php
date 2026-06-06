@@ -31,7 +31,6 @@ class MisAsignacionesService
                 fn (AsignacionAcademica $asignacion) => $asignacion->grupo?->gestion?->nombre ?? '',
                 fn (AsignacionAcademica $asignacion) => $asignacion->grupo?->nombre ?? '',
                 fn (AsignacionAcademica $asignacion) => $asignacion->materia?->nombre ?? '',
-                fn (AsignacionAcademica $asignacion) => $asignacion->horario?->dia ?? '',
                 fn (AsignacionAcademica $asignacion) => $asignacion->horario?->hora_inicio ?? '',
             ])
             ->map(fn (AsignacionAcademica $asignacion): array => $this->serialize($asignacion))
@@ -74,9 +73,9 @@ class MisAsignacionesService
             ],
             'horario' => [
                 'id_horario' => $asignacion->horario?->id_horario,
-                'dia' => $asignacion->horario?->dia,
                 'hora_inicio' => $asignacion->horario?->hora_inicio,
                 'hora_fin' => $asignacion->horario?->hora_fin,
+                'dias_label' => 'Lunes a sabado',
             ],
         ];
     }
