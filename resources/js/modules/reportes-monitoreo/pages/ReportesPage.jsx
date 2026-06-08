@@ -1,5 +1,5 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import { Download } from 'lucide-react';
+import { Download, Filter, RotateCcw } from 'lucide-react';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -21,6 +21,8 @@ import {
 export default function ReportesPage({
     gestiones,
     selectedGestion,
+    options,
+    filters,
     resumen,
     listaGeneral,
     aprobados,
@@ -32,11 +34,33 @@ export default function ReportesPage({
 }) {
     const { auth } = usePage().props;
     const canExport = auth.permissions.includes('reportes:export');
+    const normalizedFilters = {
+        id_gestion: String(filters.id_gestion ?? selectedGestion.id_gestion),
+        id_grupo: filters.id_grupo ? String(filters.id_grupo) : 'TODOS',
+        id_materia: filters.id_materia ? String(filters.id_materia) : 'TODOS',
+        estado: filters.estado ?? 'TODOS',
+    };
 
-    const changeGestion = (value) => {
+    const applyFilter = (key, value) => {
+        const nextFilters = {
+            ...normalizedFilters,
+            [key]: value,
+        };
+
+        if (key === 'id_gestion') {
+            nextFilters.id_grupo = 'TODOS';
+        }
+
+        router.get('/reportes', cleanFilters(nextFilters), {
+            preserveScroll: true,
+            replace: true,
+        });
+    };
+
+    const resetFilters = () => {
         router.get(
             '/reportes',
-            { id_gestion: value },
+            { id_gestion: normalizedFilters.id_gestion },
             {
                 preserveScroll: true,
                 replace: true,
@@ -59,30 +83,89 @@ export default function ReportesPage({
                             proceso de admisión CUP.
                         </p>
                     </div>
-
-                    <div className="w-full space-y-2 md:w-72">
-                        <Label>Gestión académica</Label>
-                        <Select
-                            value={String(selectedGestion.id_gestion)}
-                            onValueChange={changeGestion}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Gestión" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {gestiones.map((gestion) => (
-                                    <SelectItem
-                                        key={gestion.id_gestion}
-                                        value={String(gestion.id_gestion)}
-                                    >
-                                        {gestion.nombre}
-                                        {gestion.activo ? ' (activa)' : ''}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
                 </div>
+
+                <Card>
+                    <CardHeader className="gap-4 md:flex-row md:items-start md:justify-between">
+                        <div className="space-y-1">
+                            <CardTitle className="flex items-center gap-2">
+                                <Filter className="h-5 w-5" />
+                                Filtros de reporte
+                            </CardTitle>
+                            <CardDescription>
+                                Filtra por gestión, grupo, materia y estado
+                                para enfocar los resultados.
+                            </CardDescription>
+                        </div>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={resetFilters}
+                        >
+                            <RotateCcw className="mr-2 h-4 w-4" />
+                            Limpiar filtros
+                        </Button>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                            <FilterSelect
+                                label="Gestión"
+                                value={normalizedFilters.id_gestion}
+                                onChange={(value) =>
+                                    applyFilter('id_gestion', value)
+                                }
+                                options={gestiones.map((gestion) => ({
+                                    value: String(gestion.id_gestion),
+                                    label: `${gestion.nombre}${gestion.activo ? ' (activa)' : ''}`,
+                                }))}
+                            />
+
+                            <FilterSelect
+                                label="Grupo"
+                                value={normalizedFilters.id_grupo}
+                                onChange={(value) =>
+                                    applyFilter('id_grupo', value)
+                                }
+                                options={[
+                                    { value: 'TODOS', label: 'Todos' },
+                                    ...(options?.grupos ?? []).map((grupo) => ({
+                                        value: String(grupo.id_grupo),
+                                        label: `${grupo.nombre}${grupo.activo ? '' : ' (inactivo)'}`,
+                                    })),
+                                ]}
+                            />
+
+                            <FilterSelect
+                                label="Materia"
+                                value={normalizedFilters.id_materia}
+                                onChange={(value) =>
+                                    applyFilter('id_materia', value)
+                                }
+                                options={[
+                                    { value: 'TODOS', label: 'Todas' },
+                                    ...(options?.materias ?? []).map(
+                                        (materia) => ({
+                                            value: String(materia.id_materia),
+                                            label: `${materia.nombre}${materia.activo ? '' : ' (inactiva)'}`,
+                                        }),
+                                    ),
+                                ]}
+                            />
+
+                            <FilterSelect
+                                label="Estado"
+                                value={normalizedFilters.estado}
+                                onChange={(value) =>
+                                    applyFilter('estado', value)
+                                }
+                                options={options?.estados ?? [
+                                    { value: 'TODOS', label: 'Todos' },
+                                ]}
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
 
                 <div className="grid gap-4 md:grid-cols-4 xl:grid-cols-7">
                     <SummaryCard
@@ -99,12 +182,12 @@ export default function ReportesPage({
                         label="Pendientes"
                     />
                     <SummaryCard
-                        value={resumen.grupos_activos}
-                        label="Grupos activos"
+                        value={resumen.admitidos}
+                        label="Admitidos"
                     />
                     <SummaryCard
-                        value={resumen.docentes_contratados}
-                        label="Docentes contratados"
+                        value={resumen.no_admitidos}
+                        label="No admitidos"
                     />
                     <SummaryCard
                         value={resumen.asignaciones_activas}
@@ -117,7 +200,7 @@ export default function ReportesPage({
                     description="Postulantes con carrera, grupo, promedio y estado académico."
                     exportType="postulantes"
                     canExport={canExport}
-                    selectedGestion={selectedGestion}
+                    filters={normalizedFilters}
                 >
                     <DataTable
                         columns={[
@@ -133,10 +216,16 @@ export default function ReportesPage({
                             row.ci,
                             row.nombre_completo,
                             row.carrera_opcion1,
-                            row.estado_admision,
+                            <StatusBadge
+                                key="admision"
+                                status={row.estado_admision}
+                            />,
                             row.grupo,
                             formatNumber(row.promedio_final),
-                            <StatusBadge key="estado" status={row.estado_final} />,
+                            <StatusBadge
+                                key="estado"
+                                status={row.estado_final}
+                            />,
                         ])}
                     />
                 </ReportSection>
@@ -147,7 +236,7 @@ export default function ReportesPage({
                         description="Postulantes con notas completas y promedio final mayor o igual a 60."
                         exportType="aprobados"
                         canExport={canExport}
-                        selectedGestion={selectedGestion}
+                        filters={normalizedFilters}
                     >
                         <SimpleStudentTable rows={aprobados} />
                     </ReportSection>
@@ -157,7 +246,7 @@ export default function ReportesPage({
                         description="Postulantes con notas completas y promedio final menor a 60."
                         exportType="reprobados"
                         canExport={canExport}
-                        selectedGestion={selectedGestion}
+                        filters={normalizedFilters}
                     >
                         <SimpleStudentTable rows={reprobados} />
                     </ReportSection>
@@ -168,7 +257,7 @@ export default function ReportesPage({
                     description="Promedios generales, aprobados, reprobados y pendientes por materia."
                     exportType="materias"
                     canExport={canExport}
-                    selectedGestion={selectedGestion}
+                    filters={normalizedFilters}
                 >
                     <DataTable
                         columns={[
@@ -217,7 +306,7 @@ export default function ReportesPage({
                     description="Asignaciones académicas con docente, materia, horario y aula."
                     exportType="docentes-grupo"
                     canExport={canExport}
-                    selectedGestion={selectedGestion}
+                    filters={normalizedFilters}
                 >
                     <DataTable
                         columns={[
@@ -242,7 +331,7 @@ export default function ReportesPage({
                     description="Ranking de grupos por cantidad y porcentaje de aprobados."
                     exportType="grupos-aprobados"
                     canExport={canExport}
-                    selectedGestion={selectedGestion}
+                    filters={normalizedFilters}
                 >
                     <DataTable
                         columns={[
@@ -264,6 +353,26 @@ export default function ReportesPage({
     );
 }
 
+function FilterSelect({ label, value, onChange, options }) {
+    return (
+        <div className="space-y-2">
+            <Label>{label}</Label>
+            <Select value={value} onValueChange={onChange}>
+                <SelectTrigger>
+                    <SelectValue placeholder={label} />
+                </SelectTrigger>
+                <SelectContent>
+                    {options.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        </div>
+    );
+}
+
 function SummaryCard({ value, label }) {
     return (
         <Card>
@@ -280,11 +389,11 @@ function ReportSection({
     description,
     exportType,
     canExport = false,
-    selectedGestion,
+    filters,
     children,
 }) {
     const exportHref = exportType
-        ? `/reportes/export/${exportType}?id_gestion=${selectedGestion.id_gestion}`
+        ? `/reportes/export/${exportType}?${new URLSearchParams(cleanFilters(filters)).toString()}`
         : null;
 
     return (
@@ -298,7 +407,7 @@ function ReportSection({
                     <Button asChild variant="outline" size="sm">
                         <a href={exportHref}>
                             <Download className="mr-2 h-4 w-4" />
-                            Exportar CSV
+                            Exportar Excel
                         </a>
                     </Button>
                 )}
@@ -369,9 +478,9 @@ function DataTable({ columns, rows }) {
 
 function StatusBadge({ status }) {
     const className =
-        status === 'APROBADO'
+        status === 'APROBADO' || status === 'ADMITIDO'
             ? 'border-green-200 bg-green-50 text-green-700'
-            : status === 'REPROBADO'
+            : status === 'REPROBADO' || status === 'NO_ADMITIDO'
               ? 'border-red-200 bg-red-50 text-red-700'
               : 'border-yellow-200 bg-yellow-50 text-yellow-700';
 
@@ -379,6 +488,14 @@ function StatusBadge({ status }) {
         <Badge variant="outline" className={className}>
             {status ?? 'PENDIENTE'}
         </Badge>
+    );
+}
+
+function cleanFilters(filters) {
+    return Object.fromEntries(
+        Object.entries(filters ?? {}).filter(([, value]) => {
+            return value !== null && value !== undefined && value !== 'TODOS';
+        }),
     );
 }
 

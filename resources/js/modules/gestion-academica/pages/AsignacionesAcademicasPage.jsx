@@ -1,17 +1,19 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import { Plus, Shuffle } from 'lucide-react';
+import { Plus, Shuffle, WandSparkles } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import AsignacionAcademicaForm from '@/modules/gestion-academica/components/AsignacionAcademicaForm';
 import AsignacionesAcademicasTable from '@/modules/gestion-academica/components/AsignacionesAcademicasTable';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardDescription, CardHeader, CardTitle, } from '@/shared/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, } from '@/shared/components/ui/dialog';
-export default function AsignacionesAcademicasPage({ asignaciones, options, }) {
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from '@/shared/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from '@/shared/components/ui/dialog';
+export default function AsignacionesAcademicasPage({ asignaciones, options, generationSummary, }) {
     const { auth } = usePage().props;
     const canCreate = auth.permissions.includes('asignaciones:create');
     const canUpdate = auth.permissions.includes('asignaciones:update');
     const canToggle = auth.permissions.includes('asignaciones:delete');
     const [open, setOpen] = useState(false);
+    const [generateOpen, setGenerateOpen] = useState(false);
+    const [generating, setGenerating] = useState(false);
     const [selectedAsignacion, setSelectedAsignacion] = useState(null);
     const summary = useMemo(() => {
         const active = asignaciones.filter((asignacion) => asignacion.activo).length;
@@ -36,6 +38,16 @@ export default function AsignacionesAcademicasPage({ asignaciones, options, }) {
             preserveScroll: true,
         });
     };
+    const generateAssignments = () => {
+        setGenerating(true);
+        router.post('/academico/asignaciones/generar', undefined, {
+            preserveScroll: true,
+            onFinish: () => {
+                setGenerating(false);
+                setGenerateOpen(false);
+            },
+        });
+    };
     return (<>
             <Head title="Asignacion academica"/>
 
@@ -51,6 +63,10 @@ export default function AsignacionesAcademicasPage({ asignaciones, options, }) {
                         </p>
                     </div>
                     <div className="flex flex-col gap-2 sm:flex-row">
+                        {canCreate && (<Button type="button" className="bg-[#B91C1C] text-white hover:bg-[#991B1B]" onClick={() => setGenerateOpen(true)}>
+                                <WandSparkles className="size-4"/>
+                                Generar asignaciones
+                            </Button>)}
                         {canUpdate && (
                             <Button type="button" className="bg-[#001f3f] text-white hover:bg-[#06345f]" onClick={assignPostulantes}>
                                 <Shuffle className="size-4"/>
@@ -99,6 +115,38 @@ export default function AsignacionesAcademicasPage({ asignaciones, options, }) {
                     </Card>
                 </div>
 
+                {generationSummary && (<Card>
+                        <CardHeader>
+                            <CardTitle>Resumen de generacion</CardTitle>
+                            <CardDescription>
+                                Creadas: {generationSummary.creadas}. Omitidas:{' '}
+                                {generationSummary.omitidas}.
+                            </CardDescription>
+                        </CardHeader>
+                        {generationSummary.detalles?.length > 0 && (<CardContent>
+                                <div className="max-h-56 overflow-y-auto rounded-md border">
+                                    <table className="w-full text-sm">
+                                        <thead className="bg-muted text-left">
+                                            <tr>
+                                                <th className="px-3 py-2">Grupo</th>
+                                                <th className="px-3 py-2">Materia</th>
+                                                <th className="px-3 py-2">Motivo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {generationSummary.detalles.map((detalle, index) => (<tr key={`${detalle.grupo}-${detalle.materia}-${index}`} className="border-t">
+                                                    <td className="px-3 py-2">{detalle.grupo}</td>
+                                                    <td className="px-3 py-2">{detalle.materia}</td>
+                                                    <td className="px-3 py-2 text-muted-foreground">
+                                                        {detalle.motivo}
+                                                    </td>
+                                                </tr>))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </CardContent>)}
+                    </Card>)}
+
                 <Card>
                     <CardHeader>
                         <CardTitle>Listado de asignaciones</CardTitle>
@@ -126,6 +174,27 @@ export default function AsignacionesAcademicasPage({ asignaciones, options, }) {
                         </DialogDescription>
                     </DialogHeader>
                     <AsignacionAcademicaForm asignacion={selectedAsignacion} options={options} canSubmit={selectedAsignacion ? canUpdate : canCreate} onSuccess={() => setOpen(false)}/>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={generateOpen} onOpenChange={setGenerateOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Generar asignaciones automaticas</DialogTitle>
+                        <DialogDescription>
+                            Se crearan asignaciones automaticas para los grupos
+                            activos que aun no tengan sus materias completas. No
+                            se modificaran asignaciones existentes.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button type="button" variant="outline" onClick={() => setGenerateOpen(false)} disabled={generating}>
+                            Cancelar
+                        </Button>
+                        <Button type="button" onClick={generateAssignments} disabled={generating} className="bg-[#B91C1C] text-white hover:bg-[#991B1B]">
+                            <WandSparkles className="size-4"/>
+                            {generating ? 'Generando...' : 'Generar'}
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </>);

@@ -1,15 +1,24 @@
 import { Head, router, useForm, usePage } from '@inertiajs/react';
-import { Save } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { FlaskConical, Save } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import InputError from '@/shared/components/input-error';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import {
     Card,
+    CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
 } from '@/shared/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import {
@@ -20,10 +29,21 @@ import {
     SelectValue,
 } from '@/shared/components/ui/select';
 
-export default function NotasPage({ postulantes, options, filters, resumen }) {
+export default function NotasPage({
+    postulantes,
+    options,
+    filters,
+    resumen,
+    notasGenerateSummary,
+}) {
     const { auth } = usePage().props;
     const canCreate = auth.permissions.includes('notas:create');
     const canUpdate = auth.permissions.includes('notas:update');
+    const adminRoles = ['ADMINISTRADOR', 'ADMINISTRATIVO', 'COORDINADOR', 'COORDINADOR_ACADEMICO'];
+    const hasAdminRole = auth.roles.some((role) => adminRoles.includes(role));
+    const canGenerateTestScores =
+        canCreate && (!auth.roles.includes('DOCENTE') || hasAdminRole);
+    const [generateOpen, setGenerateOpen] = useState(false);
     const initialRows = useMemo(
         () =>
             postulantes.map((postulante) => ({
@@ -37,6 +57,18 @@ export default function NotasPage({ postulantes, options, filters, resumen }) {
     );
     const { data, setData, post, processing, errors, reset } = useForm({
         notas: initialRows,
+    });
+    const {
+        data: generateData,
+        setData: setGenerateData,
+        post: postGenerate,
+        processing: generating,
+        errors: generateErrors,
+    } = useForm({
+        id_grupo: '',
+        id_materia: '',
+        nota_minima: 50,
+        nota_maxima: 95,
     });
 
     useEffect(() => {
@@ -77,6 +109,12 @@ export default function NotasPage({ postulantes, options, filters, resumen }) {
         post('/examenes/notas/lote', {
             preserveScroll: true,
             onSuccess: () => reset(),
+        });
+    };
+    const generateTestScores = () => {
+        postGenerate('/examenes/notas/generar-prueba', {
+            preserveScroll: true,
+            onSuccess: () => setGenerateOpen(false),
         });
     };
 
@@ -230,7 +268,210 @@ export default function NotasPage({ postulantes, options, filters, resumen }) {
                         </div>
                     </Card>
                 </form>
+
+                {canGenerateTestScores && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Herramientas de prueba</CardTitle>
+                            <CardDescription>
+                                Genera notas aleatorias para validar promedios,
+                                historial, reportes y admision por cupos.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid gap-4 md:grid-cols-5">
+                                <SelectFilter
+                                    label="Grupo"
+                                    value={generateData.id_grupo}
+                                    placeholder="Todos"
+                                    items={options.grupos.map((grupo) => ({
+                                        value: grupo.id_grupo.toString(),
+                                        label: grupo.nombre,
+                                    }))}
+                                    onChange={(value) =>
+                                        setGenerateData(
+                                            'id_grupo',
+                                            value === 'all' ? '' : value,
+                                        )
+                                    }
+                                />
+                                <SelectFilter
+                                    label="Materia"
+                                    value={generateData.id_materia}
+                                    placeholder="Todos"
+                                    items={options.materias.map((materia) => ({
+                                        value: materia.id_materia.toString(),
+                                        label: materia.nombre,
+                                    }))}
+                                    onChange={(value) =>
+                                        setGenerateData(
+                                            'id_materia',
+                                            value === 'all' ? '' : value,
+                                        )
+                                    }
+                                />
+                                <div className="grid gap-2">
+                                    <Label htmlFor="nota_minima">
+                                        Nota minima
+                                    </Label>
+                                    <Input
+                                        id="nota_minima"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        value={generateData.nota_minima}
+                                        onChange={(event) =>
+                                            setGenerateData(
+                                                'nota_minima',
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                    <InputError
+                                        message={generateErrors.nota_minima}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="nota_maxima">
+                                        Nota maxima
+                                    </Label>
+                                    <Input
+                                        id="nota_maxima"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        value={generateData.nota_maxima}
+                                        onChange={(event) =>
+                                            setGenerateData(
+                                                'nota_maxima',
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                    <InputError
+                                        message={generateErrors.nota_maxima}
+                                    />
+                                </div>
+                                <div className="flex items-end">
+                                    <Button
+                                        type="button"
+                                        onClick={() => setGenerateOpen(true)}
+                                        className="w-full bg-[#B91C1C] text-white hover:bg-[#991B1B]"
+                                    >
+                                        <FlaskConical className="size-4" />
+                                        Generar notas de prueba
+                                    </Button>
+                                </div>
+                            </div>
+                            <InputError message={generateErrors.notas} />
+                        </CardContent>
+                    </Card>
+                )}
+
+                {notasGenerateSummary && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Resumen de generacion</CardTitle>
+                            <CardDescription>
+                                Creadas: {notasGenerateSummary.creadas}.
+                                Omitidas: {notasGenerateSummary.omitidas}.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid gap-3 md:grid-cols-3">
+                                <SummaryMetric
+                                    value={notasGenerateSummary.postulantes_procesados}
+                                    label="Postulantes procesados"
+                                />
+                                <SummaryMetric
+                                    value={notasGenerateSummary.grupos_procesados}
+                                    label="Grupos procesados"
+                                />
+                                <SummaryMetric
+                                    value={notasGenerateSummary.materias_procesadas}
+                                    label="Materias procesadas"
+                                />
+                            </div>
+                            {notasGenerateSummary.detalles?.length > 0 && (
+                                <div className="max-h-56 overflow-y-auto rounded-md border">
+                                    <table className="w-full text-sm">
+                                        <thead className="bg-muted text-left">
+                                            <tr>
+                                                <th className="px-3 py-2">
+                                                    Grupo
+                                                </th>
+                                                <th className="px-3 py-2">
+                                                    Materia
+                                                </th>
+                                                <th className="px-3 py-2">
+                                                    Postulante
+                                                </th>
+                                                <th className="px-3 py-2">
+                                                    Motivo
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {notasGenerateSummary.detalles.map(
+                                                (detalle, index) => (
+                                                    <tr
+                                                        key={`${detalle.grupo}-${detalle.materia}-${detalle.postulante}-${index}`}
+                                                        className="border-t"
+                                                    >
+                                                        <td className="px-3 py-2">
+                                                            {detalle.grupo}
+                                                        </td>
+                                                        <td className="px-3 py-2">
+                                                            {detalle.materia}
+                                                        </td>
+                                                        <td className="px-3 py-2">
+                                                            {detalle.postulante}
+                                                        </td>
+                                                        <td className="px-3 py-2 text-muted-foreground">
+                                                            {detalle.motivo}
+                                                        </td>
+                                                    </tr>
+                                                ),
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
             </div>
+
+            <Dialog open={generateOpen} onOpenChange={setGenerateOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Generar notas de prueba</DialogTitle>
+                        <DialogDescription>
+                            Se generaran notas aleatorias para los 3 examenes.
+                            Las notas existentes no seran sobrescritas.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            disabled={generating}
+                            onClick={() => setGenerateOpen(false)}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            type="button"
+                            disabled={generating}
+                            onClick={generateTestScores}
+                            className="bg-[#B91C1C] text-white hover:bg-[#991B1B]"
+                        >
+                            <FlaskConical className="size-4" />
+                            {generating ? 'Generando...' : 'Generar'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }
@@ -243,6 +484,15 @@ function SummaryCard({ value, label }) {
                 <CardDescription>{label}</CardDescription>
             </CardHeader>
         </Card>
+    );
+}
+
+function SummaryMetric({ value, label }) {
+    return (
+        <div className="rounded-md border bg-muted/30 p-3">
+            <div className="text-lg font-semibold">{value}</div>
+            <div className="text-sm text-muted-foreground">{label}</div>
+        </div>
     );
 }
 

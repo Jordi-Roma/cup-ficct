@@ -163,6 +163,105 @@ class NotaService
         ];
     }
 
+    public function generateTestScores(array $filters, User $user): array
+    {
+        if (! $this->canManageAllNotas($user)) {
+            throw ValidationException::withMessages([
+                'notas' => 'Solo administradores o coordinadores pueden generar notas de prueba.',
+            ]);
+        }
+
+        $gestion = $this->activeGestion();
+        $min = (int) $filters['nota_minima'];
+        $max = (int) $filters['nota_maxima'];
+        $summary = [
+            'creadas' => 0,
+            'omitidas' => 0,
+            'postulantes_procesados' => 0,
+            'grupos_procesados' => 0,
+            'materias_procesadas' => 0,
+            'detalles' => [],
+        ];
+        $processedPostulantes = collect();
+        $processedGroups = collect();
+        $processedMaterias = collect();
+
+        $groups = GrupoAcademico::query()
+            ->where('id_gestion', $gestion->id_gestion)
+            ->where('activo', true)
+            ->when(filled($filters['id_grupo'] ?? null), fn (Builder $query) => $query->where('id_grupo', $filters['id_grupo']))
+            ->orderBy('nombre')
+            ->get();
+
+        $materias = MateriaCup::query()
+            ->where('activo', true)
+            ->when(filled($filters['id_materia'] ?? null), fn (Builder $query) => $query->where('id_materia', $filters['id_materia']))
+            ->orderBy('nombre')
+            ->get();
+
+        foreach ($groups as $group) {
+            $processedGroups->push($group->id_grupo);
+
+            foreach ($materias as $materia) {
+                $processedMaterias->push($materia->id_materia);
+
+                if (! $this->groupHasActiveAssignment($group, $materia)) {
+                    $summary['omitidas']++;
+                    $this->appendGenerationDetail($summary, [
+                        'grupo' => $group->nombre,
+                        'materia' => $materia->nombre,
+                        'postulante' => '-',
+                        'motivo' => 'El grupo no tiene asignacion academica activa para esta materia.',
+                    ]);
+
+                    continue;
+                }
+
+                $postulaciones = Postulacion::query()
+                    ->with('postulante.usuario')
+                    ->where('id_gestion', $gestion->id_gestion)
+                    ->where('id_grupo', $group->id_grupo)
+                    ->whereHas('postulante.usuario')
+                    ->get();
+
+                foreach ($postulaciones as $postulacion) {
+                    $processedPostulantes->push($postulacion->id_postulacion);
+                    $studentName = $postulacion->postulante?->usuario?->name ?? 'Postulante '.$postulacion->id_postulacion;
+
+                    foreach ([1, 2, 3] as $exam) {
+                        if ($this->notaExists($postulacion->id_postulacion, $materia->id_materia, $exam)) {
+                            $summary['omitidas']++;
+                            $this->appendGenerationDetail($summary, [
+                                'grupo' => $group->nombre,
+                                'materia' => $materia->nombre,
+                                'postulante' => $studentName,
+                                'motivo' => "La nota ya existia para examen {$exam}.",
+                            ]);
+
+                            continue;
+                        }
+
+                        Nota::create([
+                            'id_postulacion' => $postulacion->id_postulacion,
+                            'id_materia' => $materia->id_materia,
+                            'nro_examen' => $exam,
+                            'nota' => random_int($min, $max),
+                            'registrado_por' => $user->id_usuario,
+                        ]);
+
+                        $summary['creadas']++;
+                    }
+                }
+            }
+        }
+
+        $summary['postulantes_procesados'] = $processedPostulantes->unique()->count();
+        $summary['grupos_procesados'] = $processedGroups->unique()->count();
+        $summary['materias_procesadas'] = $processedMaterias->unique()->count();
+
+        return $summary;
+    }
+
     public function validateTeacherCanGrade(Postulacion $postulacion, int $idMateria, User $user): void
     {
         $docente = $this->docenteForUser($user);
@@ -184,7 +283,11 @@ class NotaService
     {
         return $user->isAdmin()
             || $user->hasRole('ADMINISTRATIVO')
-            || ($user->hasPermission('notas:update') && ! $user->hasRole('DOCENTE'));
+            || $user->hasRole('COORDINADOR_ACADEMICO')
+            || (
+                ($user->hasPermission('notas:create') || $user->hasPermission('notas:update'))
+                && ! $user->hasRole('DOCENTE')
+            );
     }
 
     public function calculatePromedioMateria(int $idPostulacion, int $idMateria): ?float
@@ -315,15 +418,38 @@ class NotaService
 
     private function ensureNotaDoesNotExist(int $idPostulacion, int $idMateria, int $nroExamen): void
     {
-        if (Nota::query()
-            ->where('id_postulacion', $idPostulacion)
-            ->where('id_materia', $idMateria)
-            ->where('nro_examen', $nroExamen)
-            ->exists()) {
+        if ($this->notaExists($idPostulacion, $idMateria, $nroExamen)) {
             throw ValidationException::withMessages([
                 'nota' => 'Ya existe una nota registrada para ese postulante, materia y examen.',
             ]);
         }
+    }
+
+    private function notaExists(int $idPostulacion, int $idMateria, int $nroExamen): bool
+    {
+        return Nota::query()
+            ->where('id_postulacion', $idPostulacion)
+            ->where('id_materia', $idMateria)
+            ->where('nro_examen', $nroExamen)
+            ->exists();
+    }
+
+    private function groupHasActiveAssignment(GrupoAcademico $group, MateriaCup $materia): bool
+    {
+        return AsignacionAcademica::query()
+            ->where('activo', true)
+            ->where('id_grupo', $group->id_grupo)
+            ->where('id_materia', $materia->id_materia)
+            ->exists();
+    }
+
+    private function appendGenerationDetail(array &$summary, array $detail): void
+    {
+        if (count($summary['detalles']) >= 50) {
+            return;
+        }
+
+        $summary['detalles'][] = $detail;
     }
 
     private function hasActiveAssignment(Postulacion $postulacion, int $idMateria, Docente $docente): bool

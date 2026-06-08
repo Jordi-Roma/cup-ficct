@@ -26,6 +26,7 @@ class AsignacionAcademicaController extends Controller
             'asignaciones' => $this->asignacionService->list($filters),
             'options' => $this->asignacionService->getFormOptions(),
             'filters' => $filters,
+            'generationSummary' => session('asignaciones_generate_summary'),
         ]);
     }
 
@@ -50,10 +51,19 @@ class AsignacionAcademicaController extends Controller
         return back()->with('success', 'Estado de la asignacion actualizado.');
     }
 
+    public function generate(Request $request): RedirectResponse
+    {
+        $summary = $this->asignacionService->generateAutomaticAssignments();
+
+        return back()
+            ->with('success', "Asignaciones generadas: {$summary['creadas']}. Omitidas: {$summary['omitidas']}.")
+            ->with('asignaciones_generate_summary', $summary);
+    }
+
     public function assignPostulantes(): RedirectResponse
     {
         $assigned = $this->asignacionService->assignPostulantes();
 
-        return back()->with('success', "Postulantes asignados: {$assigned}.");
+        return back()->with('success', "Asignacion realizada correctamente. Postulantes asignados: {$assigned}.");
     }
 }

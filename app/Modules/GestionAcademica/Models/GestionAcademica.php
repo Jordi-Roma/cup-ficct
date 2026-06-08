@@ -33,4 +33,14 @@ class GestionAcademica extends Model
     {
         return $this->hasMany(CupoCarrera::class, 'id_gestion', 'id_gestion');
     }
+
+    public function grupos(): HasMany
+    {
+        return $this->hasMany(GrupoAcademico::class, 'id_gestion', 'id_gestion');
+    }
+
+    public function postulaciones(): HasMany
+    {
+        return $this->hasMany(\App\Modules\RegistroPostulantes\Models\Postulacion::class, 'id_gestion', 'id_gestion');
+    }
 }

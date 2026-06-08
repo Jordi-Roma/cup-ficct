@@ -3,6 +3,7 @@
 namespace App\Modules\Examenes\Controllers;
 
 use App\Modules\Examenes\Models\Nota;
+use App\Modules\Examenes\Requests\GenerateNotasPruebaRequest;
 use App\Modules\Examenes\Requests\StoreNotaRequest;
 use App\Modules\Examenes\Requests\UpdateNotaRequest;
 use App\Modules\Examenes\Services\NotaService;
@@ -32,6 +33,7 @@ class NotaController extends BaseController
             'options' => $this->service->getFormOptions($request->user()),
             'filters' => $filters,
             'resumen' => $this->service->resumen($postulantes),
+            'notasGenerateSummary' => session('notas_generate_summary'),
         ]);
     }
 
@@ -63,5 +65,14 @@ class NotaController extends BaseController
         $result = $this->service->upsertBatch($validated['notas'], $request->user());
 
         return back()->with('success', "Notas guardadas correctamente. Creadas: {$result['created']}, actualizadas: {$result['updated']}.");
+    }
+
+    public function generateTestScores(GenerateNotasPruebaRequest $request): RedirectResponse
+    {
+        $summary = $this->service->generateTestScores($request->validated(), $request->user());
+
+        return back()
+            ->with('success', "Notas generadas: {$summary['creadas']}. Omitidas: {$summary['omitidas']}.")
+            ->with('notas_generate_summary', $summary);
     }
 }

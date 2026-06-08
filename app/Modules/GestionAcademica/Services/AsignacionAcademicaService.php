@@ -5,6 +5,7 @@ namespace App\Modules\GestionAcademica\Services;
 use App\Modules\GestionAcademica\Models\AsignacionAcademica;
 use App\Modules\GestionAcademica\Models\Aula;
 use App\Modules\GestionAcademica\Models\Docente;
+use App\Modules\GestionAcademica\Models\DocenteHabilitacionMateria;
 use App\Modules\GestionAcademica\Models\GestionAcademica;
 use App\Modules\GestionAcademica\Models\GrupoAcademico;
 use App\Modules\GestionAcademica\Models\Horario;
@@ -12,6 +13,7 @@ use App\Modules\GestionAcademica\Models\MateriaCup;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class AsignacionAcademicaService
@@ -83,6 +85,108 @@ class AsignacionAcademicaService
         $asignacion->update(['activo' => ! $asignacion->activo]);
 
         return $asignacion;
+    }
+
+    public function generateAutomaticAssignments(): array
+    {
+        $gestion = $this->activeGestion();
+        $summary = [
+            'creadas' => 0,
+            'omitidas' => 0,
+            'detalles' => [],
+        ];
+
+        $subjects = $this->getOrderedCupSubjects();
+        $availableSubjects = $subjects->filter();
+
+        if ($availableSubjects->count() < 4) {
+            foreach ($subjects->filter(fn ($subject) => ! $subject)->keys() as $subjectName) {
+                $summary['omitidas']++;
+                $summary['detalles'][] = [
+                    'grupo' => '-',
+                    'materia' => $subjectName,
+                    'motivo' => "No se encontro la materia {$subjectName}.",
+                ];
+            }
+
+            return $summary;
+        }
+
+        $groups = GrupoAcademico::query()
+            ->where('id_gestion', $gestion->id_gestion)
+            ->where('activo', true)
+            ->orderByRaw("array_position(ARRAY['MANANA','TARDE','NOCHE'], turno)")
+            ->orderBy('nombre')
+            ->get();
+
+        foreach ($groups as $group) {
+            $schedules = $this->getTurnoSchedules((string) $group->turno);
+
+            if ($schedules->count() < 4) {
+                $summary['omitidas']++;
+                $summary['detalles'][] = [
+                    'grupo' => $group->nombre,
+                    'materia' => '-',
+                    'motivo' => "El turno {$group->turno} no tiene 4 horarios activos.",
+                ];
+
+                continue;
+            }
+
+            $availableSubjects->values()->each(function (MateriaCup $subject, int $index) use ($group, $schedules, &$summary): void {
+                $schedule = $schedules->get($index);
+
+                if ($this->assignmentExists($group, $subject)) {
+                    $summary['omitidas']++;
+                    $summary['detalles'][] = [
+                        'grupo' => $group->nombre,
+                        'materia' => $subject->nombre,
+                        'motivo' => 'El grupo ya tiene asignada esta materia.',
+                    ];
+
+                    return;
+                }
+
+                $teacher = $this->findAvailableTeacher($subject, $schedule, $group);
+
+                if (! $teacher) {
+                    $summary['omitidas']++;
+                    $summary['detalles'][] = [
+                        'grupo' => $group->nombre,
+                        'materia' => $subject->nombre,
+                        'motivo' => 'No hay docente disponible habilitado para la materia.',
+                    ];
+
+                    return;
+                }
+
+                $classroom = $this->findAvailableClassroom($group, $schedule, $subject, $teacher);
+
+                if (! $classroom) {
+                    $summary['omitidas']++;
+                    $summary['detalles'][] = [
+                        'grupo' => $group->nombre,
+                        'materia' => $subject->nombre,
+                        'motivo' => 'No hay aula disponible para el horario y capacidad del grupo.',
+                    ];
+
+                    return;
+                }
+
+                AsignacionAcademica::create([
+                    'id_grupo' => $group->id_grupo,
+                    'id_materia' => $subject->id_materia,
+                    'id_docente' => $teacher->id_docente,
+                    'id_aula' => $classroom->id_aula,
+                    'id_horario' => $schedule->id_horario,
+                    'activo' => true,
+                ]);
+
+                $summary['creadas']++;
+            });
+        }
+
+        return $summary;
     }
 
     public function validateBusinessRules(array $data, ?AsignacionAcademica $ignore = null): void
@@ -257,6 +361,113 @@ class AsignacionAcademicaService
         return app(GrupoAcademicoService::class)->assignPostulantes();
     }
 
+    private function getOrderedCupSubjects(): Collection
+    {
+        $subjects = MateriaCup::query()
+            ->where('activo', true)
+            ->get()
+            ->keyBy(fn (MateriaCup $materia) => $this->normalizeSubjectName($materia->nombre));
+
+        return collect(['Matematicas', 'Computacion', 'Fisica', 'Ingles'])
+            ->mapWithKeys(fn (string $name) => [$name => $subjects->get($this->normalizeSubjectName($name))]);
+    }
+
+    private function getTurnoSchedules(string $turno): Collection
+    {
+        return Horario::query()
+            ->where('activo', true)
+            ->where('turno', $turno)
+            ->orderBy('hora_inicio')
+            ->limit(4)
+            ->get();
+    }
+
+    private function findAvailableTeacher(MateriaCup $materia, Horario $horario, GrupoAcademico $grupo): ?Docente
+    {
+        $teachers = Docente::query()
+            ->with(['usuario', 'habilitaciones'])
+            ->where('activo', true)
+            ->where('contratado', true)
+            ->where('maestria_educacion_superior', true)
+            ->whereHas('usuario', fn (Builder $query) => $query->where('activo', true))
+            ->whereHas('habilitaciones', function (Builder $query) use ($materia): void {
+                $query->where('activo', true)
+                    ->where('id_materia', $materia->id_materia)
+                    ->whereIn('tipo_habilitacion', DocenteHabilitacionMateria::TIPOS);
+            })
+            ->get()
+            ->sortBy(fn (Docente $docente) => [
+                $this->docenteGroupCount($docente),
+                $docente->usuario?->apellido,
+                $docente->usuario?->nombre,
+            ]);
+
+        return $teachers->first(function (Docente $teacher) use ($materia, $horario, $grupo): bool {
+            return ! $this->teacherHasConflict($teacher, $horario)
+                && ! $this->teacherReachedLimit($teacher, $grupo);
+        });
+    }
+
+    private function findAvailableClassroom(
+        GrupoAcademico $grupo,
+        Horario $horario,
+        MateriaCup $materia,
+        Docente $docente,
+    ): ?Aula {
+        return Aula::query()
+            ->where('activo', true)
+            ->where('capacidad', '>=', $grupo->capacidad_maxima)
+            ->orderBy('capacidad')
+            ->orderBy('nombre')
+            ->get()
+            ->first(function (Aula $classroom) use ($grupo, $horario, $materia, $docente): bool {
+                if ($this->classroomHasConflict($classroom, $horario)) {
+                    return false;
+                }
+
+                try {
+                    $this->validateBusinessRules([
+                        'id_grupo' => $grupo->id_grupo,
+                        'id_materia' => $materia->id_materia,
+                        'id_docente' => $docente->id_docente,
+                        'id_aula' => $classroom->id_aula,
+                        'id_horario' => $horario->id_horario,
+                    ]);
+
+                    return true;
+                } catch (ValidationException) {
+                    return false;
+                }
+            });
+    }
+
+    private function assignmentExists(GrupoAcademico $grupo, MateriaCup $materia): bool
+    {
+        return $this->existsConflict('id_grupo', $grupo->id_grupo, 'id_materia', $materia->id_materia);
+    }
+
+    private function teacherHasConflict(Docente $docente, Horario $horario): bool
+    {
+        return $this->existsConflict('id_docente', $docente->id_docente, 'id_horario', $horario->id_horario);
+    }
+
+    private function classroomHasConflict(Aula $aula, Horario $horario): bool
+    {
+        return $this->existsConflict('id_aula', $aula->id_aula, 'id_horario', $horario->id_horario);
+    }
+
+    private function teacherReachedLimit(Docente $docente, ?GrupoAcademico $grupo = null): bool
+    {
+        $query = AsignacionAcademica::query()
+            ->where('activo', true)
+            ->where('id_docente', $docente->id_docente);
+
+        $currentGroups = $query->distinct('id_grupo')->pluck('id_grupo');
+
+        return $currentGroups->count() >= 4
+            && ($grupo === null || ! $currentGroups->contains($grupo->id_grupo));
+    }
+
     private function activeGestion(): GestionAcademica
     {
         $gestion = GestionAcademica::where('activo', true)->first();
@@ -310,6 +521,15 @@ class AsignacionAcademicaService
             ->where('postulacion.id_grupo', $asignacion->id_grupo)
             ->where('postulacion.id_gestion', $gestion->id_gestion)
             ->exists();
+    }
+
+    private function normalizeSubjectName(?string $name): string
+    {
+        return Str::of((string) $name)
+            ->ascii()
+            ->lower()
+            ->replace(' ', '')
+            ->toString();
     }
 
 }

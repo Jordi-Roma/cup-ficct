@@ -29,6 +29,10 @@ Route::middleware(['auth', 'verified'])
             ->middleware('permission:notas:create')
             ->name('notas.batch-store');
 
+        Route::post('notas/generar-prueba', [NotaController::class, 'generateTestScores'])
+            ->middleware('permission:notas:create')
+            ->name('notas.generate-test-scores');
+
         Route::put('notas/{nota}', [NotaController::class, 'update'])
             ->middleware('permission:notas:update')
             ->name('notas.update');

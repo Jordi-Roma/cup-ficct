@@ -50,7 +50,7 @@ class GrupoAcademicoController extends Controller
     {
         $created = $this->grupoAcademicoService->createMissingGroups();
 
-        return back()->with('success', "Grupos generados: {$created}.");
+        return back()->with('success', "Grupos generados correctamente. Creados: {$created}.");
     }
 
 }

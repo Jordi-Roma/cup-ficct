@@ -11,9 +11,11 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Spinner } from '@/shared/components/ui/spinner';
 
-export default function Login({ status, canResetPassword }) {
+export default function Login({ status, canResetPassword, loginRateLimit }) {
     const [username, setUsername] = useState('');
     const [rememberChecked, setRememberChecked] = useState(false);
+    const shouldShowRateLimit =
+        loginRateLimit?.attempts > 0 || loginRateLimit?.locked;
 
     // Cargar desde localStorage únicamente en el cliente después de montar el componente
     // Esto previene errores en entornos SSR (Server-Side Rendering) donde localStorage no existe
@@ -90,6 +92,30 @@ export default function Login({ status, canResetPassword }) {
                                 <InputError message={errors.password} />
                             </div>
 
+                            {shouldShowRateLimit && (
+                                <div
+                                    className={`rounded-md border px-3 py-2 text-sm ${
+                                        loginRateLimit.locked
+                                            ? 'border-red-200 bg-red-50 text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300'
+                                            : 'border-yellow-200 bg-yellow-50 text-yellow-700 dark:border-yellow-900/60 dark:bg-yellow-950/40 dark:text-yellow-300'
+                                    }`}
+                                >
+                                    {loginRateLimit.locked ? (
+                                        <span>
+                                            Cuenta temporalmente bloqueada. Intenta nuevamente en{' '}
+                                            {formatLockTime(loginRateLimit.availableIn)}.
+                                        </span>
+                                    ) : (
+                                        <span>
+                                            Intento {loginRateLimit.attempts} de{' '}
+                                            {loginRateLimit.maxAttempts}. Te quedan{' '}
+                                            {loginRateLimit.remaining} intento
+                                            {loginRateLimit.remaining === 1 ? '' : 's'} antes del bloqueo.
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+
                             <div className="flex items-center space-x-3">
                                 <input
                                     id="remember"
@@ -148,3 +174,17 @@ Login.layout = {
     title: 'Bienvenido al CUP-FICCT',
     description: 'Ingresa con tu usuario para continuar con el proceso de admisión.',
 };
+
+function formatLockTime(seconds) {
+    if (!seconds || seconds <= 0) {
+        return 'unos segundos';
+    }
+
+    if (seconds < 60) {
+        return `${seconds} segundo${seconds === 1 ? '' : 's'}`;
+    }
+
+    const minutes = Math.ceil(seconds / 60);
+
+    return `${minutes} minuto${minutes === 1 ? '' : 's'}`;
+}

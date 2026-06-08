@@ -2,6 +2,7 @@
 
 use App\Modules\GestionAcademica\Controllers\AsignacionAcademicaController;
 use App\Modules\GestionAcademica\Controllers\AulaController;
+use App\Modules\GestionAcademica\Controllers\GestionAcademicaController;
 use App\Modules\GestionAcademica\Controllers\MateriaCupController;
 use App\Modules\GestionAcademica\Controllers\GrupoAcademicoController;
 use App\Modules\GestionAcademica\Controllers\DocenteController;
@@ -12,6 +13,22 @@ Route::middleware(['auth'])
     ->prefix('academico')
     ->name('academico.')
     ->group(function () {
+        Route::get('gestiones', [GestionAcademicaController::class, 'index'])
+            ->middleware('permission:gestiones:read')
+            ->name('gestiones.index');
+
+        Route::post('gestiones', [GestionAcademicaController::class, 'store'])
+            ->middleware('permission:gestiones:create')
+            ->name('gestiones.store');
+
+        Route::put('gestiones/{gestion}', [GestionAcademicaController::class, 'update'])
+            ->middleware('permission:gestiones:update')
+            ->name('gestiones.update');
+
+        Route::patch('gestiones/{gestion}/toggle', [GestionAcademicaController::class, 'toggle'])
+            ->middleware('permission:gestiones:delete')
+            ->name('gestiones.toggle');
+
         Route::get('asignaciones', [AsignacionAcademicaController::class, 'index'])
             ->middleware('permission:asignaciones:read')
             ->name('asignaciones.index');
@@ -23,6 +40,10 @@ Route::middleware(['auth'])
         Route::post('asignaciones/asignar-postulantes', [AsignacionAcademicaController::class, 'assignPostulantes'])
             ->middleware('permission:asignaciones:update')
             ->name('asignaciones.assign-postulantes');
+
+        Route::post('asignaciones/generar', [AsignacionAcademicaController::class, 'generate'])
+            ->middleware('permission:asignaciones:create')
+            ->name('asignaciones.generate');
 
         Route::put('asignaciones/{asignacion}', [AsignacionAcademicaController::class, 'update'])
             ->middleware('permission:asignaciones:update')

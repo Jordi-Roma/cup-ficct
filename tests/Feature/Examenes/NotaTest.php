@@ -54,6 +54,7 @@ class NotaTest extends TestCase
         $otherGrupo = GrupoAcademico::create([
             'id_gestion' => $context['gestion']->id_gestion,
             'nombre' => 'Grupo '.Str::upper(Str::random(6)),
+            'turno' => 'MANANA',
             'capacidad_maxima' => 70,
             'activo' => true,
         ]);
@@ -66,12 +67,7 @@ class NotaTest extends TestCase
                 'nombre' => 'Aula '.Str::upper(Str::random(6)),
                 'capacidad' => 70,
             ])->id_aula,
-            'id_horario' => Horario::create([
-                'turno' => 'MANANA',
-                'hora_inicio' => '08:00',
-                'hora_fin' => '10:00',
-                'activo' => true,
-            ])->id_horario,
+            'id_horario' => $this->createHorario('MANANA', '09:00', '10:00')->id_horario,
             'activo' => true,
         ]);
         $teacher = $this->teacherUserWithPermissions($context['docente'], ['notas:read']);
@@ -261,6 +257,204 @@ class NotaTest extends TestCase
         $this->assertSame('PENDIENTE', $result['estado_final']);
     }
 
+    public function test_user_without_notas_create_cannot_generate_test_scores(): void
+    {
+        $this->createContext();
+        $user = $this->userWithPermissions(['notas:read']);
+
+        $this->actingAs($user)
+            ->post('/examenes/notas/generar-prueba', [
+                'nota_minima' => 50,
+                'nota_maxima' => 95,
+            ])
+            ->assertForbidden();
+    }
+
+    public function test_user_with_notas_create_can_generate_test_scores_for_group_and_subject(): void
+    {
+        $context = $this->createContext();
+        $admin = $this->userWithPermissions(['notas:create']);
+
+        $this->actingAs($admin)
+            ->post('/examenes/notas/generar-prueba', [
+                'id_grupo' => $context['grupo']->id_grupo,
+                'id_materia' => $context['materia']->id_materia,
+                'nota_minima' => 50,
+                'nota_maxima' => 95,
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('notas_generate_summary');
+
+        $summary = session('notas_generate_summary');
+
+        $this->assertSame(3, $summary['creadas']);
+        $this->assertSame(0, $summary['omitidas']);
+        $this->assertSame([1, 2, 3], Nota::query()->orderBy('nro_examen')->pluck('nro_examen')->all());
+        $this->assertDatabaseHas('nota', [
+            'id_postulacion' => $context['postulacion']->id_postulacion,
+            'id_materia' => $context['materia']->id_materia,
+            'nro_examen' => 1,
+            'registrado_por' => $admin->id_usuario,
+        ]);
+    }
+
+    public function test_generate_test_scores_does_not_overwrite_existing_notes(): void
+    {
+        $context = $this->createContext();
+        $admin = $this->userWithPermissions(['notas:create']);
+        $this->createNota($context, ['nro_examen' => 1, 'nota' => 88, 'registrado_por' => $admin->id_usuario]);
+
+        $this->actingAs($admin)
+            ->post('/examenes/notas/generar-prueba', [
+                'id_grupo' => $context['grupo']->id_grupo,
+                'id_materia' => $context['materia']->id_materia,
+                'nota_minima' => 50,
+                'nota_maxima' => 95,
+            ])
+            ->assertRedirect();
+
+        $summary = session('notas_generate_summary');
+
+        $this->assertSame(2, $summary['creadas']);
+        $this->assertSame(1, $summary['omitidas']);
+        $this->assertDatabaseHas('nota', [
+            'id_postulacion' => $context['postulacion']->id_postulacion,
+            'id_materia' => $context['materia']->id_materia,
+            'nro_examen' => 1,
+            'nota' => '88.00',
+        ]);
+    }
+
+    public function test_generate_test_scores_for_all_groups_when_group_is_empty(): void
+    {
+        $context = $this->createContext();
+        $secondGroup = GrupoAcademico::create([
+            'id_gestion' => $context['gestion']->id_gestion,
+            'nombre' => 'Grupo '.Str::upper(Str::random(6)),
+            'turno' => 'MANANA',
+            'capacidad_maxima' => 70,
+            'activo' => true,
+        ]);
+        $secondPostulacion = $this->createPostulacion($context['gestion'], $secondGroup);
+        AsignacionAcademica::create([
+            'id_grupo' => $secondGroup->id_grupo,
+            'id_materia' => $context['materia']->id_materia,
+            'id_docente' => $context['docente']->id_docente,
+            'id_aula' => $context['aula']->id_aula,
+            'id_horario' => $this->createHorario('MANANA', '09:00', '10:00')->id_horario,
+            'activo' => true,
+        ]);
+        $admin = $this->userWithPermissions(['notas:create']);
+
+        $this->actingAs($admin)
+            ->post('/examenes/notas/generar-prueba', [
+                'id_materia' => $context['materia']->id_materia,
+                'nota_minima' => 50,
+                'nota_maxima' => 95,
+            ])
+            ->assertRedirect();
+
+        $summary = session('notas_generate_summary');
+
+        $this->assertSame(6, $summary['creadas']);
+        $this->assertSame(2, $summary['grupos_procesados']);
+        $this->assertDatabaseHas('nota', [
+            'id_postulacion' => $secondPostulacion->id_postulacion,
+            'id_materia' => $context['materia']->id_materia,
+            'nro_examen' => 3,
+        ]);
+    }
+
+    public function test_generate_test_scores_for_all_subjects_when_subject_is_empty(): void
+    {
+        $context = $this->createContext();
+        $secondMateria = $this->createMateria('Materia adicional');
+        AsignacionAcademica::create([
+            'id_grupo' => $context['grupo']->id_grupo,
+            'id_materia' => $secondMateria->id_materia,
+            'id_docente' => $context['docente']->id_docente,
+            'id_aula' => $context['aula']->id_aula,
+            'id_horario' => $this->createHorario('MANANA', '09:00', '10:00')->id_horario,
+            'activo' => true,
+        ]);
+        $admin = $this->userWithPermissions(['notas:create']);
+
+        $this->actingAs($admin)
+            ->post('/examenes/notas/generar-prueba', [
+                'id_grupo' => $context['grupo']->id_grupo,
+                'nota_minima' => 60,
+                'nota_maxima' => 90,
+            ])
+            ->assertRedirect();
+
+        $summary = session('notas_generate_summary');
+
+        $this->assertSame(6, $summary['creadas']);
+        $this->assertSame(2, $summary['materias_procesadas']);
+    }
+
+    public function test_generate_test_scores_omits_subject_without_active_assignment(): void
+    {
+        $context = $this->createContext();
+        $unassignedMateria = $this->createMateria('Materia sin asignacion');
+        $admin = $this->userWithPermissions(['notas:create']);
+
+        $this->actingAs($admin)
+            ->post('/examenes/notas/generar-prueba', [
+                'id_grupo' => $context['grupo']->id_grupo,
+                'id_materia' => $unassignedMateria->id_materia,
+                'nota_minima' => 50,
+                'nota_maxima' => 95,
+            ])
+            ->assertRedirect();
+
+        $summary = session('notas_generate_summary');
+
+        $this->assertSame(0, $summary['creadas']);
+        $this->assertSame(1, $summary['omitidas']);
+        $this->assertDatabaseMissing('nota', [
+            'id_materia' => $unassignedMateria->id_materia,
+        ]);
+    }
+
+    public function test_generate_test_scores_respects_score_range(): void
+    {
+        $context = $this->createContext();
+        $admin = $this->userWithPermissions(['notas:create']);
+
+        $this->actingAs($admin)
+            ->post('/examenes/notas/generar-prueba', [
+                'id_grupo' => $context['grupo']->id_grupo,
+                'id_materia' => $context['materia']->id_materia,
+                'nota_minima' => 70,
+                'nota_maxima' => 70,
+            ])
+            ->assertRedirect();
+
+        $this->assertSame([70.0, 70.0, 70.0], Nota::query()
+            ->orderBy('nro_examen')
+            ->pluck('nota')
+            ->map(fn ($score) => (float) $score)
+            ->all());
+    }
+
+    public function test_docente_normal_cannot_generate_test_scores(): void
+    {
+        $context = $this->createContext();
+        $teacher = $this->teacherUserWithPermissions($context['docente'], ['notas:create']);
+
+        $this->actingAs($teacher)
+            ->post('/examenes/notas/generar-prueba', [
+                'id_grupo' => $context['grupo']->id_grupo,
+                'id_materia' => $context['materia']->id_materia,
+                'nota_minima' => 50,
+                'nota_maxima' => 95,
+            ])
+            ->assertSessionHasErrors('notas');
+
+        $this->assertSame(0, Nota::count());
+    }
+
     private function userWithPermissions(array $permissions): User
     {
         $this->seed(AccessControlSeeder::class);
@@ -315,6 +509,7 @@ class NotaTest extends TestCase
         $grupo = GrupoAcademico::create([
             'id_gestion' => $gestion->id_gestion,
             'nombre' => 'Grupo '.Str::upper(Str::random(6)),
+            'turno' => 'MANANA',
             'capacidad_maxima' => 70,
             'activo' => true,
         ]);
@@ -325,12 +520,7 @@ class NotaTest extends TestCase
             'nombre' => 'Aula '.Str::upper(Str::random(6)),
             'capacidad' => 70,
         ]);
-        $horario = Horario::create([
-            'turno' => 'MANANA',
-            'hora_inicio' => '08:00',
-            'hora_fin' => '10:00',
-            'activo' => true,
-        ]);
+        $horario = $this->createHorario();
         $asignacion = AsignacionAcademica::create([
             'id_grupo' => $grupo->id_grupo,
             'id_materia' => $materia->id_materia,
@@ -362,6 +552,18 @@ class NotaTest extends TestCase
             'nombre' => $nombre ?? 'Materia '.Str::upper(Str::random(6)),
             'activo' => true,
         ]);
+    }
+
+    private function createHorario(string $turno = 'MANANA', string $inicio = '08:00', string $fin = '09:00'): Horario
+    {
+        return Horario::firstOrCreate(
+            [
+                'turno' => $turno,
+                'hora_inicio' => $inicio,
+                'hora_fin' => $fin,
+            ],
+            ['activo' => true],
+        );
     }
 
     private function createDocente(): Docente

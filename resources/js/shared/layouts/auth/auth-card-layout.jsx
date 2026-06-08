@@ -1,9 +1,11 @@
 import { Link } from '@inertiajs/react';
 import { home } from '@/routes';
 import AppLogoIcon from '@/shared/components/app-logo-icon';
+import FlashMessageCenter from '@/shared/components/flash-message-center';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from '@/shared/components/ui/card';
 export default function AuthCardLayout({ children, title, description, }) {
     return (<div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+            <FlashMessageCenter />
             <div className="flex w-full max-w-md flex-col gap-6">
                 <Link href={home()} className="flex items-center gap-2 self-center font-medium">
                     <div className="flex h-9 w-9 items-center justify-center">

@@ -1,0 +1,1992 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict Zrkqua0xfIzOvGxRrvyovf5dA7dwwab7ORslxl3MWmnsj24PUQo5lQ8qywj25Nk
+
+-- Dumped from database version 16.14
+-- Dumped by pg_dump version 16.14
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+ALTER TABLE IF EXISTS ONLY public.sesion DROP CONSTRAINT IF EXISTS sesion_id_usuario_foreign;
+ALTER TABLE IF EXISTS ONLY public.rol_usuario DROP CONSTRAINT IF EXISTS rol_usuario_id_usuario_foreign;
+ALTER TABLE IF EXISTS ONLY public.rol_usuario DROP CONSTRAINT IF EXISTS rol_usuario_id_rol_foreign;
+ALTER TABLE IF EXISTS ONLY public.rol_permiso DROP CONSTRAINT IF EXISTS rol_permiso_id_rol_foreign;
+ALTER TABLE IF EXISTS ONLY public.rol_permiso DROP CONSTRAINT IF EXISTS rol_permiso_id_permiso_foreign;
+ALTER TABLE IF EXISTS ONLY public.postulante DROP CONSTRAINT IF EXISTS postulante_validado_por_foreign;
+ALTER TABLE IF EXISTS ONLY public.postulante DROP CONSTRAINT IF EXISTS postulante_id_usuario_foreign;
+ALTER TABLE IF EXISTS ONLY public.postulacion DROP CONSTRAINT IF EXISTS postulacion_id_postulante_foreign;
+ALTER TABLE IF EXISTS ONLY public.postulacion DROP CONSTRAINT IF EXISTS postulacion_id_grupo_foreign;
+ALTER TABLE IF EXISTS ONLY public.postulacion DROP CONSTRAINT IF EXISTS postulacion_id_gestion_foreign;
+ALTER TABLE IF EXISTS ONLY public.postulacion DROP CONSTRAINT IF EXISTS postulacion_id_carrera_opcion2_foreign;
+ALTER TABLE IF EXISTS ONLY public.postulacion DROP CONSTRAINT IF EXISTS postulacion_id_carrera_opcion1_foreign;
+ALTER TABLE IF EXISTS ONLY public.postulacion DROP CONSTRAINT IF EXISTS postulacion_id_carrera_admitida_foreign;
+ALTER TABLE IF EXISTS ONLY public.pago_inscripcion DROP CONSTRAINT IF EXISTS pago_inscripcion_id_postulacion_foreign;
+ALTER TABLE IF EXISTS ONLY public.nota DROP CONSTRAINT IF EXISTS nota_registrado_por_foreign;
+ALTER TABLE IF EXISTS ONLY public.nota DROP CONSTRAINT IF EXISTS nota_id_postulacion_foreign;
+ALTER TABLE IF EXISTS ONLY public.nota DROP CONSTRAINT IF EXISTS nota_id_materia_foreign;
+ALTER TABLE IF EXISTS ONLY public.log_auditoria DROP CONSTRAINT IF EXISTS log_auditoria_id_usuario_foreign;
+ALTER TABLE IF EXISTS ONLY public.grupo_academico DROP CONSTRAINT IF EXISTS grupo_academico_id_gestion_foreign;
+ALTER TABLE IF EXISTS ONLY public.docente DROP CONSTRAINT IF EXISTS docente_id_usuario_foreign;
+ALTER TABLE IF EXISTS ONLY public.docente_habilitacion_materia DROP CONSTRAINT IF EXISTS docente_habilitacion_materia_id_materia_foreign;
+ALTER TABLE IF EXISTS ONLY public.docente_habilitacion_materia DROP CONSTRAINT IF EXISTS docente_habilitacion_materia_id_docente_foreign;
+ALTER TABLE IF EXISTS ONLY public.cupo_carrera DROP CONSTRAINT IF EXISTS cupo_carrera_id_gestion_foreign;
+ALTER TABLE IF EXISTS ONLY public.cupo_carrera DROP CONSTRAINT IF EXISTS cupo_carrera_id_carrera_foreign;
+ALTER TABLE IF EXISTS ONLY public.asignacion_academica DROP CONSTRAINT IF EXISTS asignacion_academica_id_materia_foreign;
+ALTER TABLE IF EXISTS ONLY public.asignacion_academica DROP CONSTRAINT IF EXISTS asignacion_academica_id_horario_foreign;
+ALTER TABLE IF EXISTS ONLY public.asignacion_academica DROP CONSTRAINT IF EXISTS asignacion_academica_id_grupo_foreign;
+ALTER TABLE IF EXISTS ONLY public.asignacion_academica DROP CONSTRAINT IF EXISTS asignacion_academica_id_docente_foreign;
+ALTER TABLE IF EXISTS ONLY public.asignacion_academica DROP CONSTRAINT IF EXISTS asignacion_academica_id_aula_foreign;
+DROP INDEX IF EXISTS public.sessions_user_id_index;
+DROP INDEX IF EXISTS public.sessions_last_activity_index;
+DROP INDEX IF EXISTS public.jobs_queue_index;
+DROP INDEX IF EXISTS public.failed_jobs_connection_queue_failed_at_index;
+DROP INDEX IF EXISTS public.docente_habilitacion_materia_id_materia_index;
+DROP INDEX IF EXISTS public.docente_habilitacion_materia_id_docente_index;
+DROP INDEX IF EXISTS public.docente_habilitacion_materia_activo_index;
+DROP INDEX IF EXISTS public.cache_locks_expiration_index;
+DROP INDEX IF EXISTS public.cache_expiration_index;
+ALTER TABLE IF EXISTS ONLY public.usuario DROP CONSTRAINT IF EXISTS usuario_username_unique;
+ALTER TABLE IF EXISTS ONLY public.usuario DROP CONSTRAINT IF EXISTS usuario_pkey;
+ALTER TABLE IF EXISTS ONLY public.usuario DROP CONSTRAINT IF EXISTS usuario_correo_unique;
+ALTER TABLE IF EXISTS ONLY public.usuario DROP CONSTRAINT IF EXISTS usuario_ci_unique;
+ALTER TABLE IF EXISTS ONLY public.sessions DROP CONSTRAINT IF EXISTS sessions_pkey;
+ALTER TABLE IF EXISTS ONLY public.sesion DROP CONSTRAINT IF EXISTS sesion_token_sesion_unique;
+ALTER TABLE IF EXISTS ONLY public.sesion DROP CONSTRAINT IF EXISTS sesion_refresh_token_unique;
+ALTER TABLE IF EXISTS ONLY public.sesion DROP CONSTRAINT IF EXISTS sesion_pkey;
+ALTER TABLE IF EXISTS ONLY public.rol_usuario DROP CONSTRAINT IF EXISTS rol_usuario_pkey;
+ALTER TABLE IF EXISTS ONLY public.rol DROP CONSTRAINT IF EXISTS rol_pkey;
+ALTER TABLE IF EXISTS ONLY public.rol_permiso DROP CONSTRAINT IF EXISTS rol_permiso_pkey;
+ALTER TABLE IF EXISTS ONLY public.rol DROP CONSTRAINT IF EXISTS rol_nombre_unique;
+ALTER TABLE IF EXISTS ONLY public.postulante DROP CONSTRAINT IF EXISTS postulante_pkey;
+ALTER TABLE IF EXISTS ONLY public.postulante DROP CONSTRAINT IF EXISTS postulante_id_usuario_unique;
+ALTER TABLE IF EXISTS ONLY public.postulacion DROP CONSTRAINT IF EXISTS postulacion_pkey;
+ALTER TABLE IF EXISTS ONLY public.postulacion DROP CONSTRAINT IF EXISTS postulacion_id_postulante_id_gestion_unique;
+ALTER TABLE IF EXISTS ONLY public.permiso DROP CONSTRAINT IF EXISTS permiso_pkey;
+ALTER TABLE IF EXISTS ONLY public.permiso DROP CONSTRAINT IF EXISTS permiso_nombre_unique;
+ALTER TABLE IF EXISTS ONLY public.password_reset_tokens DROP CONSTRAINT IF EXISTS password_reset_tokens_pkey;
+ALTER TABLE IF EXISTS ONLY public.pago_inscripcion DROP CONSTRAINT IF EXISTS pago_inscripcion_pkey;
+ALTER TABLE IF EXISTS ONLY public.pago_inscripcion DROP CONSTRAINT IF EXISTS pago_inscripcion_numero_transaccion_unique;
+ALTER TABLE IF EXISTS ONLY public.nota DROP CONSTRAINT IF EXISTS nota_pkey;
+ALTER TABLE IF EXISTS ONLY public.nota DROP CONSTRAINT IF EXISTS nota_id_postulacion_id_materia_nro_examen_unique;
+ALTER TABLE IF EXISTS ONLY public.migrations DROP CONSTRAINT IF EXISTS migrations_pkey;
+ALTER TABLE IF EXISTS ONLY public.materia_cup DROP CONSTRAINT IF EXISTS materia_cup_pkey;
+ALTER TABLE IF EXISTS ONLY public.materia_cup DROP CONSTRAINT IF EXISTS materia_cup_nombre_unique;
+ALTER TABLE IF EXISTS ONLY public.log_auditoria DROP CONSTRAINT IF EXISTS log_auditoria_pkey;
+ALTER TABLE IF EXISTS ONLY public.jobs DROP CONSTRAINT IF EXISTS jobs_pkey;
+ALTER TABLE IF EXISTS ONLY public.job_batches DROP CONSTRAINT IF EXISTS job_batches_pkey;
+ALTER TABLE IF EXISTS ONLY public.horario DROP CONSTRAINT IF EXISTS horario_turno_horas_unique;
+ALTER TABLE IF EXISTS ONLY public.horario DROP CONSTRAINT IF EXISTS horario_pkey;
+ALTER TABLE IF EXISTS ONLY public.grupo_academico DROP CONSTRAINT IF EXISTS grupo_academico_pkey;
+ALTER TABLE IF EXISTS ONLY public.grupo_academico DROP CONSTRAINT IF EXISTS grupo_academico_id_gestion_nombre_unique;
+ALTER TABLE IF EXISTS ONLY public.gestion_academica DROP CONSTRAINT IF EXISTS gestion_academica_pkey;
+ALTER TABLE IF EXISTS ONLY public.gestion_academica DROP CONSTRAINT IF EXISTS gestion_academica_nombre_unique;
+ALTER TABLE IF EXISTS ONLY public.failed_jobs DROP CONSTRAINT IF EXISTS failed_jobs_uuid_unique;
+ALTER TABLE IF EXISTS ONLY public.failed_jobs DROP CONSTRAINT IF EXISTS failed_jobs_pkey;
+ALTER TABLE IF EXISTS ONLY public.docente DROP CONSTRAINT IF EXISTS docente_pkey;
+ALTER TABLE IF EXISTS ONLY public.docente DROP CONSTRAINT IF EXISTS docente_id_usuario_unique;
+ALTER TABLE IF EXISTS ONLY public.docente_habilitacion_materia DROP CONSTRAINT IF EXISTS docente_habilitacion_unique;
+ALTER TABLE IF EXISTS ONLY public.docente_habilitacion_materia DROP CONSTRAINT IF EXISTS docente_habilitacion_materia_pkey;
+ALTER TABLE IF EXISTS ONLY public.cupo_carrera DROP CONSTRAINT IF EXISTS cupo_carrera_pkey;
+ALTER TABLE IF EXISTS ONLY public.cupo_carrera DROP CONSTRAINT IF EXISTS cupo_carrera_id_carrera_id_gestion_unique;
+ALTER TABLE IF EXISTS ONLY public.carrera DROP CONSTRAINT IF EXISTS carrera_pkey;
+ALTER TABLE IF EXISTS ONLY public.carrera DROP CONSTRAINT IF EXISTS carrera_nombre_unique;
+ALTER TABLE IF EXISTS ONLY public.cache DROP CONSTRAINT IF EXISTS cache_pkey;
+ALTER TABLE IF EXISTS ONLY public.cache_locks DROP CONSTRAINT IF EXISTS cache_locks_pkey;
+ALTER TABLE IF EXISTS ONLY public.aula DROP CONSTRAINT IF EXISTS aula_pkey;
+ALTER TABLE IF EXISTS ONLY public.aula DROP CONSTRAINT IF EXISTS aula_nombre_unique;
+ALTER TABLE IF EXISTS ONLY public.asignacion_academica DROP CONSTRAINT IF EXISTS asignacion_academica_pkey;
+ALTER TABLE IF EXISTS ONLY public.asignacion_academica DROP CONSTRAINT IF EXISTS asignacion_academica_id_grupo_id_materia_unique;
+ALTER TABLE IF EXISTS ONLY public.asignacion_academica DROP CONSTRAINT IF EXISTS asignacion_academica_id_docente_id_horario_unique;
+ALTER TABLE IF EXISTS ONLY public.asignacion_academica DROP CONSTRAINT IF EXISTS asignacion_academica_id_aula_id_horario_unique;
+ALTER TABLE IF EXISTS public.usuario ALTER COLUMN id_usuario DROP DEFAULT;
+ALTER TABLE IF EXISTS public.sesion ALTER COLUMN id_sesion DROP DEFAULT;
+ALTER TABLE IF EXISTS public.rol ALTER COLUMN id_rol DROP DEFAULT;
+ALTER TABLE IF EXISTS public.postulante ALTER COLUMN id_postulante DROP DEFAULT;
+ALTER TABLE IF EXISTS public.postulacion ALTER COLUMN id_postulacion DROP DEFAULT;
+ALTER TABLE IF EXISTS public.permiso ALTER COLUMN id_permiso DROP DEFAULT;
+ALTER TABLE IF EXISTS public.pago_inscripcion ALTER COLUMN id_pago DROP DEFAULT;
+ALTER TABLE IF EXISTS public.nota ALTER COLUMN id_nota DROP DEFAULT;
+ALTER TABLE IF EXISTS public.migrations ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.materia_cup ALTER COLUMN id_materia DROP DEFAULT;
+ALTER TABLE IF EXISTS public.log_auditoria ALTER COLUMN id_log DROP DEFAULT;
+ALTER TABLE IF EXISTS public.jobs ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.horario ALTER COLUMN id_horario DROP DEFAULT;
+ALTER TABLE IF EXISTS public.grupo_academico ALTER COLUMN id_grupo DROP DEFAULT;
+ALTER TABLE IF EXISTS public.gestion_academica ALTER COLUMN id_gestion DROP DEFAULT;
+ALTER TABLE IF EXISTS public.failed_jobs ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.docente_habilitacion_materia ALTER COLUMN id_habilitacion DROP DEFAULT;
+ALTER TABLE IF EXISTS public.docente ALTER COLUMN id_docente DROP DEFAULT;
+ALTER TABLE IF EXISTS public.cupo_carrera ALTER COLUMN id_cupo DROP DEFAULT;
+ALTER TABLE IF EXISTS public.carrera ALTER COLUMN id_carrera DROP DEFAULT;
+ALTER TABLE IF EXISTS public.aula ALTER COLUMN id_aula DROP DEFAULT;
+ALTER TABLE IF EXISTS public.asignacion_academica ALTER COLUMN id_asignacion DROP DEFAULT;
+DROP SEQUENCE IF EXISTS public.usuario_id_usuario_seq;
+DROP TABLE IF EXISTS public.sessions;
+DROP SEQUENCE IF EXISTS public.sesion_id_sesion_seq;
+DROP TABLE IF EXISTS public.sesion;
+DROP TABLE IF EXISTS public.rol_usuario;
+DROP TABLE IF EXISTS public.rol_permiso;
+DROP SEQUENCE IF EXISTS public.rol_id_rol_seq;
+DROP TABLE IF EXISTS public.rol;
+DROP VIEW IF EXISTS public.resultado_final_postulante;
+DROP VIEW IF EXISTS public.promedio_por_materia;
+DROP TABLE IF EXISTS public.usuario;
+DROP SEQUENCE IF EXISTS public.postulante_id_postulante_seq;
+DROP TABLE IF EXISTS public.postulante;
+DROP SEQUENCE IF EXISTS public.postulacion_id_postulacion_seq;
+DROP TABLE IF EXISTS public.postulacion;
+DROP SEQUENCE IF EXISTS public.permiso_id_permiso_seq;
+DROP TABLE IF EXISTS public.permiso;
+DROP TABLE IF EXISTS public.password_reset_tokens;
+DROP SEQUENCE IF EXISTS public.pago_inscripcion_id_pago_seq;
+DROP TABLE IF EXISTS public.pago_inscripcion;
+DROP SEQUENCE IF EXISTS public.nota_id_nota_seq;
+DROP TABLE IF EXISTS public.nota;
+DROP SEQUENCE IF EXISTS public.migrations_id_seq;
+DROP TABLE IF EXISTS public.migrations;
+DROP SEQUENCE IF EXISTS public.materia_cup_id_materia_seq;
+DROP TABLE IF EXISTS public.materia_cup;
+DROP SEQUENCE IF EXISTS public.log_auditoria_id_log_seq;
+DROP TABLE IF EXISTS public.log_auditoria;
+DROP SEQUENCE IF EXISTS public.jobs_id_seq;
+DROP TABLE IF EXISTS public.jobs;
+DROP TABLE IF EXISTS public.job_batches;
+DROP SEQUENCE IF EXISTS public.horario_id_horario_seq;
+DROP TABLE IF EXISTS public.horario;
+DROP SEQUENCE IF EXISTS public.grupo_academico_id_grupo_seq;
+DROP TABLE IF EXISTS public.grupo_academico;
+DROP SEQUENCE IF EXISTS public.gestion_academica_id_gestion_seq;
+DROP TABLE IF EXISTS public.gestion_academica;
+DROP SEQUENCE IF EXISTS public.failed_jobs_id_seq;
+DROP TABLE IF EXISTS public.failed_jobs;
+DROP SEQUENCE IF EXISTS public.docente_id_docente_seq;
+DROP SEQUENCE IF EXISTS public.docente_habilitacion_materia_id_habilitacion_seq;
+DROP TABLE IF EXISTS public.docente_habilitacion_materia;
+DROP TABLE IF EXISTS public.docente;
+DROP SEQUENCE IF EXISTS public.cupo_carrera_id_cupo_seq;
+DROP TABLE IF EXISTS public.cupo_carrera;
+DROP SEQUENCE IF EXISTS public.carrera_id_carrera_seq;
+DROP TABLE IF EXISTS public.carrera;
+DROP TABLE IF EXISTS public.cache_locks;
+DROP TABLE IF EXISTS public.cache;
+DROP SEQUENCE IF EXISTS public.aula_id_aula_seq;
+DROP TABLE IF EXISTS public.aula;
+DROP SEQUENCE IF EXISTS public.asignacion_academica_id_asignacion_seq;
+DROP TABLE IF EXISTS public.asignacion_academica;
+DROP FUNCTION IF EXISTS public.calcular_grupos(total_inscritos integer);
+--
+-- Name: calcular_grupos(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.calcular_grupos(total_inscritos integer) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+        RETURN CEIL(total_inscritos / 70.0);
+    END;
+    $$;
+
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: asignacion_academica; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.asignacion_academica (
+    id_asignacion bigint NOT NULL,
+    id_grupo bigint NOT NULL,
+    id_materia bigint NOT NULL,
+    id_docente bigint NOT NULL,
+    id_aula bigint NOT NULL,
+    id_horario bigint NOT NULL,
+    activo boolean DEFAULT true NOT NULL
+);
+
+
+--
+-- Name: asignacion_academica_id_asignacion_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.asignacion_academica_id_asignacion_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: asignacion_academica_id_asignacion_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.asignacion_academica_id_asignacion_seq OWNED BY public.asignacion_academica.id_asignacion;
+
+
+--
+-- Name: aula; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.aula (
+    id_aula bigint NOT NULL,
+    nombre character varying(50) NOT NULL,
+    capacidad integer NOT NULL,
+    activo boolean DEFAULT true NOT NULL,
+    CONSTRAINT aula_capacidad_check CHECK ((capacidad > 0))
+);
+
+
+--
+-- Name: aula_id_aula_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.aula_id_aula_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: aula_id_aula_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.aula_id_aula_seq OWNED BY public.aula.id_aula;
+
+
+--
+-- Name: cache; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cache (
+    key character varying(255) NOT NULL,
+    value text NOT NULL,
+    expiration bigint NOT NULL
+);
+
+
+--
+-- Name: cache_locks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cache_locks (
+    key character varying(255) NOT NULL,
+    owner character varying(255) NOT NULL,
+    expiration bigint NOT NULL
+);
+
+
+--
+-- Name: carrera; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.carrera (
+    id_carrera bigint NOT NULL,
+    nombre character varying(120) NOT NULL,
+    activo boolean DEFAULT true NOT NULL
+);
+
+
+--
+-- Name: carrera_id_carrera_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.carrera_id_carrera_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: carrera_id_carrera_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.carrera_id_carrera_seq OWNED BY public.carrera.id_carrera;
+
+
+--
+-- Name: cupo_carrera; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cupo_carrera (
+    id_cupo bigint NOT NULL,
+    id_carrera bigint NOT NULL,
+    id_gestion bigint NOT NULL,
+    cupo_maximo integer NOT NULL,
+    CONSTRAINT cupo_carrera_cupo_maximo_check CHECK ((cupo_maximo > 0))
+);
+
+
+--
+-- Name: cupo_carrera_id_cupo_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cupo_carrera_id_cupo_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cupo_carrera_id_cupo_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cupo_carrera_id_cupo_seq OWNED BY public.cupo_carrera.id_cupo;
+
+
+--
+-- Name: docente; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.docente (
+    id_docente bigint NOT NULL,
+    id_usuario bigint NOT NULL,
+    profesional_area boolean DEFAULT false NOT NULL,
+    maestria boolean DEFAULT false NOT NULL,
+    diplomado_educacion_superior boolean DEFAULT false NOT NULL,
+    contratado boolean DEFAULT false NOT NULL,
+    activo boolean DEFAULT true NOT NULL,
+    maestria_educacion_superior boolean DEFAULT false NOT NULL,
+    CONSTRAINT docente_contratado_check CHECK (((contratado = false) OR (maestria_educacion_superior = true)))
+);
+
+
+--
+-- Name: docente_habilitacion_materia; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.docente_habilitacion_materia (
+    id_habilitacion bigint NOT NULL,
+    id_docente bigint NOT NULL,
+    id_materia bigint NOT NULL,
+    tipo_habilitacion character varying(30) NOT NULL,
+    activo boolean DEFAULT true NOT NULL,
+    fecha_registro timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT docente_habilitacion_tipo_check CHECK (((tipo_habilitacion)::text = ANY ((ARRAY['PROFESIONAL_AREA'::character varying, 'DIPLOMADO'::character varying, 'MAESTRIA'::character varying])::text[])))
+);
+
+
+--
+-- Name: docente_habilitacion_materia_id_habilitacion_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.docente_habilitacion_materia_id_habilitacion_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: docente_habilitacion_materia_id_habilitacion_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.docente_habilitacion_materia_id_habilitacion_seq OWNED BY public.docente_habilitacion_materia.id_habilitacion;
+
+
+--
+-- Name: docente_id_docente_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.docente_id_docente_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: docente_id_docente_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.docente_id_docente_seq OWNED BY public.docente.id_docente;
+
+
+--
+-- Name: failed_jobs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.failed_jobs (
+    id bigint NOT NULL,
+    uuid character varying(255) NOT NULL,
+    connection character varying(255) NOT NULL,
+    queue character varying(255) NOT NULL,
+    payload text NOT NULL,
+    exception text NOT NULL,
+    failed_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+--
+-- Name: failed_jobs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.failed_jobs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: failed_jobs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.failed_jobs_id_seq OWNED BY public.failed_jobs.id;
+
+
+--
+-- Name: gestion_academica; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.gestion_academica (
+    id_gestion bigint NOT NULL,
+    nombre character varying(30) NOT NULL,
+    fecha_inicio date NOT NULL,
+    fecha_fin date NOT NULL,
+    activo boolean DEFAULT true NOT NULL,
+    CONSTRAINT gestion_academica_fechas_check CHECK ((fecha_fin > fecha_inicio))
+);
+
+
+--
+-- Name: gestion_academica_id_gestion_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.gestion_academica_id_gestion_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: gestion_academica_id_gestion_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.gestion_academica_id_gestion_seq OWNED BY public.gestion_academica.id_gestion;
+
+
+--
+-- Name: grupo_academico; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.grupo_academico (
+    id_grupo bigint NOT NULL,
+    id_gestion bigint NOT NULL,
+    nombre character varying(50) NOT NULL,
+    capacidad_maxima integer DEFAULT 70 NOT NULL,
+    activo boolean DEFAULT true NOT NULL,
+    turno character varying(20),
+    CONSTRAINT grupo_academico_capacidad_maxima_check CHECK (((capacidad_maxima > 0) AND (capacidad_maxima <= 70))),
+    CONSTRAINT grupo_academico_turno_check CHECK (((turno)::text = ANY ((ARRAY['MANANA'::character varying, 'TARDE'::character varying, 'NOCHE'::character varying])::text[])))
+);
+
+
+--
+-- Name: grupo_academico_id_grupo_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.grupo_academico_id_grupo_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: grupo_academico_id_grupo_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.grupo_academico_id_grupo_seq OWNED BY public.grupo_academico.id_grupo;
+
+
+--
+-- Name: horario; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.horario (
+    id_horario bigint NOT NULL,
+    hora_inicio time(0) without time zone NOT NULL,
+    hora_fin time(0) without time zone NOT NULL,
+    activo boolean DEFAULT true NOT NULL,
+    turno character varying(20) NOT NULL,
+    CONSTRAINT horario_horas_check CHECK ((hora_fin > hora_inicio)),
+    CONSTRAINT horario_turno_check CHECK (((turno)::text = ANY ((ARRAY['MANANA'::character varying, 'TARDE'::character varying, 'NOCHE'::character varying])::text[])))
+);
+
+
+--
+-- Name: horario_id_horario_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.horario_id_horario_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: horario_id_horario_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.horario_id_horario_seq OWNED BY public.horario.id_horario;
+
+
+--
+-- Name: job_batches; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.job_batches (
+    id character varying(255) NOT NULL,
+    name character varying(255) NOT NULL,
+    total_jobs integer NOT NULL,
+    pending_jobs integer NOT NULL,
+    failed_jobs integer NOT NULL,
+    failed_job_ids text NOT NULL,
+    options text,
+    cancelled_at integer,
+    created_at integer NOT NULL,
+    finished_at integer
+);
+
+
+--
+-- Name: jobs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.jobs (
+    id bigint NOT NULL,
+    queue character varying(255) NOT NULL,
+    payload text NOT NULL,
+    attempts smallint NOT NULL,
+    reserved_at integer,
+    available_at integer NOT NULL,
+    created_at integer NOT NULL
+);
+
+
+--
+-- Name: jobs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.jobs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: jobs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.jobs_id_seq OWNED BY public.jobs.id;
+
+
+--
+-- Name: log_auditoria; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.log_auditoria (
+    id_log bigint NOT NULL,
+    tabla_afectada character varying(100) NOT NULL,
+    operacion character varying(20) NOT NULL,
+    id_registro character varying(50),
+    datos_anteriores jsonb,
+    datos_nuevos jsonb,
+    id_usuario bigint,
+    user_agent text,
+    fecha_operacion timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    ip_origen inet,
+    CONSTRAINT log_auditoria_operacion_check CHECK (((operacion)::text = ANY ((ARRAY['INSERT'::character varying, 'UPDATE'::character varying, 'DELETE'::character varying, 'LOGIN'::character varying, 'LOGOUT'::character varying])::text[])))
+);
+
+
+--
+-- Name: log_auditoria_id_log_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.log_auditoria_id_log_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: log_auditoria_id_log_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.log_auditoria_id_log_seq OWNED BY public.log_auditoria.id_log;
+
+
+--
+-- Name: materia_cup; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.materia_cup (
+    id_materia bigint NOT NULL,
+    nombre character varying(80) NOT NULL,
+    activo boolean DEFAULT true NOT NULL
+);
+
+
+--
+-- Name: materia_cup_id_materia_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.materia_cup_id_materia_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materia_cup_id_materia_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.materia_cup_id_materia_seq OWNED BY public.materia_cup.id_materia;
+
+
+--
+-- Name: migrations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.migrations (
+    id integer NOT NULL,
+    migration character varying(255) NOT NULL,
+    batch integer NOT NULL
+);
+
+
+--
+-- Name: migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.migrations_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.migrations_id_seq OWNED BY public.migrations.id;
+
+
+--
+-- Name: nota; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.nota (
+    id_nota bigint NOT NULL,
+    id_postulacion bigint NOT NULL,
+    id_materia bigint NOT NULL,
+    nro_examen integer NOT NULL,
+    nota numeric(5,2) NOT NULL,
+    fecha_registro timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    registrado_por bigint,
+    CONSTRAINT nota_nota_check CHECK (((nota >= (0)::numeric) AND (nota <= (100)::numeric))),
+    CONSTRAINT nota_nro_examen_check CHECK (((nro_examen >= 1) AND (nro_examen <= 3)))
+);
+
+
+--
+-- Name: nota_id_nota_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.nota_id_nota_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: nota_id_nota_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.nota_id_nota_seq OWNED BY public.nota.id_nota;
+
+
+--
+-- Name: pago_inscripcion; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.pago_inscripcion (
+    id_pago bigint NOT NULL,
+    id_postulacion bigint NOT NULL,
+    monto numeric(10,2) NOT NULL,
+    moneda character varying(10) DEFAULT 'BOB'::character varying NOT NULL,
+    pasarela character varying(50) NOT NULL,
+    numero_transaccion character varying(150) NOT NULL,
+    codigo_autorizacion character varying(100),
+    codigo_error character varying(100),
+    estado_pago character varying(30) DEFAULT 'PENDIENTE'::character varying NOT NULL,
+    fecha_inicio timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    fecha_confirmacion timestamp(0) without time zone,
+    CONSTRAINT pago_inscripcion_estado_pago_check CHECK (((estado_pago)::text = ANY ((ARRAY['PENDIENTE'::character varying, 'PROCESANDO'::character varying, 'APROBADO'::character varying, 'RECHAZADO'::character varying, 'CANCELADO'::character varying])::text[]))),
+    CONSTRAINT pago_inscripcion_fecha_confirmacion_check CHECK (((fecha_confirmacion IS NULL) OR (fecha_confirmacion >= fecha_inicio))),
+    CONSTRAINT pago_inscripcion_monto_check CHECK ((monto > (0)::numeric)),
+    CONSTRAINT pago_inscripcion_pasarela_check CHECK (((pasarela)::text = ANY ((ARRAY['PAYPAL'::character varying, 'STRIPE'::character varying])::text[])))
+);
+
+
+--
+-- Name: pago_inscripcion_id_pago_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.pago_inscripcion_id_pago_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pago_inscripcion_id_pago_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.pago_inscripcion_id_pago_seq OWNED BY public.pago_inscripcion.id_pago;
+
+
+--
+-- Name: password_reset_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.password_reset_tokens (
+    email character varying(150) NOT NULL,
+    token character varying(255) NOT NULL,
+    created_at timestamp(0) without time zone,
+    CONSTRAINT password_reset_tokens_email_check CHECK (((email)::text ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'::text))
+);
+
+
+--
+-- Name: permiso; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.permiso (
+    id_permiso bigint NOT NULL,
+    nombre character varying(100) NOT NULL,
+    modulo character varying(50) NOT NULL,
+    accion character varying(50) NOT NULL,
+    descripcion text,
+    activo boolean DEFAULT true NOT NULL,
+    CONSTRAINT permiso_accion_check CHECK (((accion)::text = ANY ((ARRAY['CREAR'::character varying, 'LEER'::character varying, 'ACTUALIZAR'::character varying, 'ELIMINAR'::character varying, 'EJECUTAR'::character varying])::text[])))
+);
+
+
+--
+-- Name: permiso_id_permiso_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.permiso_id_permiso_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: permiso_id_permiso_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.permiso_id_permiso_seq OWNED BY public.permiso.id_permiso;
+
+
+--
+-- Name: postulacion; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.postulacion (
+    id_postulacion bigint NOT NULL,
+    id_postulante bigint NOT NULL,
+    id_gestion bigint NOT NULL,
+    id_carrera_opcion1 bigint NOT NULL,
+    id_carrera_opcion2 bigint,
+    id_carrera_admitida bigint,
+    id_grupo bigint,
+    estado_admision character varying(20) DEFAULT 'PENDIENTE'::character varying NOT NULL,
+    fecha_postulacion timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    estado_proceso character varying(40) DEFAULT 'PENDIENTE_VALIDACION'::character varying NOT NULL,
+    turno_preferido character varying(20),
+    CONSTRAINT postulacion_carreras_distintas_check CHECK (((id_carrera_opcion2 IS NULL) OR (id_carrera_opcion1 <> id_carrera_opcion2))),
+    CONSTRAINT postulacion_estado_admision_check CHECK (((estado_admision)::text = ANY ((ARRAY['PENDIENTE'::character varying, 'ADMITIDO'::character varying, 'NO_ADMITIDO'::character varying])::text[]))),
+    CONSTRAINT postulacion_turno_preferido_check CHECK (((turno_preferido)::text = ANY ((ARRAY['MANANA'::character varying, 'TARDE'::character varying, 'NOCHE'::character varying])::text[])))
+);
+
+
+--
+-- Name: postulacion_id_postulacion_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.postulacion_id_postulacion_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: postulacion_id_postulacion_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.postulacion_id_postulacion_seq OWNED BY public.postulacion.id_postulacion;
+
+
+--
+-- Name: postulante; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.postulante (
+    id_postulante bigint NOT NULL,
+    id_usuario bigint NOT NULL,
+    fecha_nacimiento date NOT NULL,
+    direccion text,
+    colegio_procedencia character varying(150),
+    ciudad character varying(80),
+    documentacion_completa boolean DEFAULT false NOT NULL,
+    presento_titulo_bachiller boolean DEFAULT false NOT NULL,
+    presento_fotocopia_carnet boolean DEFAULT false NOT NULL,
+    documentacion_validada boolean DEFAULT false NOT NULL,
+    fecha_validacion_documentos timestamp(0) without time zone,
+    validado_por bigint,
+    creado_por_admin boolean DEFAULT false NOT NULL,
+    requiere_pago boolean DEFAULT true NOT NULL
+);
+
+
+--
+-- Name: postulante_id_postulante_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.postulante_id_postulante_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: postulante_id_postulante_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.postulante_id_postulante_seq OWNED BY public.postulante.id_postulante;
+
+
+--
+-- Name: usuario; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.usuario (
+    id_usuario bigint NOT NULL,
+    ci character varying(20) NOT NULL,
+    nombre character varying(100) NOT NULL,
+    apellido character varying(100) NOT NULL,
+    username character varying(50) NOT NULL,
+    correo character varying(150) NOT NULL,
+    email_verified_at timestamp(0) without time zone,
+    password_hash character varying(255) NOT NULL,
+    telefono character varying(20),
+    sexo character(1),
+    intentos_fallidos integer DEFAULT 0 NOT NULL,
+    estado_acceso character varying(20) DEFAULT 'HABILITADO'::character varying NOT NULL,
+    activo boolean DEFAULT true NOT NULL,
+    fecha_registro timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    remember_token character varying(100),
+    CONSTRAINT usuario_correo_check CHECK (((correo)::text ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'::text)),
+    CONSTRAINT usuario_estado_acceso_check CHECK (((estado_acceso)::text = ANY ((ARRAY['HABILITADO'::character varying, 'SUSPENDIDO'::character varying, 'BLOQUEADO'::character varying])::text[]))),
+    CONSTRAINT usuario_intentos_fallidos_check CHECK ((intentos_fallidos >= 0)),
+    CONSTRAINT usuario_sexo_check CHECK ((sexo = ANY (ARRAY['M'::bpchar, 'F'::bpchar, 'O'::bpchar])))
+);
+
+
+--
+-- Name: promedio_por_materia; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.promedio_por_materia AS
+ SELECT po.id_postulacion,
+    u.ci,
+    u.nombre,
+    u.apellido,
+    m.nombre AS materia,
+    round(avg(n.nota), 2) AS promedio_materia
+   FROM ((((public.nota n
+     JOIN public.postulacion po ON ((n.id_postulacion = po.id_postulacion)))
+     JOIN public.postulante p ON ((po.id_postulante = p.id_postulante)))
+     JOIN public.usuario u ON ((p.id_usuario = u.id_usuario)))
+     JOIN public.materia_cup m ON ((n.id_materia = m.id_materia)))
+  GROUP BY po.id_postulacion, u.ci, u.nombre, u.apellido, m.nombre;
+
+
+--
+-- Name: resultado_final_postulante; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.resultado_final_postulante AS
+ SELECT po.id_postulacion,
+    u.ci,
+    u.nombre,
+    u.apellido,
+    round(avg(n.nota), 2) AS promedio_final,
+        CASE
+            WHEN (avg(n.nota) >= (60)::numeric) THEN 'APROBADO'::text
+            ELSE 'REPROBADO'::text
+        END AS estado_final
+   FROM (((public.postulacion po
+     JOIN public.postulante p ON ((po.id_postulante = p.id_postulante)))
+     JOIN public.usuario u ON ((p.id_usuario = u.id_usuario)))
+     JOIN public.nota n ON ((po.id_postulacion = n.id_postulacion)))
+  GROUP BY po.id_postulacion, u.ci, u.nombre, u.apellido;
+
+
+--
+-- Name: rol; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.rol (
+    id_rol bigint NOT NULL,
+    nombre character varying(50) NOT NULL,
+    descripcion text,
+    activo boolean DEFAULT true NOT NULL,
+    fecha_creacion timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+--
+-- Name: rol_id_rol_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.rol_id_rol_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rol_id_rol_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.rol_id_rol_seq OWNED BY public.rol.id_rol;
+
+
+--
+-- Name: rol_permiso; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.rol_permiso (
+    id_rol bigint NOT NULL,
+    id_permiso bigint NOT NULL,
+    fecha_asignacion timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    activo boolean DEFAULT true NOT NULL
+);
+
+
+--
+-- Name: rol_usuario; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.rol_usuario (
+    id_usuario bigint NOT NULL,
+    id_rol bigint NOT NULL,
+    fecha_asignacion timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    fecha_expiracion timestamp(0) without time zone,
+    activo boolean DEFAULT true NOT NULL,
+    CONSTRAINT rol_usuario_fecha_expiracion_check CHECK (((fecha_expiracion IS NULL) OR (fecha_expiracion >= fecha_asignacion)))
+);
+
+
+--
+-- Name: sesion; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sesion (
+    id_sesion bigint NOT NULL,
+    id_usuario bigint NOT NULL,
+    token_sesion character varying(255) NOT NULL,
+    refresh_token character varying(255),
+    fecha_inicio timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    fecha_expiracion timestamp(0) without time zone,
+    fecha_cierre timestamp(0) without time zone,
+    user_agent text,
+    ip_origen inet,
+    CONSTRAINT sesion_fecha_cierre_check CHECK (((fecha_cierre IS NULL) OR (fecha_cierre >= fecha_inicio))),
+    CONSTRAINT sesion_fecha_expiracion_check CHECK (((fecha_expiracion IS NULL) OR (fecha_expiracion > fecha_inicio)))
+);
+
+
+--
+-- Name: sesion_id_sesion_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sesion_id_sesion_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sesion_id_sesion_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.sesion_id_sesion_seq OWNED BY public.sesion.id_sesion;
+
+
+--
+-- Name: sessions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sessions (
+    id character varying(255) NOT NULL,
+    user_id bigint,
+    ip_address character varying(45),
+    user_agent text,
+    payload text NOT NULL,
+    last_activity integer NOT NULL
+);
+
+
+--
+-- Name: usuario_id_usuario_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.usuario_id_usuario_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: usuario_id_usuario_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.usuario_id_usuario_seq OWNED BY public.usuario.id_usuario;
+
+
+--
+-- Name: asignacion_academica id_asignacion; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.asignacion_academica ALTER COLUMN id_asignacion SET DEFAULT nextval('public.asignacion_academica_id_asignacion_seq'::regclass);
+
+
+--
+-- Name: aula id_aula; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.aula ALTER COLUMN id_aula SET DEFAULT nextval('public.aula_id_aula_seq'::regclass);
+
+
+--
+-- Name: carrera id_carrera; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.carrera ALTER COLUMN id_carrera SET DEFAULT nextval('public.carrera_id_carrera_seq'::regclass);
+
+
+--
+-- Name: cupo_carrera id_cupo; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cupo_carrera ALTER COLUMN id_cupo SET DEFAULT nextval('public.cupo_carrera_id_cupo_seq'::regclass);
+
+
+--
+-- Name: docente id_docente; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.docente ALTER COLUMN id_docente SET DEFAULT nextval('public.docente_id_docente_seq'::regclass);
+
+
+--
+-- Name: docente_habilitacion_materia id_habilitacion; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.docente_habilitacion_materia ALTER COLUMN id_habilitacion SET DEFAULT nextval('public.docente_habilitacion_materia_id_habilitacion_seq'::regclass);
+
+
+--
+-- Name: failed_jobs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.failed_jobs ALTER COLUMN id SET DEFAULT nextval('public.failed_jobs_id_seq'::regclass);
+
+
+--
+-- Name: gestion_academica id_gestion; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.gestion_academica ALTER COLUMN id_gestion SET DEFAULT nextval('public.gestion_academica_id_gestion_seq'::regclass);
+
+
+--
+-- Name: grupo_academico id_grupo; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.grupo_academico ALTER COLUMN id_grupo SET DEFAULT nextval('public.grupo_academico_id_grupo_seq'::regclass);
+
+
+--
+-- Name: horario id_horario; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.horario ALTER COLUMN id_horario SET DEFAULT nextval('public.horario_id_horario_seq'::regclass);
+
+
+--
+-- Name: jobs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jobs ALTER COLUMN id SET DEFAULT nextval('public.jobs_id_seq'::regclass);
+
+
+--
+-- Name: log_auditoria id_log; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.log_auditoria ALTER COLUMN id_log SET DEFAULT nextval('public.log_auditoria_id_log_seq'::regclass);
+
+
+--
+-- Name: materia_cup id_materia; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materia_cup ALTER COLUMN id_materia SET DEFAULT nextval('public.materia_cup_id_materia_seq'::regclass);
+
+
+--
+-- Name: migrations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.migrations ALTER COLUMN id SET DEFAULT nextval('public.migrations_id_seq'::regclass);
+
+
+--
+-- Name: nota id_nota; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nota ALTER COLUMN id_nota SET DEFAULT nextval('public.nota_id_nota_seq'::regclass);
+
+
+--
+-- Name: pago_inscripcion id_pago; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pago_inscripcion ALTER COLUMN id_pago SET DEFAULT nextval('public.pago_inscripcion_id_pago_seq'::regclass);
+
+
+--
+-- Name: permiso id_permiso; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.permiso ALTER COLUMN id_permiso SET DEFAULT nextval('public.permiso_id_permiso_seq'::regclass);
+
+
+--
+-- Name: postulacion id_postulacion; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulacion ALTER COLUMN id_postulacion SET DEFAULT nextval('public.postulacion_id_postulacion_seq'::regclass);
+
+
+--
+-- Name: postulante id_postulante; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulante ALTER COLUMN id_postulante SET DEFAULT nextval('public.postulante_id_postulante_seq'::regclass);
+
+
+--
+-- Name: rol id_rol; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rol ALTER COLUMN id_rol SET DEFAULT nextval('public.rol_id_rol_seq'::regclass);
+
+
+--
+-- Name: sesion id_sesion; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sesion ALTER COLUMN id_sesion SET DEFAULT nextval('public.sesion_id_sesion_seq'::regclass);
+
+
+--
+-- Name: usuario id_usuario; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.usuario ALTER COLUMN id_usuario SET DEFAULT nextval('public.usuario_id_usuario_seq'::regclass);
+
+
+--
+-- Name: asignacion_academica asignacion_academica_id_aula_id_horario_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.asignacion_academica
+    ADD CONSTRAINT asignacion_academica_id_aula_id_horario_unique UNIQUE (id_aula, id_horario);
+
+
+--
+-- Name: asignacion_academica asignacion_academica_id_docente_id_horario_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.asignacion_academica
+    ADD CONSTRAINT asignacion_academica_id_docente_id_horario_unique UNIQUE (id_docente, id_horario);
+
+
+--
+-- Name: asignacion_academica asignacion_academica_id_grupo_id_materia_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.asignacion_academica
+    ADD CONSTRAINT asignacion_academica_id_grupo_id_materia_unique UNIQUE (id_grupo, id_materia);
+
+
+--
+-- Name: asignacion_academica asignacion_academica_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.asignacion_academica
+    ADD CONSTRAINT asignacion_academica_pkey PRIMARY KEY (id_asignacion);
+
+
+--
+-- Name: aula aula_nombre_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.aula
+    ADD CONSTRAINT aula_nombre_unique UNIQUE (nombre);
+
+
+--
+-- Name: aula aula_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.aula
+    ADD CONSTRAINT aula_pkey PRIMARY KEY (id_aula);
+
+
+--
+-- Name: cache_locks cache_locks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cache_locks
+    ADD CONSTRAINT cache_locks_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: cache cache_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cache
+    ADD CONSTRAINT cache_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: carrera carrera_nombre_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.carrera
+    ADD CONSTRAINT carrera_nombre_unique UNIQUE (nombre);
+
+
+--
+-- Name: carrera carrera_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.carrera
+    ADD CONSTRAINT carrera_pkey PRIMARY KEY (id_carrera);
+
+
+--
+-- Name: cupo_carrera cupo_carrera_id_carrera_id_gestion_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cupo_carrera
+    ADD CONSTRAINT cupo_carrera_id_carrera_id_gestion_unique UNIQUE (id_carrera, id_gestion);
+
+
+--
+-- Name: cupo_carrera cupo_carrera_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cupo_carrera
+    ADD CONSTRAINT cupo_carrera_pkey PRIMARY KEY (id_cupo);
+
+
+--
+-- Name: docente_habilitacion_materia docente_habilitacion_materia_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.docente_habilitacion_materia
+    ADD CONSTRAINT docente_habilitacion_materia_pkey PRIMARY KEY (id_habilitacion);
+
+
+--
+-- Name: docente_habilitacion_materia docente_habilitacion_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.docente_habilitacion_materia
+    ADD CONSTRAINT docente_habilitacion_unique UNIQUE (id_docente, id_materia, tipo_habilitacion);
+
+
+--
+-- Name: docente docente_id_usuario_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.docente
+    ADD CONSTRAINT docente_id_usuario_unique UNIQUE (id_usuario);
+
+
+--
+-- Name: docente docente_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.docente
+    ADD CONSTRAINT docente_pkey PRIMARY KEY (id_docente);
+
+
+--
+-- Name: failed_jobs failed_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.failed_jobs
+    ADD CONSTRAINT failed_jobs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: failed_jobs failed_jobs_uuid_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.failed_jobs
+    ADD CONSTRAINT failed_jobs_uuid_unique UNIQUE (uuid);
+
+
+--
+-- Name: gestion_academica gestion_academica_nombre_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.gestion_academica
+    ADD CONSTRAINT gestion_academica_nombre_unique UNIQUE (nombre);
+
+
+--
+-- Name: gestion_academica gestion_academica_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.gestion_academica
+    ADD CONSTRAINT gestion_academica_pkey PRIMARY KEY (id_gestion);
+
+
+--
+-- Name: grupo_academico grupo_academico_id_gestion_nombre_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.grupo_academico
+    ADD CONSTRAINT grupo_academico_id_gestion_nombre_unique UNIQUE (id_gestion, nombre);
+
+
+--
+-- Name: grupo_academico grupo_academico_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.grupo_academico
+    ADD CONSTRAINT grupo_academico_pkey PRIMARY KEY (id_grupo);
+
+
+--
+-- Name: horario horario_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.horario
+    ADD CONSTRAINT horario_pkey PRIMARY KEY (id_horario);
+
+
+--
+-- Name: horario horario_turno_horas_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.horario
+    ADD CONSTRAINT horario_turno_horas_unique UNIQUE (turno, hora_inicio, hora_fin);
+
+
+--
+-- Name: job_batches job_batches_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.job_batches
+    ADD CONSTRAINT job_batches_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jobs jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jobs
+    ADD CONSTRAINT jobs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_auditoria log_auditoria_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.log_auditoria
+    ADD CONSTRAINT log_auditoria_pkey PRIMARY KEY (id_log);
+
+
+--
+-- Name: materia_cup materia_cup_nombre_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materia_cup
+    ADD CONSTRAINT materia_cup_nombre_unique UNIQUE (nombre);
+
+
+--
+-- Name: materia_cup materia_cup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materia_cup
+    ADD CONSTRAINT materia_cup_pkey PRIMARY KEY (id_materia);
+
+
+--
+-- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.migrations
+    ADD CONSTRAINT migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: nota nota_id_postulacion_id_materia_nro_examen_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nota
+    ADD CONSTRAINT nota_id_postulacion_id_materia_nro_examen_unique UNIQUE (id_postulacion, id_materia, nro_examen);
+
+
+--
+-- Name: nota nota_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nota
+    ADD CONSTRAINT nota_pkey PRIMARY KEY (id_nota);
+
+
+--
+-- Name: pago_inscripcion pago_inscripcion_numero_transaccion_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pago_inscripcion
+    ADD CONSTRAINT pago_inscripcion_numero_transaccion_unique UNIQUE (numero_transaccion);
+
+
+--
+-- Name: pago_inscripcion pago_inscripcion_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pago_inscripcion
+    ADD CONSTRAINT pago_inscripcion_pkey PRIMARY KEY (id_pago);
+
+
+--
+-- Name: password_reset_tokens password_reset_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.password_reset_tokens
+    ADD CONSTRAINT password_reset_tokens_pkey PRIMARY KEY (email);
+
+
+--
+-- Name: permiso permiso_nombre_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.permiso
+    ADD CONSTRAINT permiso_nombre_unique UNIQUE (nombre);
+
+
+--
+-- Name: permiso permiso_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.permiso
+    ADD CONSTRAINT permiso_pkey PRIMARY KEY (id_permiso);
+
+
+--
+-- Name: postulacion postulacion_id_postulante_id_gestion_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulacion
+    ADD CONSTRAINT postulacion_id_postulante_id_gestion_unique UNIQUE (id_postulante, id_gestion);
+
+
+--
+-- Name: postulacion postulacion_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulacion
+    ADD CONSTRAINT postulacion_pkey PRIMARY KEY (id_postulacion);
+
+
+--
+-- Name: postulante postulante_id_usuario_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulante
+    ADD CONSTRAINT postulante_id_usuario_unique UNIQUE (id_usuario);
+
+
+--
+-- Name: postulante postulante_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulante
+    ADD CONSTRAINT postulante_pkey PRIMARY KEY (id_postulante);
+
+
+--
+-- Name: rol rol_nombre_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rol
+    ADD CONSTRAINT rol_nombre_unique UNIQUE (nombre);
+
+
+--
+-- Name: rol_permiso rol_permiso_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rol_permiso
+    ADD CONSTRAINT rol_permiso_pkey PRIMARY KEY (id_rol, id_permiso);
+
+
+--
+-- Name: rol rol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rol
+    ADD CONSTRAINT rol_pkey PRIMARY KEY (id_rol);
+
+
+--
+-- Name: rol_usuario rol_usuario_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rol_usuario
+    ADD CONSTRAINT rol_usuario_pkey PRIMARY KEY (id_usuario, id_rol);
+
+
+--
+-- Name: sesion sesion_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sesion
+    ADD CONSTRAINT sesion_pkey PRIMARY KEY (id_sesion);
+
+
+--
+-- Name: sesion sesion_refresh_token_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sesion
+    ADD CONSTRAINT sesion_refresh_token_unique UNIQUE (refresh_token);
+
+
+--
+-- Name: sesion sesion_token_sesion_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sesion
+    ADD CONSTRAINT sesion_token_sesion_unique UNIQUE (token_sesion);
+
+
+--
+-- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: usuario usuario_ci_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.usuario
+    ADD CONSTRAINT usuario_ci_unique UNIQUE (ci);
+
+
+--
+-- Name: usuario usuario_correo_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.usuario
+    ADD CONSTRAINT usuario_correo_unique UNIQUE (correo);
+
+
+--
+-- Name: usuario usuario_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.usuario
+    ADD CONSTRAINT usuario_pkey PRIMARY KEY (id_usuario);
+
+
+--
+-- Name: usuario usuario_username_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.usuario
+    ADD CONSTRAINT usuario_username_unique UNIQUE (username);
+
+
+--
+-- Name: cache_expiration_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX cache_expiration_index ON public.cache USING btree (expiration);
+
+
+--
+-- Name: cache_locks_expiration_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX cache_locks_expiration_index ON public.cache_locks USING btree (expiration);
+
+
+--
+-- Name: docente_habilitacion_materia_activo_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX docente_habilitacion_materia_activo_index ON public.docente_habilitacion_materia USING btree (activo);
+
+
+--
+-- Name: docente_habilitacion_materia_id_docente_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX docente_habilitacion_materia_id_docente_index ON public.docente_habilitacion_materia USING btree (id_docente);
+
+
+--
+-- Name: docente_habilitacion_materia_id_materia_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX docente_habilitacion_materia_id_materia_index ON public.docente_habilitacion_materia USING btree (id_materia);
+
+
+--
+-- Name: failed_jobs_connection_queue_failed_at_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX failed_jobs_connection_queue_failed_at_index ON public.failed_jobs USING btree (connection, queue, failed_at);
+
+
+--
+-- Name: jobs_queue_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX jobs_queue_index ON public.jobs USING btree (queue);
+
+
+--
+-- Name: sessions_last_activity_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX sessions_last_activity_index ON public.sessions USING btree (last_activity);
+
+
+--
+-- Name: sessions_user_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX sessions_user_id_index ON public.sessions USING btree (user_id);
+
+
+--
+-- Name: asignacion_academica asignacion_academica_id_aula_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.asignacion_academica
+    ADD CONSTRAINT asignacion_academica_id_aula_foreign FOREIGN KEY (id_aula) REFERENCES public.aula(id_aula);
+
+
+--
+-- Name: asignacion_academica asignacion_academica_id_docente_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.asignacion_academica
+    ADD CONSTRAINT asignacion_academica_id_docente_foreign FOREIGN KEY (id_docente) REFERENCES public.docente(id_docente);
+
+
+--
+-- Name: asignacion_academica asignacion_academica_id_grupo_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.asignacion_academica
+    ADD CONSTRAINT asignacion_academica_id_grupo_foreign FOREIGN KEY (id_grupo) REFERENCES public.grupo_academico(id_grupo);
+
+
+--
+-- Name: asignacion_academica asignacion_academica_id_horario_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.asignacion_academica
+    ADD CONSTRAINT asignacion_academica_id_horario_foreign FOREIGN KEY (id_horario) REFERENCES public.horario(id_horario);
+
+
+--
+-- Name: asignacion_academica asignacion_academica_id_materia_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.asignacion_academica
+    ADD CONSTRAINT asignacion_academica_id_materia_foreign FOREIGN KEY (id_materia) REFERENCES public.materia_cup(id_materia);
+
+
+--
+-- Name: cupo_carrera cupo_carrera_id_carrera_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cupo_carrera
+    ADD CONSTRAINT cupo_carrera_id_carrera_foreign FOREIGN KEY (id_carrera) REFERENCES public.carrera(id_carrera);
+
+
+--
+-- Name: cupo_carrera cupo_carrera_id_gestion_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cupo_carrera
+    ADD CONSTRAINT cupo_carrera_id_gestion_foreign FOREIGN KEY (id_gestion) REFERENCES public.gestion_academica(id_gestion);
+
+
+--
+-- Name: docente_habilitacion_materia docente_habilitacion_materia_id_docente_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.docente_habilitacion_materia
+    ADD CONSTRAINT docente_habilitacion_materia_id_docente_foreign FOREIGN KEY (id_docente) REFERENCES public.docente(id_docente) ON DELETE CASCADE;
+
+
+--
+-- Name: docente_habilitacion_materia docente_habilitacion_materia_id_materia_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.docente_habilitacion_materia
+    ADD CONSTRAINT docente_habilitacion_materia_id_materia_foreign FOREIGN KEY (id_materia) REFERENCES public.materia_cup(id_materia) ON DELETE CASCADE;
+
+
+--
+-- Name: docente docente_id_usuario_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.docente
+    ADD CONSTRAINT docente_id_usuario_foreign FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario) ON DELETE CASCADE;
+
+
+--
+-- Name: grupo_academico grupo_academico_id_gestion_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.grupo_academico
+    ADD CONSTRAINT grupo_academico_id_gestion_foreign FOREIGN KEY (id_gestion) REFERENCES public.gestion_academica(id_gestion);
+
+
+--
+-- Name: log_auditoria log_auditoria_id_usuario_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.log_auditoria
+    ADD CONSTRAINT log_auditoria_id_usuario_foreign FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario);
+
+
+--
+-- Name: nota nota_id_materia_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nota
+    ADD CONSTRAINT nota_id_materia_foreign FOREIGN KEY (id_materia) REFERENCES public.materia_cup(id_materia);
+
+
+--
+-- Name: nota nota_id_postulacion_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nota
+    ADD CONSTRAINT nota_id_postulacion_foreign FOREIGN KEY (id_postulacion) REFERENCES public.postulacion(id_postulacion);
+
+
+--
+-- Name: nota nota_registrado_por_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nota
+    ADD CONSTRAINT nota_registrado_por_foreign FOREIGN KEY (registrado_por) REFERENCES public.usuario(id_usuario);
+
+
+--
+-- Name: pago_inscripcion pago_inscripcion_id_postulacion_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pago_inscripcion
+    ADD CONSTRAINT pago_inscripcion_id_postulacion_foreign FOREIGN KEY (id_postulacion) REFERENCES public.postulacion(id_postulacion);
+
+
+--
+-- Name: postulacion postulacion_id_carrera_admitida_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulacion
+    ADD CONSTRAINT postulacion_id_carrera_admitida_foreign FOREIGN KEY (id_carrera_admitida) REFERENCES public.carrera(id_carrera);
+
+
+--
+-- Name: postulacion postulacion_id_carrera_opcion1_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulacion
+    ADD CONSTRAINT postulacion_id_carrera_opcion1_foreign FOREIGN KEY (id_carrera_opcion1) REFERENCES public.carrera(id_carrera);
+
+
+--
+-- Name: postulacion postulacion_id_carrera_opcion2_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulacion
+    ADD CONSTRAINT postulacion_id_carrera_opcion2_foreign FOREIGN KEY (id_carrera_opcion2) REFERENCES public.carrera(id_carrera);
+
+
+--
+-- Name: postulacion postulacion_id_gestion_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulacion
+    ADD CONSTRAINT postulacion_id_gestion_foreign FOREIGN KEY (id_gestion) REFERENCES public.gestion_academica(id_gestion);
+
+
+--
+-- Name: postulacion postulacion_id_grupo_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulacion
+    ADD CONSTRAINT postulacion_id_grupo_foreign FOREIGN KEY (id_grupo) REFERENCES public.grupo_academico(id_grupo);
+
+
+--
+-- Name: postulacion postulacion_id_postulante_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulacion
+    ADD CONSTRAINT postulacion_id_postulante_foreign FOREIGN KEY (id_postulante) REFERENCES public.postulante(id_postulante);
+
+
+--
+-- Name: postulante postulante_id_usuario_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulante
+    ADD CONSTRAINT postulante_id_usuario_foreign FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario) ON DELETE CASCADE;
+
+
+--
+-- Name: postulante postulante_validado_por_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.postulante
+    ADD CONSTRAINT postulante_validado_por_foreign FOREIGN KEY (validado_por) REFERENCES public.usuario(id_usuario) ON DELETE SET NULL;
+
+
+--
+-- Name: rol_permiso rol_permiso_id_permiso_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rol_permiso
+    ADD CONSTRAINT rol_permiso_id_permiso_foreign FOREIGN KEY (id_permiso) REFERENCES public.permiso(id_permiso) ON DELETE CASCADE;
+
+
+--
+-- Name: rol_permiso rol_permiso_id_rol_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rol_permiso
+    ADD CONSTRAINT rol_permiso_id_rol_foreign FOREIGN KEY (id_rol) REFERENCES public.rol(id_rol) ON DELETE CASCADE;
+
+
+--
+-- Name: rol_usuario rol_usuario_id_rol_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rol_usuario
+    ADD CONSTRAINT rol_usuario_id_rol_foreign FOREIGN KEY (id_rol) REFERENCES public.rol(id_rol) ON DELETE CASCADE;
+
+
+--
+-- Name: rol_usuario rol_usuario_id_usuario_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rol_usuario
+    ADD CONSTRAINT rol_usuario_id_usuario_foreign FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario) ON DELETE CASCADE;
+
+
+--
+-- Name: sesion sesion_id_usuario_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sesion
+    ADD CONSTRAINT sesion_id_usuario_foreign FOREIGN KEY (id_usuario) REFERENCES public.usuario(id_usuario) ON DELETE CASCADE;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict Zrkqua0xfIzOvGxRrvyovf5dA7dwwab7ORslxl3MWmnsj24PUQo5lQ8qywj25Nk
+

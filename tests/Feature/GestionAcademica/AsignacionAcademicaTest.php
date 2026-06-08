@@ -246,6 +246,122 @@ class AsignacionAcademicaTest extends TestCase
         ]);
     }
 
+    public function test_user_without_asignaciones_create_cannot_generate_automatic_assignments(): void
+    {
+        $this->createAutomaticGenerationContext();
+        $user = $this->userWithPermissions(['asignaciones:read']);
+
+        $this->actingAs($user)
+            ->post('/academico/asignaciones/generar')
+            ->assertForbidden();
+    }
+
+    public function test_user_with_asignaciones_create_can_generate_automatic_assignments(): void
+    {
+        $context = $this->createAutomaticGenerationContext();
+        $user = $this->userWithPermissions(['asignaciones:create']);
+
+        $this->actingAs($user)
+            ->post('/academico/asignaciones/generar')
+            ->assertRedirect()
+            ->assertSessionHas('asignaciones_generate_summary');
+
+        $summary = session('asignaciones_generate_summary');
+
+        $this->assertSame(4, $summary['creadas']);
+        $this->assertSame(0, $summary['omitidas']);
+
+        foreach ($context['materias'] as $materia) {
+            $this->assertDatabaseHas('asignacion_academica', [
+                'id_grupo' => $context['grupo']->id_grupo,
+                'id_materia' => $materia->id_materia,
+                'activo' => true,
+            ]);
+        }
+    }
+
+    public function test_automatic_generation_respects_subject_order_by_schedule(): void
+    {
+        $context = $this->createAutomaticGenerationContext();
+        $user = $this->userWithPermissions(['asignaciones:create']);
+
+        $this->actingAs($user)->post('/academico/asignaciones/generar')->assertRedirect();
+
+        $ordered = AsignacionAcademica::query()
+            ->join('materia_cup', 'materia_cup.id_materia', '=', 'asignacion_academica.id_materia')
+            ->join('horario', 'horario.id_horario', '=', 'asignacion_academica.id_horario')
+            ->where('asignacion_academica.id_grupo', $context['grupo']->id_grupo)
+            ->orderBy('horario.hora_inicio')
+            ->pluck('materia_cup.nombre')
+            ->all();
+
+        $this->assertSame(['Matemáticas', 'Computación', 'Física', 'Inglés'], $ordered);
+    }
+
+    public function test_automatic_generation_does_not_duplicate_existing_group_subject(): void
+    {
+        $context = $this->createAutomaticGenerationContext();
+        AsignacionAcademica::create([
+            'id_grupo' => $context['grupo']->id_grupo,
+            'id_materia' => $context['materias']['Matemáticas']->id_materia,
+            'id_docente' => $context['docentes']['Matemáticas']->id_docente,
+            'id_aula' => $context['aula']->id_aula,
+            'id_horario' => $context['horarios'][0]->id_horario,
+            'activo' => true,
+        ]);
+        $user = $this->userWithPermissions(['asignaciones:create']);
+
+        $this->actingAs($user)->post('/academico/asignaciones/generar')->assertRedirect();
+
+        $this->assertSame(1, AsignacionAcademica::query()
+            ->where('id_grupo', $context['grupo']->id_grupo)
+            ->where('id_materia', $context['materias']['Matemáticas']->id_materia)
+            ->count());
+        $this->assertSame(4, AsignacionAcademica::query()
+            ->where('id_grupo', $context['grupo']->id_grupo)
+            ->count());
+    }
+
+    public function test_automatic_generation_omits_subject_without_available_teacher_and_continues(): void
+    {
+        $context = $this->createAutomaticGenerationContext(skipSubject: 'Física');
+        $user = $this->userWithPermissions(['asignaciones:create']);
+
+        $this->actingAs($user)->post('/academico/asignaciones/generar')->assertRedirect();
+
+        $summary = session('asignaciones_generate_summary');
+
+        $this->assertSame(3, $summary['creadas']);
+        $this->assertSame(1, $summary['omitidas']);
+        $this->assertStringContainsString('docente disponible', $summary['detalles'][0]['motivo']);
+        $this->assertDatabaseMissing('asignacion_academica', [
+            'id_grupo' => $context['grupo']->id_grupo,
+            'id_materia' => $context['materias']['Física']->id_materia,
+        ]);
+    }
+
+    public function test_automatic_generation_omits_when_classroom_is_occupied(): void
+    {
+        $context = $this->createAutomaticGenerationContext();
+        $otherGroup = $this->createGrupo($context['gestion'], 'Grupo ocupado', ['activo' => false]);
+        AsignacionAcademica::create([
+            'id_grupo' => $otherGroup->id_grupo,
+            'id_materia' => $this->createMateria('Materia ocupada')->id_materia,
+            'id_docente' => $this->createDocente()->id_docente,
+            'id_aula' => $context['aula']->id_aula,
+            'id_horario' => $context['horarios'][0]->id_horario,
+            'activo' => true,
+        ]);
+        $user = $this->userWithPermissions(['asignaciones:create']);
+
+        $this->actingAs($user)->post('/academico/asignaciones/generar')->assertRedirect();
+
+        $summary = session('asignaciones_generate_summary');
+
+        $this->assertSame(3, $summary['creadas']);
+        $this->assertSame(1, $summary['omitidas']);
+    }
+
     private function userWithPermissions(array $permissions): User
     {
         $this->seed(AccessControlSeeder::class);
@@ -432,5 +548,40 @@ class AsignacionAcademicaTest extends TestCase
             'nota' => 80,
             'fecha_registro' => now(),
         ]);
+    }
+
+    private function createAutomaticGenerationContext(?string $skipSubject = null): array
+    {
+        $gestion = $this->createGestion();
+        $grupo = $this->createGrupo($gestion, 'M001', ['turno' => 'MANANA']);
+        $aula = $this->createAula('Aula generacion', ['capacidad' => 80]);
+        $horarios = collect([
+            $this->createHorario('MANANA', '07:00', '08:00'),
+            $this->createHorario('MANANA', '08:00', '09:00'),
+            $this->createHorario('MANANA', '09:00', '10:00'),
+            $this->createHorario('MANANA', '10:00', '11:00'),
+        ]);
+        $materias = collect(['Matemáticas', 'Computación', 'Física', 'Inglés'])
+            ->mapWithKeys(fn (string $name) => [$name => $this->createMateria($name)]);
+        $docentes = collect();
+
+        foreach ($materias as $name => $materia) {
+            if ($skipSubject === $name) {
+                continue;
+            }
+
+            $docente = $this->createDocente();
+            $this->habilitateDocenteForMateria($docente, $materia);
+            $docentes->put($name, $docente);
+        }
+
+        return [
+            'gestion' => $gestion,
+            'grupo' => $grupo,
+            'aula' => $aula,
+            'horarios' => $horarios,
+            'materias' => $materias,
+            'docentes' => $docentes,
+        ];
     }
 }

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Modules\AccesoSeguridad\Models\Permiso;
 use App\Modules\AccesoSeguridad\Models\Rol;
 use App\Modules\AccesoSeguridad\Models\User;
+use App\Modules\GestionAcademica\Models\GestionAcademica;
 use Illuminate\Database\Seeder;
 
 class AccessControlSeeder extends Seeder
@@ -53,6 +54,10 @@ class AccessControlSeeder extends Seeder
                 'admision:process' => ['accion' => 'EJECUTAR', 'descripcion' => 'Procesar admisión por cupos'],
             ],
             'GestionAcademica' => [
+                'gestiones:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar gestiones academicas'],
+                'gestiones:create' => ['accion' => 'CREAR', 'descripcion' => 'Crear gestiones academicas'],
+                'gestiones:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Actualizar gestiones academicas'],
+                'gestiones:delete' => ['accion' => 'ELIMINAR', 'descripcion' => 'Activar o desactivar gestiones academicas'],
                 'materias:read' => ['accion' => 'LEER', 'descripcion' => 'Consultar materias CUP'],
                 'materias:create' => ['accion' => 'CREAR', 'descripcion' => 'Crear materias CUP'],
                 'materias:update' => ['accion' => 'ACTUALIZAR', 'descripcion' => 'Actualizar materias CUP'],
@@ -110,6 +115,7 @@ class AccessControlSeeder extends Seeder
 
         $this->syncRolePermissions();
         $this->assignAdminToTestUser();
+        $this->ensureDefaultGestionAcademica();
     }
 
     private function syncRolePermissions(): void
@@ -127,6 +133,10 @@ class AccessControlSeeder extends Seeder
             'postulantes:update',
             'pagos:read',
             'pagos:update',
+            'gestiones:read',
+            'gestiones:create',
+            'gestiones:update',
+            'gestiones:delete',
             'materias:read',
             'materias:create',
             'materias:update',
@@ -208,5 +218,19 @@ class AccessControlSeeder extends Seeder
         if ($admin && $testUser) {
             $testUser->roles()->syncWithoutDetaching($this->pivotRecords([$admin->id_rol]));
         }
+    }
+
+    private function ensureDefaultGestionAcademica(): void
+    {
+        if (GestionAcademica::query()->exists()) {
+            return;
+        }
+
+        GestionAcademica::create([
+            'nombre' => 'CUP 2026',
+            'fecha_inicio' => '2026-01-01',
+            'fecha_fin' => '2026-12-31',
+            'activo' => true,
+        ]);
     }
 }

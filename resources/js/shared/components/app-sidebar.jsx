@@ -6,10 +6,12 @@ import {
     BookOpen,
     BookText,
     CalendarCheck,
+    CalendarDays,
     ClipboardCheck,
     ClipboardList,
     Clock,
     DoorOpen,
+    FileUp,
     GraduationCap,
     KeyRound,
     Layers,
@@ -63,6 +65,12 @@ const mainNavGroups = [
                 permission: 'usuarios:read',
             },
             {
+                title: 'Carga masiva',
+                href: '/admin/carga-masiva',
+                icon: FileUp,
+                permission: 'usuarios:create',
+            },
+            {
                 title: 'Bitácora',
                 href: '/admin/bitacora',
                 icon: BookText,
@@ -98,6 +106,12 @@ const mainNavGroups = [
         title: 'Gestión Académica',
         icon: GraduationCap,
         items: [
+            {
+                title: 'Gestiones académicas',
+                href: '/academico/gestiones',
+                icon: CalendarDays,
+                permission: 'gestiones:read',
+            },
             {
                 title: 'Materias CUP',
                 href: '/academico/materias',

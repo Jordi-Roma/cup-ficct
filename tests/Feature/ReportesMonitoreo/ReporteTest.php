@@ -47,6 +47,68 @@ class ReporteTest extends TestCase
         $this->actingAs($user)->get('/reportes')->assertOk();
     }
 
+    public function test_reportes_exposes_dynamic_filter_options(): void
+    {
+        $context = $this->createContext();
+        $user = $this->userWithPermissions(['reportes:read']);
+
+        $response = $this->actingAs($user)->get('/reportes');
+        $props = $response->viewData('page')['props'];
+
+        $this->assertSame($context['gestion']->id_gestion, $props['filters']['id_gestion']);
+        $this->assertTrue(collect($props['options']['grupos'])->contains('id_grupo', $context['grupo']->id_grupo));
+        $this->assertTrue(collect($props['options']['materias'])->contains('id_materia', $context['materias'][0]->id_materia));
+        $this->assertTrue(collect($props['options']['estados'])->contains('value', 'ADMITIDO'));
+    }
+
+    public function test_can_filter_reportes_by_group(): void
+    {
+        $context = $this->createContext();
+        $otherGroup = GrupoAcademico::create([
+            'id_gestion' => $context['gestion']->id_gestion,
+            'nombre' => 'Grupo Filtro '.Str::upper(Str::random(6)),
+            'turno' => 'TARDE',
+            'capacidad_maxima' => 70,
+            'activo' => true,
+        ]);
+        $other = $this->createPostulante($context['gestion'], $otherGroup);
+        $this->createFullNotas($other['postulacion_id'], $context['materias'], 90);
+        $user = $this->userWithPermissions(['reportes:read']);
+
+        $response = $this->actingAs($user)->get('/reportes?id_grupo='.$otherGroup->id_grupo);
+        $lista = $response->viewData('page')['props']['listaGeneral'];
+
+        $this->assertCount(1, $lista);
+        $this->assertSame($otherGroup->nombre, $lista[0]['grupo']);
+    }
+
+    public function test_can_filter_reportes_by_materia(): void
+    {
+        $context = $this->createContext();
+        $user = $this->userWithPermissions(['reportes:read']);
+
+        $response = $this->actingAs($user)->get('/reportes?id_materia='.$context['materias'][0]->id_materia);
+        $stats = $response->viewData('page')['props']['estadisticasPorMateria'];
+
+        $this->assertCount(1, $stats);
+        $this->assertSame($context['materias'][0]->id_materia, $stats[0]['id_materia']);
+    }
+
+    public function test_can_filter_reportes_by_estado_admitido(): void
+    {
+        $context = $this->createContext();
+        DB::table('postulacion')
+            ->where('id_postulacion', $context['approved']['postulacion_id'])
+            ->update(['estado_admision' => 'ADMITIDO']);
+        $user = $this->userWithPermissions(['reportes:read']);
+
+        $response = $this->actingAs($user)->get('/reportes?estado=ADMITIDO');
+        $lista = $response->viewData('page')['props']['listaGeneral'];
+
+        $this->assertCount(1, $lista);
+        $this->assertSame('ADMITIDO', $lista[0]['estado_admision']);
+    }
+
     public function test_lista_general_includes_postulante_carrera_and_estado(): void
     {
         $context = $this->createContext();
@@ -158,16 +220,42 @@ class ReporteTest extends TestCase
         $this->actingAs($user)->get('/reportes/export/postulantes')->assertForbidden();
     }
 
-    public function test_user_with_reportes_export_can_export_csv(): void
+    public function test_user_with_reportes_export_can_export_excel_compatible_csv(): void
     {
         $context = $this->createContext();
         $user = $this->userWithPermissions(['reportes:read', 'reportes:export']);
 
         $response = $this->actingAs($user)->get('/reportes/export/postulantes');
+        $content = $response->streamedContent();
 
         $response->assertOk();
         $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
-        $this->assertStringContainsString($context['approved']['user']->ci, $response->streamedContent());
+        $this->assertStringContainsString('reporte-postulantes.csv', $response->headers->get('content-disposition'));
+        $this->assertStringStartsWith("\xEF\xBB\xBF", $content);
+        $this->assertStringContainsString('CI;"Nombre completo";Correo', $content);
+        $this->assertStringContainsString($context['approved']['user']->ci, $content);
+    }
+
+    public function test_export_csv_respects_group_filter(): void
+    {
+        $context = $this->createContext();
+        $otherGroup = GrupoAcademico::create([
+            'id_gestion' => $context['gestion']->id_gestion,
+            'nombre' => 'Grupo Export '.Str::upper(Str::random(6)),
+            'turno' => 'NOCHE',
+            'capacidad_maxima' => 70,
+            'activo' => true,
+        ]);
+        $other = $this->createPostulante($context['gestion'], $otherGroup);
+        $this->createFullNotas($other['postulacion_id'], $context['materias'], 88);
+        $user = $this->userWithPermissions(['reportes:read', 'reportes:export']);
+
+        $response = $this->actingAs($user)->get('/reportes/export/postulantes?id_grupo='.$otherGroup->id_grupo);
+        $content = $response->streamedContent();
+
+        $response->assertOk();
+        $this->assertStringContainsString($other['user']->ci, $content);
+        $this->assertStringNotContainsString($context['approved']['user']->ci, $content);
     }
 
     public function test_export_csv_does_not_modify_data(): void
@@ -209,6 +297,8 @@ class ReporteTest extends TestCase
 
     private function createContext(): array
     {
+        GestionAcademica::query()->update(['activo' => false]);
+
         $gestion = GestionAcademica::create([
             'nombre' => 'CUP '.Str::upper(Str::random(6)),
             'fecha_inicio' => '2026-01-01',
@@ -233,12 +323,17 @@ class ReporteTest extends TestCase
             'nombre' => 'Aula '.Str::upper(Str::random(6)),
             'capacidad' => 70,
         ]);
-        $horario = Horario::create([
-            'turno' => 'MANANA',
-            'hora_inicio' => '08:00',
-            'hora_fin' => '10:00',
-            'activo' => true,
-        ]);
+        $horario = Horario::query()
+            ->where('turno', 'MANANA')
+            ->where('hora_inicio', '07:00')
+            ->where('hora_fin', '08:00')
+            ->first()
+            ?? Horario::create([
+                'turno' => 'MANANA',
+                'hora_inicio' => '06:00',
+                'hora_fin' => '07:00',
+                'activo' => true,
+            ]);
         AsignacionAcademica::create([
             'id_grupo' => $grupo->id_grupo,
             'id_materia' => $materias[0]->id_materia,

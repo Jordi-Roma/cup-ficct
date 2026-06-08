@@ -49,6 +49,11 @@ class FortifyServiceProvider extends ServiceProvider
                 public function toResponse($request)
                 {
                     $user = $request->user();
+                    $throttleKey = Str::transliterate(Str::lower((string) $request->input(Fortify::username())).'|'.$request->ip());
+
+                    RateLimiter::clear($throttleKey);
+                    RateLimiter::clear('login:'.$throttleKey);
+                    RateLimiter::clear(md5('login'.$throttleKey));
 
                     if (! $user?->hasRole('POSTULANTE')) {
                         return redirect()->intended(route('dashboard', absolute: false));
@@ -119,6 +124,7 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(fn (Request $request) => Inertia::render('auth/login', [
             'canResetPassword' => true,
             'status' => $request->session()->get('status'),
+            'loginRateLimit' => self::loginRateLimitStatus($request),
         ]));
 
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/reset-password', [
@@ -156,9 +162,49 @@ class FortifyServiceProvider extends ServiceProvider
     private function configureRateLimiting(): void
     {
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $throttleKey = self::loginThrottleKey($request);
 
-            return Limit::perMinute(5)->by($throttleKey);
+            return Limit::perMinutes(3, 5)->by($throttleKey);
         });
+    }
+
+    private static function loginRateLimitStatus(Request $request): array
+    {
+        $username = (string) $request->old(Fortify::username(), $request->input(Fortify::username(), ''));
+        $maxAttempts = 5;
+
+        if ($username === '') {
+            return [
+                'maxAttempts' => $maxAttempts,
+                'attempts' => 0,
+                'remaining' => $maxAttempts,
+                'locked' => false,
+                'availableIn' => 0,
+            ];
+        }
+
+        $key = self::loginThrottleStorageKey($username, $request->ip());
+        $attempts = RateLimiter::attempts($key);
+        $locked = RateLimiter::tooManyAttempts($key, $maxAttempts);
+
+        return [
+            'maxAttempts' => $maxAttempts,
+            'attempts' => min($attempts, $maxAttempts),
+            'remaining' => max(0, $maxAttempts - $attempts),
+            'locked' => $locked,
+            'availableIn' => $locked ? RateLimiter::availableIn($key) : 0,
+        ];
+    }
+
+    private static function loginThrottleKey(Request $request): string
+    {
+        return Str::transliterate(Str::lower((string) $request->input(Fortify::username())).'|'.$request->ip());
+    }
+
+    private static function loginThrottleStorageKey(string $username, string $ip): string
+    {
+        $throttleKey = Str::transliterate(Str::lower($username).'|'.$ip);
+
+        return md5('login'.$throttleKey);
     }
 }

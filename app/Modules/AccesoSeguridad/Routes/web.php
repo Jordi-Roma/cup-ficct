@@ -2,6 +2,7 @@
 
 use App\Modules\AccesoSeguridad\Controllers\ProfileController;
 use App\Modules\AccesoSeguridad\Controllers\BitacoraController;
+use App\Modules\AccesoSeguridad\Controllers\CargaMasivaUsuarioController;
 use App\Modules\AccesoSeguridad\Controllers\PasswordResetController;
 use App\Modules\AccesoSeguridad\Controllers\PermisoController;
 use App\Modules\AccesoSeguridad\Controllers\RolController;
@@ -53,6 +54,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('usuarios', [UsuarioController::class, 'store'])->middleware('permission:usuarios:create')->name('usuarios.store');
     Route::put('usuarios/{usuario}', [UsuarioController::class, 'update'])->middleware('permission:usuarios:update')->name('usuarios.update');
     Route::put('usuarios/{usuario}/roles', [UsuarioController::class, 'syncRoles'])->middleware('permission:usuarios:update')->name('usuarios.roles.sync');
+
+    Route::get('carga-masiva', [CargaMasivaUsuarioController::class, 'index'])->middleware('permission:usuarios:create')->name('carga-masiva.index');
+    Route::post('carga-masiva', [CargaMasivaUsuarioController::class, 'store'])->middleware('permission:usuarios:create')->name('carga-masiva.store');
 
     Route::get('bitacora', [BitacoraController::class, 'index'])->middleware('permission:bitacora:read')->name('bitacora.index');
     Route::get('bitacora/export', [BitacoraController::class, 'export'])->middleware('permission:bitacora:read')->name('bitacora.export');
