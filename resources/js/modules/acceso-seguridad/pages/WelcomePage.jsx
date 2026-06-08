@@ -1,179 +1,349 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { BarChart3, CalendarDays, CheckSquare, CreditCard, FileText, LogIn, Monitor, ShieldCheck, UserPlus, UsersRound, } from 'lucide-react';
+import {
+    BarChart3,
+    CheckSquare,
+    CreditCard,
+    FileText,
+    LogIn,
+    UserPlus,
+} from 'lucide-react';
 import { dashboard, login, register } from '@/routes';
 import { Button } from '@/shared/components/ui/button';
+
 const processSteps = [
     {
-        title: 'Postula',
+        number: '01',
+        title: 'POSTULA',
         description: 'Registra tus datos y envía tu postulación.',
         icon: FileText,
     },
     {
-        title: 'Cumple requisitos',
-        description: 'Marca tu documentación como completa.',
+        number: '02',
+        title: 'REQUISITOS',
+        description: 'Completa tu documentación.',
         icon: CheckSquare,
     },
     {
-        title: 'Realiza tu pago',
-        description: 'Asocia el pago de inscripción a tu proceso.',
+        number: '03',
+        title: 'PAGO CUP',
+        description: 'Realiza el pago de inscripción de forma segura.',
         icon: CreditCard,
     },
     {
-        title: 'Sigue tu proceso',
-        description: 'Consulta estado, grupo, notas y resultado.',
+        number: '04',
+        title: 'SIGUE TU PROCESO',
+        description: 'Consulta estado, novedades y resultados de tu postulación.',
         icon: BarChart3,
     },
 ];
-const subjects = [
-    { name: 'Computación', icon: Monitor },
-    { name: 'Matemáticas', icon: BarChart3 },
-    { name: 'Inglés', icon: FileText },
-    { name: 'Física', icon: CheckSquare },
-];
+
 export default function Welcome() {
     const { auth } = usePage().props;
-    return (<>
-            <Head title="Admisión CUP-FICCT"/>
 
-            <main className="min-h-screen overflow-hidden bg-slate-50 text-slate-950">
-                <section className="relative mx-auto flex min-h-screen w-full max-w-[1600px] flex-col px-5 py-5 sm:px-8 lg:px-12">
-                    <header className="relative z-20 flex items-center justify-between gap-4 py-4">
-                        <Link href="/" className="flex items-center gap-3">
-                            <span className="flex size-10 items-center justify-center rounded-md bg-[#061d3b] text-white">
-                                <span className="text-sm font-bold">FC</span>
-                            </span>
-                            <div className="leading-tight">
-                                <p className="font-semibold text-[#061d3b]">
-                                    CUP-FICCT
+    return (
+        <>
+            <Head title="Admisión CUP-FICCT" />
+
+            <style>{`
+                /* ── Circuit board pattern ── */
+                .welcome-circuit-bg {
+                    background-image:
+                        linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+                    background-size: 40px 40px;
+                }
+                .welcome-circuit-left {
+                    background-image:
+                        linear-gradient(rgba(180,40,100,0.12) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(180,40,100,0.12) 1px, transparent 1px);
+                    background-size: 36px 36px;
+                }
+                /* ── Step card 3D effect ── */
+                @keyframes wcFloat {
+                    0%, 100% { transform: translateY(0px); }
+                    50%       { transform: translateY(-5px); }
+                }
+                .wc-step {
+                    transform-style: preserve-3d;
+                    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1),
+                                box-shadow 0.35s ease;
+                    animation: wcFloat 5s ease-in-out infinite;
+                }
+                .wc-step:nth-child(1) { animation-delay: 0s; }
+                .wc-step:nth-child(2) { animation-delay: 0.7s; }
+                .wc-step:nth-child(3) { animation-delay: 1.4s; }
+                .wc-step:nth-child(4) { animation-delay: 2.1s; }
+                .wc-step:hover {
+                    transform: translateY(-8px) rotateX(5deg) scale(1.03);
+                    box-shadow: 0 20px 40px rgba(120,10,60,0.35), 0 6px 12px rgba(0,0,0,0.2);
+                }
+                /* ── Dot node pulse ── */
+                @keyframes wcDot {
+                    0%, 100% { opacity: 0.4; transform: scale(1); }
+                    50%       { opacity: 0.9; transform: scale(1.4); }
+                }
+                .wc-dot { animation: wcDot 3s ease-in-out infinite; }
+                .wc-dot:nth-child(2) { animation-delay: 0.6s; }
+                .wc-dot:nth-child(3) { animation-delay: 1.2s; }
+                .wc-dot:nth-child(4) { animation-delay: 1.8s; }
+                /* ── Building filter — line-art on pink ── */
+                .wc-building {
+                    filter: sepia(1) saturate(0.3) brightness(0.55) contrast(1.4);
+                    mix-blend-mode: multiply;
+                }
+            `}</style>
+
+            {/* ════════════════════════════════════════
+                FULL SCREEN WRAPPER
+            ════════════════════════════════════════ */}
+            <main className="flex min-h-screen flex-col overflow-hidden">
+
+                {/* ── CONTENT ROW ── */}
+                <div className="flex flex-1">
+
+                    {/* ════════════════════════════════
+                        LEFT PANEL — light pink, building
+                    ════════════════════════════════ */}
+                    <aside
+                        className="welcome-circuit-left relative flex w-64 shrink-0 flex-col overflow-hidden xl:w-72"
+                        style={{ background: 'linear-gradient(180deg, #f0a0be 0%, #e890b2 40%, #e080a8 100%)' }}
+                    >
+                        {/* Decorative circuit nodes */}
+                        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                            {[
+                                { top: '12%', left: '20%' }, { top: '28%', right: '15%' },
+                                { top: '55%', left: '35%' }, { top: '75%', right: '20%' },
+                            ].map((pos, i) => (
+                                <div
+                                    key={i}
+                                    className="wc-dot absolute size-2 rounded-full bg-white/60"
+                                    style={pos}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Shield logo + faculty name */}
+                        <div className="relative z-10 flex flex-col items-center gap-2 px-4 pt-4">
+                            <img
+                                src="/images/ficct-shield-oval.png"
+                                alt="Escudo FICCT"
+                                className="h-24 w-auto object-contain xl:h-28"
+                                style={{
+                                    filter: 'contrast(18) brightness(0.45)',
+                                    mixBlendMode: 'multiply',
+                                    opacity: 0.72,
+                                }}
+                            />
+                            <div className="text-center">
+                                <p className="text-[9px] font-bold leading-tight tracking-wide text-[#4a0030] uppercase">
+                                    Facultad de Ingeniería
                                 </p>
-                                <p className="text-xs text-slate-500">
-                                    Admisión universitaria
+                                <p className="text-[9px] font-semibold leading-tight text-[#4a0030] uppercase">
+                                    en Ciencias de la Computación
                                 </p>
-                            </div>
-                        </Link>
-
-                        {auth.user && (<Button asChild>
-                                <a href={dashboard.url()}>Dashboard Administrativo</a>
-                            </Button>)}
-                    </header>
-
-                    <div className="relative z-10 grid flex-1 items-center gap-10 py-10 lg:grid-cols-[0.9fr_1.1fr] lg:py-6">
-                        <div className="max-w-2xl space-y-8">
-                            <div className="space-y-5">
-                                <div className="inline-flex items-center gap-2 rounded-full border border-red-100 bg-white px-3 py-1 text-sm font-medium text-[#e30613] shadow-sm">
-                                    <ShieldCheck className="size-4"/>
-                                    Proceso de admisión CUP 2026
-                                </div>
-
-                                <div className="space-y-3">
-                                    <h1 className="text-5xl leading-tight font-bold tracking-normal text-balance text-[#061d3b] sm:text-6xl lg:text-7xl">
-                                        CUP-FICCT{' '}
-                                        <span className="text-[#e30613]">
-                                            Admisión
-                                        </span>{' '}
-                                        Universitaria
-                                    </h1>
-                                    <div className="h-1.5 w-24 rounded-full bg-[#e30613]"/>
-                                </div>
-
-                                <p className="max-w-xl text-lg leading-8 text-slate-700">
-                                    Registra tu postulación al Curso
-                                    Preuniversitario de la FICCT, consulta tu
-                                    proceso de admisión y accede a tu
-                                    información académica.
+                                <p className="text-[9px] font-semibold leading-tight text-[#4a0030] uppercase">
+                                    y Telecomunicaciones
                                 </p>
-                            </div>
-
-                            <div className="flex flex-col gap-3 sm:flex-row">
-                                {auth.user ? (<Button asChild className="h-12 bg-[#061d3b] px-6 text-base hover:bg-[#0b2a52]">
-                                        <a href={dashboard.url()}>
-                                            Ir al dashboard
-                                        </a>
-                                    </Button>) : (<>
-                                        <Button asChild className="h-12 bg-[#061d3b] px-6 text-base hover:bg-[#0b2a52]">
-                                            <Link href={login()}>
-                                                <LogIn className="size-5"/>
-                                                Iniciar sesión
-                                            </Link>
-                                        </Button>
-                                        <Button asChild className="h-12 bg-[#e30613] px-6 text-base hover:bg-[#bb0710]">
-                                            <Link href={register()}>
-                                                <UserPlus className="size-5"/>
-                                                Registrarse como postulante
-                                            </Link>
-                                        </Button>
-                                    </>)}
-                            </div>
-
-                            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                                {processSteps.map((step) => (<div key={step.title} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                                        <step.icon className="mb-3 size-6 text-[#e30613]"/>
-                                        <h2 className="font-semibold text-[#061d3b]">
-                                            {step.title}
-                                        </h2>
-                                        <p className="mt-1 text-sm leading-5 text-slate-600">
-                                            {step.description}
-                                        </p>
-                                    </div>))}
-                            </div>
-
-                            <div className="grid gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-3">
-                                <div className="flex items-center gap-3">
-                                    <CalendarDays className="size-7 text-[#e30613]"/>
-                                    <div>
-                                        <p className="font-semibold text-[#061d3b]">
-                                            Gestión activa
-                                        </p>
-                                        <p className="text-sm text-slate-600">
-                                            CUP 2026
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <UsersRound className="size-7 text-[#061d3b]"/>
-                                    <div>
-                                        <p className="font-semibold text-[#061d3b]">
-                                            Cupos por grupo
-                                        </p>
-                                        <p className="text-sm text-slate-600">
-                                            70 estudiantes
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <ShieldCheck className="size-7 text-[#e30613]"/>
-                                    <div>
-                                        <p className="font-semibold text-[#061d3b]">
-                                            Proceso seguro
-                                        </p>
-                                        <p className="text-sm text-slate-600">
-                                            Plataforma confiable
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="lg:hidden">
-                                <p className="mb-3 text-sm font-semibold text-[#061d3b]">
-                                    Áreas de evaluación
-                                </p>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {subjects.map((subject) => (<div key={subject.name} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-3 text-sm font-medium text-slate-700 shadow-sm">
-                                            <subject.icon className="size-5 text-[#e30613]"/>
-                                            {subject.name}
-                                        </div>))}
-                                </div>
                             </div>
                         </div>
 
-                        <div className="relative hidden min-h-[680px] lg:block">
-                            <div className="absolute inset-y-0 -right-12 left-0 overflow-hidden rounded-l-[2rem] border border-slate-200 bg-white shadow-2xl">
-                                <img src="/images/cup-ficct-hero.png" alt="Postulantes frente a la Facultad de Ingeniería de la FICCT" className="h-full w-full object-cover object-[72%_center]"/>
-                                <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-slate-50 to-transparent"/>
+                        {/* Big title */}
+                        <div className="relative z-10 px-5 pb-2">
+                            <h1 className="text-3xl font-extrabold leading-tight text-[#2c0020] xl:text-4xl">
+                                ADMISIÓN{' '}
+                                <span className="block">UNIVERSITARIA</span>
+                            </h1>
+                            <p
+                                className="mt-1 text-2xl font-extrabold xl:text-3xl"
+                                style={{ color: '#b01060' }}
+                            >
+                                CUP-FICCT
+                            </p>
+                        </div>
+
+                        {/* Building line-art illustration */}
+                        <div className="relative mt-auto overflow-hidden" style={{ height: '58%' }}>
+                            {/* Fade top edge into panel */}
+                            <div
+                                className="absolute inset-x-0 top-0 z-10 h-10"
+                                style={{ background: 'linear-gradient(to bottom, #e890b2, transparent)' }}
+                            />
+                            <img
+                                src="/images/ficct-building-lineart.png"
+                                alt="Edificio FICCT 236"
+                                className="h-full w-full object-contain object-bottom"
+                                style={{
+                                    /* White bg → transparent via multiply;
+                                       boost contrast so faint lines become solid */
+                                    filter: 'contrast(2) brightness(0.75)',
+                                    mixBlendMode: 'multiply',
+                                    opacity: 0.88,
+                                }}
+                            />
+                        </div>
+                    </aside>
+
+                    {/* ════════════════════════════════
+                        RIGHT PANEL — magenta gradient
+                    ════════════════════════════════ */}
+                    <section
+                        className="welcome-circuit-bg relative flex flex-1 flex-col overflow-hidden"
+                        style={{
+                            background: 'linear-gradient(145deg, #5e0a32 0%, #7a1244 20%, #6a1040 45%, #7e1448 65%, #520830 85%, #3e0624 100%)',
+                        }}
+                    >
+                        {/* SVG circuit decoration lines */}
+                        <svg
+                            className="pointer-events-none absolute inset-0 h-full w-full opacity-15"
+                            xmlns="http://www.w3.org/2000/svg"
+                            preserveAspectRatio="none"
+                        >
+                            <line x1="0" y1="20%" x2="60%" y2="20%" stroke="white" strokeWidth="0.8" strokeDasharray="6 5" />
+                            <line x1="0" y1="80%" x2="100%" y2="80%" stroke="white" strokeWidth="0.8" strokeDasharray="6 5" />
+                            <line x1="55%" y1="0" x2="55%" y2="100%" stroke="white" strokeWidth="0.8" strokeDasharray="6 5" />
+                            <circle cx="55%" cy="20%" r="5" fill="white" opacity="0.6" />
+                            <circle cx="0" cy="80%" r="4" fill="white" opacity="0.5" />
+                            <circle cx="55%" cy="80%" r="5" fill="white" opacity="0.6" />
+                        </svg>
+
+                        {/* Admin button (if logged in) */}
+                        {auth.user && (
+                            <div className="relative z-20 flex justify-end p-5">
+                                <Button
+                                    asChild
+                                    className="border border-white/30 bg-white/15 text-white hover:bg-white/25"
+                                >
+                                    <a href={dashboard.url()}>Dashboard Administrativo</a>
+                                </Button>
+                            </div>
+                        )}
+
+                        {/* ── Main content flex ── */}
+                        <div className="relative z-10 flex flex-1 items-center gap-6 px-8 py-8 xl:px-12">
+
+                            {/* Welcome text + buttons */}
+                            <div className="flex-1 space-y-6">
+                                <div>
+                                    <h2
+                                        className="text-4xl font-extrabold leading-tight text-white xl:text-5xl"
+                                        style={{ textShadow: '0 2px 12px rgba(0,0,0,0.3)' }}
+                                    >
+                                        TE DAMOS LA{' '}
+                                        <span
+                                            className="block"
+                                            style={{ color: '#ffb8d8' }}
+                                        >
+                                            BIENVENIDA
+                                        </span>
+                                    </h2>
+                                </div>
+
+                                <p className="max-w-sm text-base leading-7 text-pink-100">
+                                    Registra tu postulación al Curso Preuniversitario de la FICCT,
+                                    consulta tu proceso de admisión y accede a tu información académica.
+                                </p>
+
+                                <div className="flex flex-wrap gap-3">
+                                    {auth.user ? (
+                                        <Button
+                                            asChild
+                                            className="h-10 border border-white/40 bg-white/15 px-5 text-sm font-bold text-white hover:bg-white/25"
+                                        >
+                                            <a href={dashboard.url()}>Ir al Dashboard</a>
+                                        </Button>
+                                    ) : (
+                                        <>
+                                            <Button
+                                                asChild
+                                                className="h-10 border border-white/50 bg-white/15 px-5 text-sm font-bold text-white hover:bg-white/28"
+                                                style={{ backdropFilter: 'blur(6px)' }}
+                                            >
+                                                <Link href={register()}>
+                                                    <UserPlus className="size-4" />
+                                                    REGISTRARSE COMO POSTULANTE
+                                                </Link>
+                                            </Button>
+                                            <Button
+                                                asChild
+                                                className="h-10 border border-white/50 bg-white/15 px-5 text-sm font-bold text-white hover:bg-white/28"
+                                                style={{ backdropFilter: 'blur(6px)' }}
+                                            >
+                                                <Link href={login()}>
+                                                    <LogIn className="size-4" />
+                                                    INICIAR SESIÓN
+                                                </Link>
+                                            </Button>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Step cards — right sub-column */}
+                            <div
+                                className="hidden w-72 flex-col gap-3 lg:flex xl:w-80"
+                                style={{ perspective: '900px' }}
+                            >
+                                {processSteps.map((step) => (
+                                    <div
+                                        key={step.number}
+                                        className="wc-step group relative overflow-hidden rounded-2xl px-4 py-3"
+                                        style={{
+                                            background: 'rgba(255,220,235,0.18)',
+                                            border: '1px solid rgba(255,255,255,0.28)',
+                                            backdropFilter: 'blur(12px)',
+                                        }}
+                                    >
+                                        {/* Hover shimmer */}
+                                        <div
+                                            className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                                            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%)' }}
+                                        />
+
+                                        <div className="relative flex items-center gap-3">
+                                            {/* Icon box */}
+                                            <div
+                                                className="flex size-10 shrink-0 items-center justify-center rounded-xl"
+                                                style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.3)' }}
+                                            >
+                                                <step.icon className="size-5 text-white" />
+                                            </div>
+
+                                            <div className="min-w-0">
+                                                <p className="text-xs font-bold tracking-wide text-white">
+                                                    <span
+                                                        className="mr-1.5 text-pink-200"
+                                                        style={{ fontVariantNumeric: 'tabular-nums' }}
+                                                    >
+                                                        {step.number}
+                                                    </span>
+                                                    {step.title}
+                                                </p>
+                                                <p className="mt-0.5 text-xs leading-4 text-pink-100/90">
+                                                    {step.description}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Bottom glow on hover */}
+                                        <div
+                                            className="absolute bottom-0 left-6 right-6 h-px opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                                            style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent)' }}
+                                        />
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    </div>
-                </section>
+
+                        {/* ── Bottom bar ── */}
+                        <div
+                            className="relative z-10 border-t border-white/15 py-2 text-center text-xs text-pink-200/80"
+                            style={{ background: 'rgba(0,0,0,0.12)' }}
+                        >
+                            • Facultad de Ingeniería en Ciencias de la Computación y Telecomunicaciones •
+                        </div>
+                    </section>
+                </div>
             </main>
-        </>);
+        </>
+    );
 }
