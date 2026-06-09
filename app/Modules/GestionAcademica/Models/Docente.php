@@ -2,6 +2,8 @@
 
 namespace App\Modules\GestionAcademica\Models;
 
+use App\Modules\AccesoSeguridad\Traits\Auditable;
+
 use App\Modules\AccesoSeguridad\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Docente extends Model
 {
+    use Auditable;
+
     protected $table = 'docente';
 
     protected $primaryKey = 'id_docente';

@@ -2,11 +2,15 @@
 
 namespace App\Modules\AccesoSeguridad\Models;
 
+use App\Modules\AccesoSeguridad\Traits\Auditable;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class RolUsuario extends Model
 {
+    use Auditable;
+
     protected $table = 'rol_usuario';
 
     public $incrementing = false;

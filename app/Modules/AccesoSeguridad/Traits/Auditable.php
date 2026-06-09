@@ -36,10 +36,15 @@ trait Auditable
             $datosAnteriores = $model->getAttributes();
         }
 
+        $idRegistro = $model->getKey();
+        if (is_array($idRegistro)) {
+            $idRegistro = json_encode($idRegistro);
+        }
+
         LogAuditoria::create([
             'tabla_afectada' => $model->getTable(),
             'operacion' => $operacion,
-            'id_registro' => $model->getKey(),
+            'id_registro' => $idRegistro ? (string) $idRegistro : null,
             'datos_anteriores' => $datosAnteriores,
             'datos_nuevos' => $datosNuevos,
             'id_usuario' => Auth::id(),

@@ -2,11 +2,15 @@
 
 namespace App\Modules\GestionAcademica\Models;
 
+use App\Modules\AccesoSeguridad\Traits\Auditable;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Carrera extends Model
 {
+    use Auditable;
+
     protected $table = 'carrera';
 
     protected $primaryKey = 'id_carrera';

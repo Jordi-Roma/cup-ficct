@@ -2,11 +2,15 @@
 
 namespace App\Modules\GestionAcademica\Models;
 
+use App\Modules\AccesoSeguridad\Traits\Auditable;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Horario extends Model
 {
+    use Auditable;
+
     protected $table = 'horario';
 
     protected $primaryKey = 'id_horario';

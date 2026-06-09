@@ -2,11 +2,15 @@
 
 namespace App\Modules\GestionAcademica\Models;
 
+use App\Modules\AccesoSeguridad\Traits\Auditable;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DocenteHabilitacionMateria extends Model
 {
+    use Auditable;
+
     public const PROFESIONAL_AREA = 'PROFESIONAL_AREA';
     public const DIPLOMADO = 'DIPLOMADO';
     public const MAESTRIA = 'MAESTRIA';

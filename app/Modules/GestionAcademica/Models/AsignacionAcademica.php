@@ -2,11 +2,15 @@
 
 namespace App\Modules\GestionAcademica\Models;
 
+use App\Modules\AccesoSeguridad\Traits\Auditable;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AsignacionAcademica extends Model
 {
+    use Auditable;
+
     protected $table = 'asignacion_academica';
 
     protected $primaryKey = 'id_asignacion';

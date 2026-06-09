@@ -2,11 +2,15 @@
 
 namespace App\Modules\RegistroPostulantes\Models;
 
+use App\Modules\AccesoSeguridad\Traits\Auditable;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PagoInscripcion extends Model
 {
+    use Auditable;
+
     protected $table = 'pago_inscripcion';
 
     protected $primaryKey = 'id_pago';
