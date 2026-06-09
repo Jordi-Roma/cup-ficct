@@ -213,7 +213,7 @@ export default function Welcome() {
                                     asChild
                                     className="border border-white/30 bg-white/15 text-white hover:bg-white/25"
                                 >
-                                    <a href={dashboard.url()}>Dashboard Administrativo</a>
+                                    <a href="/">Ir al Sistema</a>
                                 </Button>
                             </div>
                         )}
@@ -249,7 +249,7 @@ export default function Welcome() {
                                             asChild
                                             className="h-10 border border-white/40 bg-white/15 px-5 text-sm font-bold text-white hover:bg-white/25"
                                         >
-                                            <a href={dashboard.url()}>Ir al Dashboard</a>
+                                            <a href="/">Ir al Sistema</a>
                                         </Button>
                                     ) : (
                                         <>

@@ -55,23 +55,50 @@ class FortifyServiceProvider extends ServiceProvider
                     RateLimiter::clear('login:'.$throttleKey);
                     RateLimiter::clear(md5('login'.$throttleKey));
 
+                    // Usuarios que no son postulantes van al dashboard directamente
                     if (! $user?->hasRole('POSTULANTE')) {
                         return redirect()->intended(route('dashboard', absolute: false));
                     }
 
                     $postulante = $user->postulante()
-                        ->with(['postulaciones' => fn ($query) => $query->orderByDesc('fecha_postulacion')])
+                        ->with(['postulaciones' => fn ($q) => $q->orderByDesc('fecha_postulacion')])
                         ->first();
+
                     $postulacion = $postulante?->postulaciones->first();
 
-                    if ($postulacion?->estado_proceso === 'VALIDADO_PENDIENTE_PAGO') {
-                        return redirect()->intended('/postulante/pago');
+                    // Gestión académica activa en este momento
+                    $gestionActiva = \App\Modules\GestionAcademica\Models\GestionAcademica::query()
+                        ->where('activo', true)
+                        ->orderByDesc('id_gestion')
+                        ->first();
+
+                    // Postulación en la gestión activa (puede ser null si es repostulante)
+                    $postulacionGestionActiva = $gestionActiva
+                        ? $postulante?->postulaciones->firstWhere('id_gestion', $gestionActiva->id_gestion)
+                        : null;
+
+                    // Caso 1: tiene postulación en la gestión activa y ya pagó → historial/portal
+                    if ($postulacionGestionActiva?->estado_proceso === 'HABILITADO_CUP') {
+                        return redirect()->route('examenes.historial.index');
                     }
 
-                    if ($postulacion?->estado_proceso === 'HABILITADO_CUP') {
-                        return redirect()->intended(route('dashboard', absolute: false));
+                    // Caso 2: tiene postulación en la gestión activa pendiente de pago → pago
+                    if ($postulacionGestionActiva?->estado_proceso === 'VALIDADO_PENDIENTE_PAGO') {
+                        return redirect('/postulante/pago');
                     }
 
+                    // Caso 3: tiene postulación en gestión ANTERIOR con documentos validados
+                    // → puede repostularse a la gestión activa
+                    if ($postulacion && $postulante?->documentacion_validada && $gestionActiva) {
+                        return redirect('/postulante/repostulacion');
+                    }
+
+                    // Caso 4: postulación en gestión activa con pago pendiente de validación
+                    if ($postulacionGestionActiva?->estado_proceso === 'VALIDADO_PENDIENTE_PAGO') {
+                        return redirect('/postulante/pago');
+                    }
+
+                    // Caso 5: sin ninguna postulación habilitada → logout con mensaje
                     Auth::guard()->logout();
                     $request->session()->invalidate();
                     $request->session()->regenerateToken();

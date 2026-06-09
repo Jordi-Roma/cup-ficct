@@ -3,12 +3,12 @@
 use App\Modules\ReportesMonitoreo\Controllers\ReporteController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'permission:dashboard:read'])->group(function () {
     Route::get('dashboard', [ReporteController::class, 'dashboard'])
         ->name('dashboard');
 });
 
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth'])
     ->prefix('reportes')
     ->name('reportes.')
     ->group(function () {

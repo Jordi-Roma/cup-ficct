@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (auth()->check()) {
+        if (auth()->user()->hasRole('POSTULANTE')) {
+            return redirect()->route('examenes.historial.index');
+        }
         return redirect()->route('dashboard');
     }
 

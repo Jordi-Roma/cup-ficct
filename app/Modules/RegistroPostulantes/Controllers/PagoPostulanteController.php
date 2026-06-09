@@ -21,7 +21,7 @@ class PagoPostulanteController extends Controller
         $state = $this->service->currentState(auth()->user());
 
         if ($state['postulacion']['estado_proceso'] === 'HABILITADO_CUP') {
-            return redirect()->route('dashboard');
+            return redirect()->route('examenes.historial.index');
         }
 
         return Inertia::render('registro-postulantes/pago', $state);
@@ -38,7 +38,7 @@ class PagoPostulanteController extends Controller
     {
         $this->service->confirmStripePayment(auth()->user(), (string) $request->query('session_id', ''));
 
-        return redirect()->route('dashboard')->with('success', 'Pago aprobado con Stripe. Ya puedes acceder al sistema.');
+        return redirect()->route('examenes.historial.index')->with('success', 'Pago aprobado con Stripe. Ya puedes acceder al sistema.');
     }
 
     public function cancelado(): RedirectResponse

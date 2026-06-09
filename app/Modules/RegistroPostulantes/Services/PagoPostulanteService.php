@@ -23,24 +23,26 @@ class PagoPostulanteService
     {
         $postulante = $this->postulanteFor($user);
         $postulacion = $this->currentPostulacion($postulante);
+        $postulacion->loadMissing('gestion');
 
         return [
             'postulante' => [
-                'id_postulante' => $postulante->id_postulante,
+                'id_postulante'   => $postulante->id_postulante,
                 'nombre_completo' => $user->name,
-                'ci' => $user->ci,
-                'correo' => $user->correo,
+                'ci'              => $user->ci,
+                'correo'          => $user->correo,
             ],
             'postulacion' => [
-                'id_postulacion' => $postulacion->id_postulacion,
-                'estado_proceso' => $postulacion->estado_proceso,
+                'id_postulacion'  => $postulacion->id_postulacion,
+                'estado_proceso'  => $postulacion->estado_proceso,
                 'estado_admision' => $postulacion->estado_admision,
                 'carrera_opcion1' => $postulacion->carreraOpcion1?->nombre,
                 'carrera_opcion2' => $postulacion->carreraOpcion2?->nombre,
+                'gestion'         => $postulacion->gestion?->nombre,
             ],
             'puede_pagar' => $postulacion->estado_proceso === 'VALIDADO_PENDIENTE_PAGO',
             'monto' => [
-                'valor' => self::STRIPE_AMOUNT_DECIMAL,
+                'valor'  => self::STRIPE_AMOUNT_DECIMAL,
                 'moneda' => strtoupper(self::STRIPE_CURRENCY),
             ],
         ];
@@ -202,15 +204,24 @@ class PagoPostulanteService
 
     private function ensureCanPay(Postulante $postulante, Postulacion $postulacion): void
     {
-        if (! $postulante->requiere_pago) {
-            throw ValidationException::withMessages([
-                'pago' => 'Esta postulacion no requiere pago.',
-            ]);
-        }
-
         if ($postulacion->estado_proceso !== 'VALIDADO_PENDIENTE_PAGO') {
             throw ValidationException::withMessages([
                 'pago' => 'El postulante no tiene un pago pendiente.',
+            ]);
+        }
+
+        // Verificar que esta postulación en particular no tenga ya un pago aprobado.
+        // No usamos postulante->requiere_pago porque ese flag es de nivel de perfil
+        // y puede ser false para cuentas creadas por admin, pero igual deben pagar
+        // si hacen una repostulación.
+        $pagoAprobado = PagoInscripcion::query()
+            ->where('id_postulacion', $postulacion->id_postulacion)
+            ->where('estado_pago', 'APROBADO')
+            ->exists();
+
+        if ($pagoAprobado) {
+            throw ValidationException::withMessages([
+                'pago' => 'Ya existe un pago aprobado para esta postulación.',
             ]);
         }
     }

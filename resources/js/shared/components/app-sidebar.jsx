@@ -182,6 +182,7 @@ const mainNavGroups = [
                 title: 'Dashboard Adm.',
                 href: dashboard.url(),
                 icon: LayoutGrid,
+                permission: 'dashboard:read',
             },
             {
                 title: 'Reportes',
@@ -211,7 +212,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard.url()} prefetch>
+                            <Link href="/" prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

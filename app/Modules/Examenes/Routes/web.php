@@ -5,7 +5,7 @@ use App\Modules\Examenes\Controllers\MisAsignacionesController;
 use App\Modules\Examenes\Controllers\NotaController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth'])
     ->prefix('examenes')
     ->name('examenes.')
     ->group(function () {

@@ -4,9 +4,12 @@ namespace App\Modules\GestionAcademica\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Modules\AccesoSeguridad\Traits\Auditable;
 
 class GestionAcademica extends Model
 {
+    use Auditable;
+
     protected $table = 'gestion_academica';
 
     protected $primaryKey = 'id_gestion';

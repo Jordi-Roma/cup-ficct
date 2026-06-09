@@ -35,6 +35,7 @@ const pageAliases = {
     'registro-postulantes/postulantes': './modules/registro-postulantes/pages/PostulantesPage.jsx',
     'registro-postulantes/solicitudes': './modules/registro-postulantes/pages/SolicitudesPostulantesPage.jsx',
     'registro-postulantes/pago': './modules/registro-postulantes/pages/PagoPostulantePage.jsx',
+    'registro-postulantes/repostulacion': './modules/registro-postulantes/pages/RepostulacionPage.jsx',
     'reportes-monitoreo/reportes': './modules/reportes-monitoreo/pages/ReportesPage.jsx',
     'acceso-seguridad/bitacora': './modules/acceso-seguridad/pages/BitacoraPage.jsx',
     'settings/appearance': './modules/acceso-seguridad/pages/AparienciaPage.jsx',

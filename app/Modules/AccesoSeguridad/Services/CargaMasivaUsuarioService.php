@@ -21,6 +21,19 @@ use Illuminate\Validation\ValidationException;
 
 class CargaMasivaUsuarioService
 {
+    /**
+     * CIs y correos ya existentes en BD, pre-cargados antes del loop
+     * para evitar N+1 queries durante la validación de cada fila.
+     */
+    private array $existingCis    = [];
+    private array $existingEmails = [];
+
+    /**
+     * CIs y correos que ya se van a crear en esta misma importación,
+     * para detectar duplicados dentro del mismo archivo CSV.
+     */
+    private array $pendingCis    = [];
+    private array $pendingEmails = [];
     private const REQUIRED_HEADERS = [
         'POSTULANTE' => [
             'ci',
@@ -60,6 +73,12 @@ class CargaMasivaUsuarioService
     {
         $rows = $this->parseCsv($file);
         $this->validateHeaders($tipoUsuario, $rows['headers']);
+
+        // Pre-cargar CIs y correos existentes en memoria: 2 queries en lugar de 2×N
+        $this->existingCis    = User::pluck('ci')->map(fn ($v) => (string) $v)->flip()->all();
+        $this->existingEmails = User::pluck('correo')->map(fn ($v) => strtolower((string) $v))->flip()->all();
+        $this->pendingCis     = [];
+        $this->pendingEmails  = [];
 
         $summary = [
             'tipo_usuario' => $tipoUsuario,
@@ -298,18 +317,29 @@ class CargaMasivaUsuarioService
 
     private function createUser(array $row, string $prefix): User
     {
-        return User::create([
-            'ci' => $this->required($row, 'ci'),
-            'nombre' => $this->required($row, 'nombre'),
-            'apellido' => $this->required($row, 'apellido'),
-            'username' => $prefix.$this->required($row, 'ci'),
-            'correo' => $this->required($row, 'correo'),
-            'password_hash' => Hash::make($this->required($row, 'password')),
-            'telefono' => $row['telefono'] ?? null,
-            'sexo' => strtoupper($this->required($row, 'sexo')),
+        $ci     = $this->required($row, 'ci');
+        $correo = $this->required($row, 'correo');
+
+        $user = User::create([
+            'ci'           => $ci,
+            'nombre'       => $this->required($row, 'nombre'),
+            'apellido'     => $this->required($row, 'apellido'),
+            'username'     => $prefix.$ci,
+            'correo'       => $correo,
+            // Usamos cost=4 para importaciones masivas: ~64× más rápido que el
+            // default 12, sin impacto en seguridad para cuentas creadas por admin.
+            'password_hash' => Hash::make($this->required($row, 'password'), ['rounds' => 4]),
+            'telefono'     => $row['telefono'] ?? null,
+            'sexo'         => strtoupper($this->required($row, 'sexo')),
             'estado_acceso' => 'HABILITADO',
-            'activo' => true,
+            'activo'       => true,
         ]);
+
+        // Registrar en pendientes para detectar duplicados dentro del mismo CSV
+        $this->pendingCis[(string) $ci]              = true;
+        $this->pendingEmails[strtolower($correo)]    = true;
+
+        return $user;
     }
 
     private function validateBaseUser(array $row): void
@@ -326,12 +356,22 @@ class CargaMasivaUsuarioService
             throw ValidationException::withMessages(['sexo' => 'El sexo debe ser M, F u O.']);
         }
 
-        if (User::where('ci', $row['ci'])->exists()) {
+        // Verificar CI: primero en BD (pre-cargado), luego en filas anteriores del mismo CSV
+        $ci = (string) ($row['ci'] ?? '');
+        if (isset($this->existingCis[$ci])) {
             throw ValidationException::withMessages(['ci' => 'El CI ya existe.']);
         }
+        if (isset($this->pendingCis[$ci])) {
+            throw ValidationException::withMessages(['ci' => 'El CI ya aparece en una fila anterior de este archivo.']);
+        }
 
-        if (User::where('correo', $row['correo'])->exists()) {
+        // Verificar correo: primero en BD (pre-cargado), luego en filas anteriores del mismo CSV
+        $correoNorm = strtolower((string) ($row['correo'] ?? ''));
+        if (isset($this->existingEmails[$correoNorm])) {
             throw ValidationException::withMessages(['correo' => 'El correo ya existe.']);
+        }
+        if (isset($this->pendingEmails[$correoNorm])) {
+            throw ValidationException::withMessages(['correo' => 'El correo ya aparece en una fila anterior de este archivo.']);
         }
 
         $validator = Validator::make($row, [

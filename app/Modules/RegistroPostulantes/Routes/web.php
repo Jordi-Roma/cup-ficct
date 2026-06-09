@@ -4,6 +4,7 @@ use App\Modules\RegistroPostulantes\Controllers\AdmisionCupoController;
 use App\Modules\RegistroPostulantes\Controllers\PagoPostulanteController;
 use App\Modules\RegistroPostulantes\Controllers\PostulanteController;
 use App\Modules\RegistroPostulantes\Controllers\PostulanteSolicitudController;
+use App\Modules\RegistroPostulantes\Controllers\RepostulacionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->prefix('postulante')->name('postulante.')->group(function () {
@@ -11,6 +12,9 @@ Route::middleware(['auth'])->prefix('postulante')->name('postulante.')->group(fu
     Route::post('pago/stripe', [PagoPostulanteController::class, 'stripe'])->name('pago.stripe');
     Route::get('pago/exito', [PagoPostulanteController::class, 'exito'])->name('pago.exito');
     Route::get('pago/cancelado', [PagoPostulanteController::class, 'cancelado'])->name('pago.cancelado');
+
+    Route::get('repostulacion', [RepostulacionController::class, 'index'])->name('repostulacion.index');
+    Route::post('repostulacion', [RepostulacionController::class, 'store'])->name('repostulacion.store');
 });
 
 Route::middleware(['auth'])
