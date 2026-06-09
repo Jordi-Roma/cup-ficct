@@ -1,0 +1,733 @@
+RESUMEN COMPLETO DEL PROYECTO CUP-FICCT
+=======================================
+
+Proyecto:
+Sistema web para la gestion del Curso Preuniversitario CUP-FICCT.
+
+Objetivo general:
+Automatizar el proceso de admision universitaria del CUP: registro de postulantes,
+gestion de usuarios, control academico, grupos, docentes, asignaciones, notas,
+pagos, admision por cupos, reportes, historial academico y carga masiva.
+
+Tecnologias usadas:
+- Backend: Laravel / PHP.
+- Frontend: React con Inertia.
+- Lenguaje frontend actual: JavaScript JSX.
+- Base de datos: PostgreSQL.
+- Estilos: TailwindCSS y componentes UI propios.
+- Control de version: GitHub.
+- Pagos: Stripe en modo prueba.
+- Correos: configurables por SMTP o log.
+
+Arquitectura:
+- Backend modular en app/Modules.
+- Frontend modular en resources/js/modules.
+- Componentes compartidos en resources/js/shared.
+- Inertia comparte auth.user, auth.roles y auth.permissions.
+- No se usa Spatie Permission.
+- El sistema usa middleware propio permission.
+- La tabla de usuarios se llama usuario, no users.
+
+
+MODULOS ORGANIZADOS
+===================
+
+1. Acceso / Seguridad
+   Casos de uso:
+   - CU01 Gestionar sesion.
+   - CU02 Configurar perfil.
+   - CU03 Gestionar usuarios y asignar roles.
+   - CU04 Gestionar roles y permisos.
+   - CU15 Gestionar bitacora del sistema.
+
+2. Registro de Postulantes
+   Casos de uso:
+   - CU05 Registrarse en el sistema.
+   - CU06 Gestionar postulantes.
+   - CU07 Gestionar pagos de inscripcion.
+   - CU16 Gestionar admision por cupos.
+   - CU19 Carga masiva de usuarios por CSV.
+
+3. Gestion Academica
+   Casos de uso:
+   - CU08 Gestionar materias del CUP.
+   - CU09 Gestionar grupos academicos.
+   - CU11 Gestionar docentes.
+   - CU17 Gestionar asignacion academica.
+   - CU18 Gestionar aulas y horarios.
+
+4. Evaluaciones
+   Casos de uso:
+   - CU10 Gestionar notas.
+   - CU14 Consultar historial academico.
+
+5. Reportes y Monitoreo
+   Casos de uso:
+   - CU12 Dashboard administrativo.
+   - CU13 Generar y exportar reportes.
+
+
+CASOS DE USO IMPLEMENTADOS
+==========================
+
+CU01 - Gestionar sesion
+-----------------------
+Permite iniciar y cerrar sesion.
+Se agrego control de intentos fallidos:
+- Maximo 5 intentos.
+- Bloqueo temporal de 3 minutos.
+- Mensaje visible indicando intento actual y cuantos quedan.
+
+Tambien se tradujeron textos al espanol y se elimino 2FA/passkeys heredado del starter kit.
+
+
+CU02 - Configurar perfil
+------------------------
+Permite actualizar datos del usuario autenticado.
+Se ajusto la seccion de seguridad para que diga "Cambiar contrasena".
+Se agrego validacion fuerte de contrasena:
+- Minimo 8 caracteres.
+- Una mayuscula.
+- Una minuscula.
+- Un numero.
+- Un simbolo.
+
+Tambien se agrego checklist visual en verde mientras se escribe la nueva contrasena.
+
+
+CU03 - Gestionar usuarios y asignar roles
+-----------------------------------------
+Permite listar usuarios, crear usuarios y asignar roles.
+Se amplio para crear usuarios segun tipo:
+- Postulante.
+- Docente.
+- Coordinador academico.
+- Administrador.
+
+Segun el tipo elegido, el formulario muestra los campos correspondientes.
+
+Mejoras agregadas:
+- Crear docente desde usuarios.
+- Crear postulante desde usuarios.
+- Validaciones por tipo de usuario.
+- Contrasena fuerte al crear usuario.
+- Evitar que campos de postulante afecten la creacion de docente.
+- Evitar que campos de docente afecten la creacion de otros usuarios.
+
+
+CU04 - Gestionar roles y permisos
+---------------------------------
+Permite administrar roles y permisos.
+Los permisos se usan tanto en backend como frontend.
+El sidebar solo muestra opciones si auth.permissions contiene el permiso requerido.
+
+
+CU05 - Registrarse en el sistema
+--------------------------------
+Registro publico de postulante.
+El flujo fue mejorado a 3 fases:
+
+Fase 1: Solicitud de registro
+- El postulante llena sus datos.
+- Marca si presento titulo de bachiller.
+- Marca si presento fotocopia de carnet.
+- Escoge turno preferido: MANANA, TARDE o NOCHE.
+- Escoge carrera opcion 1 y opcion 2.
+- No recibe acceso inmediato.
+- Queda en estado PENDIENTE_VALIDACION.
+
+Fase 2: Validacion administrativa
+- Admin o coordinador revisa solicitudes pendientes.
+- Puede aprobar o rechazar.
+- Al aprobar:
+  - Se genera username con formato P + CI.
+  - Se genera contrasena segura.
+  - Se manda correo al correo configurado en POSTULANTE_NOTIFICATION_EMAIL.
+  - Queda VALIDADO_PENDIENTE_PAGO.
+
+Fase 3: Pago y habilitacion
+- El postulante inicia sesion con el usuario recibido.
+- Si no pago, va a pantalla de pago.
+- Si paga, queda HABILITADO_CUP.
+- Luego ya entra normalmente al sistema.
+
+Nota:
+El registro publico no pide contrasena, porque el sistema la genera.
+
+
+CU06 - Gestionar postulantes
+----------------------------
+Permite listar, buscar, filtrar, ver detalle, editar y desactivar postulantes.
+Muestra:
+- CI.
+- Nombre completo.
+- Correo.
+- Telefono.
+- Ciudad.
+- Colegio.
+- Documentacion.
+- Carrera opcion 1.
+- Carrera opcion 2.
+- Estado de admision.
+- Grupo asignado.
+- Usuario activo/inactivo.
+
+Mejoras:
+- Baja logica, no borrado fisico.
+- documentacion_completa se conserva como resumen final.
+- Se agregaron campos documentales:
+  - presento_titulo_bachiller.
+  - presento_fotocopia_carnet.
+  - documentacion_validada.
+  - fecha_validacion_documentos.
+  - validado_por.
+
+documentacion_completa queda true solo si:
+- presento_titulo_bachiller = true.
+- presento_fotocopia_carnet = true.
+- documentacion_validada = true.
+
+
+CU07 - Gestionar pagos de inscripcion
+-------------------------------------
+Se implemento pago de inscripcion con Stripe en modo prueba.
+
+Funcionamiento:
+- El postulante validado pero sin pago entra a /postulante/pago.
+- Ve el pago de inscripcion CUP-FICCT por 50 USD.
+- Se redirige a Stripe Checkout.
+- En modo prueba no usa dinero real.
+- Al volver exitosamente, se registra pago_inscripcion.
+- El postulante queda HABILITADO_CUP.
+
+Se elimino el boton de pago simulado de la interfaz.
+
+
+CU08 - Gestionar materias del CUP
+---------------------------------
+Permite administrar materias:
+- Computacion.
+- Matematicas.
+- Ingles.
+- Fisica.
+
+Incluye:
+- Listar.
+- Crear.
+- Editar.
+- Activar/desactivar.
+
+Se mantiene baja logica.
+
+
+CU09 - Gestionar grupos academicos
+----------------------------------
+Permite crear y administrar grupos academicos.
+
+Se agrego logica por turnos:
+- MANANA.
+- TARDE.
+- NOCHE.
+
+Los grupos se crean asociados a un turno.
+Ejemplos:
+- M001 para manana.
+- T001 para tarde.
+- N001 para noche.
+
+Tambien permite:
+- Ver capacidad.
+- Ver asignados.
+- Ver cupos disponibles.
+- Activar/desactivar.
+- Generar grupos automaticamente.
+- Ver postulantes asignados al grupo en modal.
+
+El boton "Generar grupos" calcula cuantos grupos se necesitan segun la cantidad de postulantes por turno y la capacidad maxima.
+
+
+CU10 - Gestionar notas
+----------------------
+Permite registrar notas de postulantes por materia y examen.
+
+Reglas:
+- nro_examen solo puede ser 1, 2 o 3.
+- nota entre 0 y 100.
+- Un docente solo registra notas de sus grupos y materias asignadas.
+- Coordinador/admin pueden gestionar mas ampliamente.
+- Promedio por materia y promedio final se calculan.
+
+Mejoras agregadas:
+- Boton para generar notas de prueba masivamente.
+- Permite generar notas para todos los grupos, un grupo especifico o una materia.
+- Sirve para probar reportes, historial y admision por cupos sin cargar todo manualmente.
+
+
+CU11 - Gestionar docentes
+-------------------------
+Permite crear y administrar docentes.
+
+Funcion original:
+- Crear usuario base.
+- Crear perfil docente.
+- Marcar requisitos:
+  - profesional_area.
+  - maestria.
+  - diplomado_educacion_superior.
+  - contratado.
+
+Luego se mejoro:
+- Se agrego tabla docente_habilitacion_materia.
+- El docente puede estar habilitado por materia segun:
+  - Profesional en el area.
+  - Diplomado.
+  - Maestria.
+- Materias posibles:
+  - Computacion.
+  - Matematicas.
+  - Ingles.
+  - Fisica.
+
+Tambien:
+- Maestria en educacion superior es indispensable.
+- Si no tiene maestria en educacion superior, no puede ser docente contratado del CUP.
+- Si no tiene ninguna habilitacion en ninguna materia, no puede ser docente del CUP.
+
+Esto se usa luego en asignacion academica para que el docente solo pueda ser asignado a materias que puede dictar.
+
+
+CU12 - Dashboard administrativo
+-------------------------------
+El panel fue movido al modulo Reportes y Monitoreo.
+Se renombro visualmente a Dashboard Administrativo.
+
+Muestra resumen administrativo del sistema.
+Se dejo como modulo separado para monitoreo.
+
+
+CU13 - Generar y exportar reportes
+----------------------------------
+Permite generar reportes operativos y academicos.
+
+Reportes incluidos:
+- Lista de postulantes.
+- Aprobados.
+- Reprobados.
+- Promedios.
+- Grupos.
+- Estadisticas por materia.
+- Docentes por grupo.
+- Admitidos/no admitidos.
+
+Mejoras:
+- Filtros dinamicos por:
+  - Gestion.
+  - Grupo.
+  - Materia.
+  - Estado.
+- Exportacion compatible con Excel mediante CSV.
+- No se instalaron paquetes extra para Excel.
+
+
+CU14 - Consultar historial academico
+------------------------------------
+Permite consultar historial academico.
+
+Postulante:
+- Solo ve su propio historial.
+- Ve notas por materia.
+- Ve promedio por materia.
+- Ve promedio final.
+- Ve estado aprobado/reprobado.
+- Ve estado de admision.
+
+Administrador/coordinador:
+- Puede buscar postulantes.
+- Puede consultar historial de cualquier postulante.
+
+
+CU15 - Gestionar bitacora del sistema
+-------------------------------------
+Bitacora del sistema integrada en Acceso / Seguridad.
+Registra cambios y eventos del sistema.
+Se usa log_auditoria.
+
+
+CU16 - Gestionar admision por cupos
+-----------------------------------
+Permite configurar cupos por carrera y procesar admision.
+
+Reglas:
+- Solo postulantes aprobados pueden ser admitidos.
+- Solo postulantes con documentacion_completa pueden ser admitidos.
+- Se intenta admitir primero en carrera opcion 1.
+- Si no hay cupo, se intenta carrera opcion 2.
+- Si no hay cupos, queda NO_ADMITIDO.
+- Si reprobo, queda NO_ADMITIDO.
+
+Tambien:
+- Permite ver cupos disponibles.
+- Permite listar admitidos y no admitidos.
+- Se puede filtrar por gestion.
+
+
+CU17 - Gestionar asignacion academica
+-------------------------------------
+Permite asignar:
+- Grupo.
+- Materia.
+- Docente.
+- Aula.
+- Horario.
+
+Validaciones:
+- Docente no puede estar en dos asignaciones al mismo horario.
+- Aula no puede estar ocupada al mismo horario.
+- Grupo no puede tener la misma materia dos veces.
+- Docente debe estar activo y contratado.
+- Docente debe estar habilitado para dictar esa materia.
+- Aula debe tener capacidad suficiente.
+- Materia debe estar activa.
+- Grupo debe estar activo.
+- Maximo 4 grupos activos por docente.
+
+Mejoras:
+- Boton para generar asignaciones automaticamente.
+- Respeta docente habilitado por materia.
+- Respeta horario del turno del grupo.
+- Respeta disponibilidad de aula.
+
+Tambien se movio la accion de asignar postulantes desde grupos hacia asignacion academica, porque logicamente corresponde mas ahi.
+
+
+CU18 - Gestionar aulas y horarios
+---------------------------------
+Caso de uso agregado como complemento.
+
+Permite:
+- Crear aulas.
+- Editar aulas.
+- Activar/desactivar aulas.
+- Registrar capacidad de aulas.
+- Crear horarios.
+- Editar horarios.
+- Activar/desactivar horarios.
+
+Horarios:
+Se simplificaron a bloques globales por turno, no por dia.
+
+Turnos:
+- MANANA.
+- TARDE.
+- NOCHE.
+
+Cada turno tiene 4 bloques de 1 hora.
+Orden sugerido de materias:
+1. Matematicas.
+2. Computacion.
+3. Fisica.
+4. Ingles.
+
+Se decidio no mostrar "materia sugerida" en frontend porque se veia poco profesional.
+Los horarios se usan como bloques disponibles para asignacion academica.
+
+
+CU19 - Carga masiva de usuarios por CSV
+---------------------------------------
+Caso de uso agregado para cumplir el requerimiento del parcial sobre carga por lotes.
+
+Permite cargar por CSV:
+- Postulantes.
+- Docentes.
+- Coordinadores.
+
+Para postulantes importados por admin/coordinador:
+- creado_por_admin = true.
+- requiere_pago = false.
+- documentacion_completa = true.
+- documentacion_validada = true.
+- estado_proceso = HABILITADO_CUP.
+- usuario.activo = true.
+- estado_acceso = HABILITADO.
+
+Esto significa que no pasan por pasarela de pago.
+
+Se decidio que en carga masiva el CSV incluya la contrasena.
+Asi no se mandan 140 correos ni se cae por timeout.
+
+El sistema valida:
+- CI duplicado.
+- Correo duplicado.
+- Username duplicado.
+- Datos requeridos.
+- Tipo de usuario.
+- Carrera.
+- Turno.
+- Materias habilitadas para docentes.
+
+Muestra resumen:
+- Registros creados.
+- Registros con error.
+- Errores por fila.
+
+
+FUNCIONALIDADES EXTRA QUE NO ESTABAN PEDIDAS DIRECTAMENTE
+=========================================================
+
+1. Sidebar modular con permisos
+-------------------------------
+El sidebar se organiza por modulo y solo muestra opciones si el usuario tiene permisos.
+
+2. Traduccion al espanol
+------------------------
+Se limpiaron textos heredados en ingles del starter kit:
+- Profile.
+- Security.
+- Appearance.
+- Login.
+- Register.
+- Password.
+- Save.
+- Cancel.
+- etc.
+
+3. Eliminacion de enlaces externos
+----------------------------------
+Se quitaron enlaces heredados:
+- Repositorio.
+- Documentacion.
+
+4. Eliminacion de logo Laravel
+------------------------------
+Se reemplazo el logo heredado de Laravel por el icono institucional CUP-FICCT.
+
+5. Eliminacion de 2FA y passkeys
+--------------------------------
+Se quito la autenticacion de dos factores y passkeys porque no eran parte del alcance.
+
+6. Stripe en modo prueba
+------------------------
+Aunque el pago pudo ser simulado, se integro Stripe Checkout en modo prueba.
+Esto da una experiencia mas real para defensa sin usar dinero real.
+
+7. Correos de credenciales
+--------------------------
+Al validar una solicitud publica se envia correo con:
+- Nombre del postulante.
+- CI.
+- Username generado.
+- Contrasena generada.
+
+El correo se manda a POSTULANTE_NOTIFICATION_EMAIL.
+
+8. Recuperacion de contrasena
+-----------------------------
+Se adapto el flujo para que el token de recuperacion llegue al correo configurado,
+no necesariamente al correo ficticio del usuario.
+
+9. Control de intentos fallidos
+-------------------------------
+Se agrego bloqueo temporal por intentos fallidos en login.
+
+10. Checklist visual de contrasena
+----------------------------------
+Al crear usuario o cambiar contrasena, se muestra en verde lo que ya cumple:
+- Minimo 8 caracteres.
+- Mayuscula.
+- Minuscula.
+- Numero.
+- Simbolo.
+
+11. Generacion automatica de grupos
+-----------------------------------
+El sistema genera grupos segun cantidad de postulantes y turno preferido.
+
+12. Generacion automatica de asignaciones
+-----------------------------------------
+El sistema puede generar asignaciones academicas considerando:
+- Docente habilitado.
+- Aula disponible.
+- Horario del turno.
+- Grupo.
+- Materia.
+
+13. Generacion masiva de notas de prueba
+----------------------------------------
+Sirve para probar reportes, historial y admision sin cargar notas manualmente.
+
+14. Exportacion CSV compatible con Excel
+----------------------------------------
+Para no instalar paquetes nuevos, se exportan reportes en CSV compatible con Excel.
+
+15. Gestion por gestion academica
+---------------------------------
+Se agrego administracion de gestiones academicas como:
+- 1-2025.
+- 2-2025.
+- 1-2026.
+
+Muchas vistas filtran o trabajan con la gestion activa.
+
+
+DATOS IMPORTANTES DE CONFIGURACION
+==================================
+
+Usuario de prueba local:
+- username: testuser
+- password: password
+- rol: ADMINISTRADOR
+
+Nota:
+Este usuario no viene en .env. Se crea en la base de datos.
+
+Correo:
+- MAIL_MAILER puede ser log para pruebas.
+- Para Gmail real se necesita SMTP y contrasena de aplicacion.
+- POSTULANTE_NOTIFICATION_EMAIL define a que correo llegan las credenciales.
+
+Stripe:
+- STRIPE_KEY.
+- STRIPE_SECRET.
+- STRIPE_WEBHOOK_SECRET si se usa webhook.
+
+En modo prueba, Stripe no cobra dinero real.
+
+
+COMANDOS UTILES
+===============
+
+Instalar dependencias:
+composer install
+npm install
+
+Limpiar cache:
+php artisan optimize:clear
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+
+Ejecutar servidor:
+php artisan serve
+npm.cmd run dev
+
+Migraciones:
+php artisan migrate
+
+Seeders:
+php artisan db:seed
+php artisan db:seed --class=AccessControlSeeder
+
+Pruebas:
+php artisan test
+npm.cmd run lint -- --ignore-pattern tmp/**
+npm.cmd run build
+
+
+REGLAS IMPORTANTES DEL PROYECTO
+===============================
+
+- No usar Spatie Permission.
+- No instalar paquetes nuevos salvo que se decida explicitamente.
+- No usar migrate:fresh en base principal.
+- Usar baja logica, no borrado fisico.
+- No romper login, registro, dashboard, usuarios, roles, permisos, postulantes, materias, grupos, docentes, asignaciones, notas, reportes ni pagos.
+- Mantener control real de permisos en backend.
+- Mantener sidebar modular.
+- No mezclar usuario.activo con estado del proceso del postulante.
+
+
+ESTADOS IMPORTANTES DE POSTULACION
+==================================
+
+Estados recomendados/usados:
+- PENDIENTE_VALIDACION.
+- RECHAZADO.
+- VALIDADO_PENDIENTE_PAGO.
+- HABILITADO_CUP.
+
+Estados de admision:
+- PENDIENTE.
+- ADMITIDO.
+- NO_ADMITIDO.
+
+
+TURNOS
+======
+
+Se usan internamente como:
+- MANANA.
+- TARDE.
+- NOCHE.
+
+Visualmente se pueden mostrar como:
+- Manana.
+- Tarde.
+- Noche.
+
+Se decidio no cambiar el dominio a "Mañana" para no tener que modificar todo el codigo y validaciones.
+
+
+PENDIENTES O COSAS A REVISAR
+============================
+
+1. Algunas pruebas antiguas pueden quedar desactualizadas por cambios de flujo.
+   Ejemplo:
+   - Registro publico antes creaba acceso directo.
+   - Ahora crea solicitud pendiente.
+
+2. El flujo de admision por cupos debe probarse con muchos postulantes, grupos y notas.
+
+3. Si se importa gran cantidad de usuarios, no conviene enviar correos uno por uno en la misma request.
+   Por eso se dejo mejor que el CSV incluya contrasena.
+
+4. Para despliegue real:
+   - Configurar SMTP real.
+   - Configurar Stripe en modo prueba o produccion.
+   - Configurar PostgreSQL en nube.
+   - Configurar APP_URL.
+
+5. En produccion, testuser no deberia existir o deberia ser reemplazado por usuario administrador real.
+
+
+RESUMEN FINAL
+=============
+
+El sistema CUP-FICCT evoluciono de un sistema basico Laravel + React + Inertia
+a una plataforma modular completa para admision universitaria.
+
+Ya cubre:
+- Acceso y seguridad.
+- Perfil.
+- Usuarios.
+- Roles.
+- Permisos.
+- Registro de postulantes.
+- Validacion documental.
+- Pagos con Stripe.
+- Gestion de materias.
+- Grupos academicos.
+- Docentes y habilitaciones por materia.
+- Aulas y horarios.
+- Asignacion academica.
+- Notas.
+- Historial academico.
+- Admision por cupos.
+- Reportes dinamicos.
+- Exportacion CSV compatible con Excel.
+- Bitacora.
+- Carga masiva por CSV.
+
+Ademas se agregaron mejoras complementarias muy utiles para defensa:
+- Modo oscuro.
+- Sidebar modular.
+- Mensajes de exito/error centrados.
+- Generacion automatica de grupos.
+- Generacion automatica de asignaciones.
+- Generacion de notas de prueba.
+- Control de intentos de login.
+- Contrasenas fuertes.
+- Stripe en modo prueba.
+- Correos de credenciales.
+
+Este contexto deberia servir para que otra instancia de Codex pueda continuar
+el desarrollo sin perder la logica del proyecto ni repetir decisiones ya tomadas.

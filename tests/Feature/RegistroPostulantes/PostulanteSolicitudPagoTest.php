@@ -67,6 +67,19 @@ class PostulanteSolicitudPagoTest extends TestCase
         $this->assertSame('VALIDADO_PENDIENTE_PAGO', $postulacion->estado_proceso);
     }
 
+    public function test_generated_postulante_password_meets_strong_requirements(): void
+    {
+        $postulante = $this->createPendingRequest();
+        $admin = $this->userWithPermissions(['postulantes:update']);
+
+        $credentials = app(PostulanteSolicitudService::class)->confirm($postulante, $admin->id_usuario);
+
+        $this->assertMatchesRegularExpression(
+            '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/',
+            $credentials['password'],
+        );
+    }
+
     public function test_reject_request_changes_process_state(): void
     {
         $postulante = $this->createPendingRequest();

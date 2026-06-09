@@ -2,11 +2,14 @@
 
 namespace App\Modules\GestionAcademica\Requests;
 
+use App\Modules\AccesoSeguridad\Concerns\PasswordValidationRules;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreDocenteRequest extends FormRequest
 {
+    use PasswordValidationRules;
+
     public function authorize(): bool
     {
         return true;
@@ -20,7 +23,7 @@ class StoreDocenteRequest extends FormRequest
             'apellido' => ['required', 'string', 'max:100'],
             'username' => ['required', 'string', 'max:50', Rule::unique('usuario', 'username')],
             'correo' => ['required', 'email', 'max:150', Rule::unique('usuario', 'correo')],
-            'password' => ['required', 'string', 'confirmed'],
+            'password' => $this->passwordRules(),
             'telefono' => ['nullable', 'string', 'max:20'],
             'sexo' => ['required', Rule::in(['M', 'F', 'O'])],
             'profesional_area' => ['nullable', 'boolean'],

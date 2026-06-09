@@ -18,7 +18,7 @@ class SecurityController extends Controller
     public function edit(Request $request): Response
     {
         return Inertia::render('settings/security', [
-            'passwordRules' => Password::defaults()->toPasswordRulesString(),
+            'passwordRules' => Password::min(8)->mixedCase()->numbers()->symbols()->toPasswordRulesString(),
         ]);
     }
 

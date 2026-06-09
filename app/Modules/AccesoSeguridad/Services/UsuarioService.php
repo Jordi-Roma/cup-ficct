@@ -5,6 +5,7 @@ namespace App\Modules\AccesoSeguridad\Services;
 use App\Modules\AccesoSeguridad\Models\Rol;
 use App\Modules\AccesoSeguridad\Models\User;
 use App\Modules\GestionAcademica\Models\Docente;
+use App\Modules\GestionAcademica\Models\DocenteHabilitacionMateria;
 use App\Modules\GestionAcademica\Services\DocenteService;
 use App\Modules\RegistroPostulantes\Models\Postulacion;
 use App\Modules\RegistroPostulantes\Models\Postulante;
@@ -131,26 +132,44 @@ class UsuarioService
 
     private function createDocenteProfile(User $user, array $data): void
     {
+        $habilitaciones = $this->normalizeHabilitaciones($data['habilitaciones'] ?? []);
         $docenteData = [
             ...$data,
-            'profesional_area' => false,
-            'maestria' => false,
-            'diplomado_educacion_superior' => false,
+            'habilitaciones' => $habilitaciones,
+            'profesional_area' => count($habilitaciones[DocenteHabilitacionMateria::PROFESIONAL_AREA]) > 0,
+            'maestria' => count($habilitaciones[DocenteHabilitacionMateria::MAESTRIA]) > 0,
+            'diplomado_educacion_superior' => count($habilitaciones[DocenteHabilitacionMateria::DIPLOMADO]) > 0,
         ];
         $this->docenteService->validateContractRequirements($docenteData);
 
         $docente = Docente::create([
             'id_usuario' => $user->id_usuario,
-            'profesional_area' => false,
-            'maestria' => false,
-            'diplomado_educacion_superior' => false,
+            'profesional_area' => $docenteData['profesional_area'],
+            'maestria' => $docenteData['maestria'],
+            'diplomado_educacion_superior' => $docenteData['diplomado_educacion_superior'],
             'maestria_educacion_superior' => $data['maestria_educacion_superior'] ?? false,
             'contratado' => $data['contratado'] ?? false,
             'activo' => true,
         ]);
 
-        $this->docenteService->syncHabilitaciones($docente, $data['habilitaciones'] ?? []);
+        $this->docenteService->syncHabilitaciones($docente, $habilitaciones);
         $this->assignRoleByName($user, 'DOCENTE');
+    }
+
+    private function normalizeHabilitaciones(array $habilitaciones): array
+    {
+        $normalized = [];
+
+        foreach (DocenteHabilitacionMateria::TIPOS as $tipo) {
+            $normalized[$tipo] = collect($habilitaciones[$tipo] ?? [])
+                ->filter(fn ($id) => $id !== null && $id !== '')
+                ->map(fn ($id) => (int) $id)
+                ->unique()
+                ->values()
+                ->all();
+        }
+
+        return $normalized;
     }
 
     private function coordinatorRoleName(): string

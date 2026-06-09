@@ -1,15 +1,20 @@
 ﻿import { Form, Head } from '@inertiajs/react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import SecurityController from '@/actions/App/Modules/AccesoSeguridad/Controllers/SecurityController';
 import { edit } from '@/routes/security';
 import Heading from '@/shared/components/heading';
 import InputError from '@/shared/components/input-error';
 import PasswordInput from '@/shared/components/password-input';
+import PasswordRequirements, { validatePasswordRequirements } from '@/shared/components/password-requirements';
 import { Button } from '@/shared/components/ui/button';
 import { Label } from '@/shared/components/ui/label';
 export default function Security(props) {
     const passwordInput = useRef(null);
     const currentPasswordInput = useRef(null);
+    const [password, setPassword] = useState('');
+    const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    const passwordStatus = validatePasswordRequirements(password);
+    const passwordConfirmationMatches = password !== '' && password === passwordConfirmation;
     return (<>
             <Head title="Cambiar contraseña"/>
 
@@ -24,7 +29,10 @@ export default function Security(props) {
             'password',
             'password_confirmation',
             'current_password',
-        ]} resetOnSuccess onError={(errors) => {
+        ]} resetOnSuccess onSuccess={() => {
+            setPassword('');
+            setPasswordConfirmation('');
+        }} onError={(errors) => {
             if (errors.password) {
                 passwordInput.current?.focus();
             }
@@ -46,7 +54,9 @@ export default function Security(props) {
                             <div className="grid gap-2">
                                 <Label htmlFor="password">Nueva contraseña</Label>
 
-                                <PasswordInput id="password" ref={passwordInput} name="password" className="mt-1 block w-full" autoComplete="new-password" placeholder="Nueva contraseña" passwordrules={props.passwordRules}/>
+                                <PasswordInput id="password" ref={passwordInput} name="password" className="mt-1 block w-full" autoComplete="new-password" placeholder="Nueva contraseña" passwordrules={props.passwordRules} value={password} onChange={(event) => setPassword(event.target.value)}/>
+
+                                <PasswordRequirements password={password}/>
 
                                 <InputError message={errors.password}/>
                             </div>
@@ -56,13 +66,17 @@ export default function Security(props) {
                                     Confirmar contraseña
                                 </Label>
 
-                                <PasswordInput id="password_confirmation" name="password_confirmation" className="mt-1 block w-full" autoComplete="new-password" placeholder="Confirmar contraseña" passwordrules={props.passwordRules}/>
+                                <PasswordInput id="password_confirmation" name="password_confirmation" className="mt-1 block w-full" autoComplete="new-password" placeholder="Confirmar contraseña" passwordrules={props.passwordRules} value={passwordConfirmation} onChange={(event) => setPasswordConfirmation(event.target.value)}/>
+
+                                {passwordConfirmation && !passwordConfirmationMatches && (
+                                    <p className="text-sm text-destructive">Las contraseñas no coinciden.</p>
+                                )}
 
                                 <InputError message={errors.password_confirmation}/>
                             </div>
 
                             <div className="flex items-center gap-4">
-                                <Button disabled={processing} data-test="update-password-button">
+                                <Button disabled={processing || !passwordStatus.isValid || !passwordConfirmationMatches} data-test="update-password-button">
                                     Guardar
                                 </Button>
                             </div>

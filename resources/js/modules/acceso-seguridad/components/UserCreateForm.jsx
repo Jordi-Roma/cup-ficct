@@ -1,6 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import InputError from '@/shared/components/input-error';
 import PasswordInput from '@/shared/components/password-input';
+import PasswordRequirements, { validatePasswordRequirements } from '@/shared/components/password-requirements';
 import { Button } from '@/shared/components/ui/button';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Input } from '@/shared/components/ui/input';
@@ -63,6 +64,9 @@ export default function UserCreateForm({ materias, gestiones, carreras, canSubmi
 
     const hasMateria = Object.values(data.habilitaciones).some((items) => items.length > 0);
     const canContract = data.maestria_educacion_superior && hasMateria;
+    const passwordStatus = validatePasswordRequirements(data.password);
+    const passwordConfirmationMatches = data.password !== '' && data.password === data.password_confirmation;
+    const canCreateUser = canSubmit && passwordStatus.isValid && passwordConfirmationMatches;
 
     return (
         <form onSubmit={submit} className="space-y-5">
@@ -117,11 +121,16 @@ export default function UserCreateForm({ materias, gestiones, carreras, canSubmi
                 <div className="grid gap-2">
                     <Label>Contraseña</Label>
                     <PasswordInput value={data.password} onChange={(event) => setData('password', event.target.value)} />
+                    <PasswordRequirements password={data.password} />
                     <InputError message={errors.password} />
                 </div>
                 <div className="grid gap-2">
                     <Label>Confirmar Contraseña</Label>
                     <PasswordInput value={data.password_confirmation} onChange={(event) => setData('password_confirmation', event.target.value)} />
+                    {data.password_confirmation && !passwordConfirmationMatches && (
+                        <p className="text-sm text-destructive">Las contraseñas no coinciden.</p>
+                    )}
+                    <InputError message={errors.password_confirmation} />
                 </div>
             </div>
 
@@ -163,7 +172,7 @@ export default function UserCreateForm({ materias, gestiones, carreras, canSubmi
 
             <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={onSuccess} disabled={processing}>Cancelar</Button>
-                <Button type="submit" disabled={processing || !canSubmit} className="bg-[#0D2B85] text-white hover:bg-[#0a2270]">Crear usuario</Button>
+                <Button type="submit" disabled={processing || !canCreateUser} className="bg-[#0D2B85] text-white hover:bg-[#0a2270]">Crear usuario</Button>
             </div>
         </form>
     );

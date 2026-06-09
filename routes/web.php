@@ -7,7 +7,7 @@ Route::get('/', function () {
         if (auth()->user()->hasRole('POSTULANTE')) {
             return redirect()->route('examenes.historial.index');
         }
-        return redirect()->route('dashboard');
+        return redirect()->route('profile.edit');
     }
 
     return inertia('welcome');

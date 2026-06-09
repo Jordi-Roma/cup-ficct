@@ -2,11 +2,13 @@
 
 namespace App\Modules\AccesoSeguridad\Requests;
 
+use App\Modules\AccesoSeguridad\Concerns\PasswordValidationRules;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 
 class ResetPasswordRequest extends FormRequest
 {
+    use PasswordValidationRules;
+
     public function authorize(): bool
     {
         return true;
@@ -17,15 +19,7 @@ class ResetPasswordRequest extends FormRequest
         return [
             'token' => ['required', 'string'],
             'username_or_email' => ['required', 'string', 'max:150'],
-            'password' => [
-                'required',
-                'string',
-                'confirmed',
-                Password::min(8)
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols(),
-            ],
+            'password' => $this->passwordRules(),
         ];
     }
 }

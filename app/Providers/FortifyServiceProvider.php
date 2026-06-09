@@ -55,9 +55,9 @@ class FortifyServiceProvider extends ServiceProvider
                     RateLimiter::clear('login:'.$throttleKey);
                     RateLimiter::clear(md5('login'.$throttleKey));
 
-                    // Usuarios que no son postulantes van al dashboard directamente
+                    // Usuarios que no son postulantes van a perfil, ruta comun para todos los roles.
                     if (! $user?->hasRole('POSTULANTE')) {
-                        return redirect()->intended(route('dashboard', absolute: false));
+                        return redirect()->intended(route('profile.edit', absolute: false));
                     }
 
                     $postulante = $user->postulante()
