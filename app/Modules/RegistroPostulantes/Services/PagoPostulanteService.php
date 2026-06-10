@@ -133,7 +133,7 @@ class PagoPostulanteService
             'mode' => 'payment',
             'success_url' => route('postulante.pago.exito', [], true).'?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('postulante.pago.cancelado', [], true),
-            'customer_email' => $user->correo,
+            'customer_email' => $this->checkoutCustomerEmail($user),
             'line_items' => [
                 [
                     'quantity' => 1,
@@ -237,5 +237,12 @@ class PagoPostulanteService
         }
 
         return (array) $session->metadata;
+    }
+
+    private function checkoutCustomerEmail(User $user): string
+    {
+        return config('services.postulantes.notification_email')
+            ?: config('services.postulante_notification_email')
+            ?: $user->correo;
     }
 }

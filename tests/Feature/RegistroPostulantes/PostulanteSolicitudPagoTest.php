@@ -164,6 +164,34 @@ class PostulanteSolicitudPagoTest extends TestCase
         $this->assertSame((string) $postulacion->id_postulacion, $payload['metadata']['id_postulacion']);
     }
 
+    public function test_stripe_checkout_payload_uses_institutional_notification_email(): void
+    {
+        config()->set('services.postulantes.notification_email', 'pagos-cup@example.com');
+        config()->set('services.postulante_notification_email', 'pagos-cup@example.com');
+
+        $postulante = $this->createPendingRequest();
+        $postulacion = $postulante->postulaciones()->firstOrFail();
+        $service = app(PagoPostulanteService::class);
+
+        $payload = $service->checkoutSessionPayload($postulante->usuario, $postulante, $postulacion);
+
+        $this->assertSame('pagos-cup@example.com', $payload['customer_email']);
+    }
+
+    public function test_stripe_checkout_payload_falls_back_to_user_email_without_notification_email(): void
+    {
+        config()->set('services.postulantes.notification_email', null);
+        config()->set('services.postulante_notification_email', null);
+
+        $postulante = $this->createPendingRequest();
+        $postulacion = $postulante->postulaciones()->firstOrFail();
+        $service = app(PagoPostulanteService::class);
+
+        $payload = $service->checkoutSessionPayload($postulante->usuario, $postulante, $postulacion);
+
+        $this->assertSame($postulante->usuario->correo, $payload['customer_email']);
+    }
+
     public function test_confirm_paid_stripe_session_enables_access_and_registers_payment(): void
     {
         $postulante = $this->createPendingRequest();
@@ -262,7 +290,7 @@ class PostulanteSolicitudPagoTest extends TestCase
         $this->seed(CupCatalogSeeder::class);
         $this->seed(AccessControlSeeder::class);
 
-        $gestion = GestionAcademica::where('nombre', 'CUP 2026')->firstOrFail();
+        $gestion = GestionAcademica::where('nombre', '1-2026')->firstOrFail();
         $carrera = Carrera::where('activo', true)->firstOrFail();
         $ci = $overrides['ci'] ?? fake()->unique()->numerify('########');
         $user = User::factory()->create([

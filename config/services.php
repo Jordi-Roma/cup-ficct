@@ -41,6 +41,10 @@ return [
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
+    'postulantes' => [
+        'notification_email' => env('POSTULANTE_NOTIFICATION_EMAIL', env('MAIL_FROM_ADDRESS')),
+    ],
+
     'postulante_notification_email' => env('POSTULANTE_NOTIFICATION_EMAIL', env('MAIL_FROM_ADDRESS')),
 
 ];
