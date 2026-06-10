@@ -29,7 +29,7 @@ export default function RoleForm({ role, permisosPorModulo, canSubmit, onSuccess
     return (<form onSubmit={submit} className="space-y-5">
             <div className="grid gap-2">
                 <Label htmlFor="nombre">Nombre del rol</Label>
-                <Input id="nombre" value={data.nombre} onChange={(event) => setData('nombre', event.target.value)} placeholder="ADMINISTRATIVO"/>
+                <Input id="nombre" value={data.nombre} onChange={(event) => setData('nombre', event.target.value)} placeholder="COORDINADOR_ACADEMICO"/>
                 <InputError message={errors.nombre}/>
             </div>
 

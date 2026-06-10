@@ -39,7 +39,7 @@ export default function NotasPage({
     const { auth } = usePage().props;
     const canCreate = auth.permissions.includes('notas:create');
     const canUpdate = auth.permissions.includes('notas:update');
-    const adminRoles = ['ADMINISTRADOR', 'ADMINISTRATIVO', 'COORDINADOR', 'COORDINADOR_ACADEMICO'];
+    const adminRoles = ['ADMINISTRADOR', 'COORDINADOR_ACADEMICO'];
     const hasAdminRole = auth.roles.some((role) => adminRoles.includes(role));
     const canGenerateTestScores =
         canCreate && (!auth.roles.includes('DOCENTE') || hasAdminRole);

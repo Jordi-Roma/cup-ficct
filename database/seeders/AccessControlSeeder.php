@@ -15,9 +15,21 @@ class AccessControlSeeder extends Seeder
      */
     public function run(): void
     {
+        $rolAdministrativo = Rol::where('nombre', 'ADMINISTRATIVO')->first();
+        $rolCoordinador = Rol::where('nombre', 'COORDINADOR_ACADEMICO')->first();
+
+        if ($rolAdministrativo && ! $rolCoordinador) {
+            $rolAdministrativo->update([
+                'nombre' => 'COORDINADOR_ACADEMICO',
+                'descripcion' => 'Gestiona el proceso academico del CUP',
+            ]);
+        } elseif ($rolAdministrativo && $rolCoordinador) {
+            $rolAdministrativo->update(['activo' => false]);
+        }
+
         $roles = [
             'ADMINISTRADOR' => 'Acceso completo al sistema',
-            'ADMINISTRATIVO' => 'Gestión administrativa del proceso CUP',
+            'COORDINADOR_ACADEMICO' => 'Gestiona el proceso academico del CUP',
             'DOCENTE' => 'Gestión de notas y consulta académica',
             'POSTULANTE' => 'Acceso de postulante al proceso de admisión',
         ];
@@ -124,7 +136,7 @@ class AccessControlSeeder extends Seeder
 
         Rol::where('nombre', 'ADMINISTRADOR')->first()?->permisos()->sync($this->pivotRecords($allPermissionIds));
 
-        $administrativo = [
+        $coordinadorAcademico = [
             'usuarios:read',
             'usuarios:create',
             'usuarios:update',
@@ -187,7 +199,7 @@ class AccessControlSeeder extends Seeder
             'historial:read-own',
         ];
 
-        $this->syncByNames('ADMINISTRATIVO', $administrativo);
+        $this->syncByNames('COORDINADOR_ACADEMICO', $coordinadorAcademico);
         $this->syncByNames('DOCENTE', $docente);
         $this->syncByNames('POSTULANTE', $postulante);
     }
@@ -227,9 +239,9 @@ class AccessControlSeeder extends Seeder
         }
 
         GestionAcademica::create([
-            'nombre' => 'CUP 2026',
+            'nombre' => '1-2026',
             'fecha_inicio' => '2026-01-01',
-            'fecha_fin' => '2026-12-31',
+            'fecha_fin' => '2026-6-31',
             'activo' => true,
         ]);
     }

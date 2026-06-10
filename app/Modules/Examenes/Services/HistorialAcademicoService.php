@@ -18,7 +18,7 @@ class HistorialAcademicoService
     public function canViewAny(User $user): bool
     {
         return $user->isAdmin()
-            || $user->hasRole('ADMINISTRATIVO')
+            || $user->hasRole('COORDINADOR_ACADEMICO')
             || $user->hasPermission('historial:read');
     }
 

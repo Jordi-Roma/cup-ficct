@@ -18,7 +18,7 @@ class AccessControlTest extends TestCase
         $this->seed(AccessControlSeeder::class);
 
         $this->assertDatabaseHas('rol', ['nombre' => 'ADMINISTRADOR']);
-        $this->assertDatabaseHas('rol', ['nombre' => 'ADMINISTRATIVO']);
+        $this->assertDatabaseHas('rol', ['nombre' => 'COORDINADOR_ACADEMICO']);
         $this->assertDatabaseHas('rol', ['nombre' => 'DOCENTE']);
         $this->assertDatabaseHas('rol', ['nombre' => 'POSTULANTE']);
         $this->assertDatabaseHas('permiso', ['nombre' => 'roles:read']);

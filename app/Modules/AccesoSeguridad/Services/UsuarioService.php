@@ -174,9 +174,7 @@ class UsuarioService
 
     private function coordinatorRoleName(): string
     {
-        return Rol::where('nombre', 'COORDINADOR_ACADEMICO')->exists()
-            ? 'COORDINADOR_ACADEMICO'
-            : 'ADMINISTRATIVO';
+        return 'COORDINADOR_ACADEMICO';
     }
 
     private function assignRoleByName(User $user, string $roleName): void

@@ -484,9 +484,7 @@ class CargaMasivaUsuarioService
 
     private function coordinatorRoleName(): string
     {
-        return Rol::where('nombre', 'COORDINADOR_ACADEMICO')->exists()
-            ? 'COORDINADOR_ACADEMICO'
-            : 'ADMINISTRATIVO';
+        return 'COORDINADOR_ACADEMICO';
     }
 
     private function createdUserPayload(array $row, User $user, string $password, string $role): array

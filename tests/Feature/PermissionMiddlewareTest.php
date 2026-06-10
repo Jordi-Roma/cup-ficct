@@ -51,7 +51,7 @@ class PermissionMiddlewareTest extends TestCase
     public function test_user_without_roles_update_cannot_update_role(): void
     {
         $user = $this->userWithPermissions(['roles:read']);
-        $role = Rol::where('nombre', 'ADMINISTRATIVO')->firstOrFail();
+        $role = Rol::where('nombre', 'COORDINADOR_ACADEMICO')->firstOrFail();
 
         $this->actingAs($user)
             ->put("/admin/roles/{$role->id_rol}", [
@@ -66,7 +66,7 @@ class PermissionMiddlewareTest extends TestCase
     public function test_user_with_roles_update_can_update_role(): void
     {
         $user = $this->userWithPermissions(['roles:update']);
-        $role = Rol::where('nombre', 'ADMINISTRATIVO')->firstOrFail();
+        $role = Rol::where('nombre', 'COORDINADOR_ACADEMICO')->firstOrFail();
 
         $this->actingAs($user)
             ->put("/admin/roles/{$role->id_rol}", [

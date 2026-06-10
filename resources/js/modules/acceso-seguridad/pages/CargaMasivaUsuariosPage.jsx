@@ -56,7 +56,7 @@ const TIPOS = {
     },
     COORDINADOR_ACADEMICO: {
         label: 'Coordinadores academicos',
-        description: 'Crea usuarios coordinadores con rol administrativo o coordinador si existe.',
+        description: 'Crea usuarios coordinadores con el rol de coordinador academico.',
         columns: ['ci', 'nombre', 'apellido', 'correo', 'telefono', 'sexo', 'password'],
         example: '70000001,Carla,Vargas,carla@example.com,70000003,F,Cup2026#03',
     },

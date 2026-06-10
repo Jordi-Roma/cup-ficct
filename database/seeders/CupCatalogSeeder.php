@@ -15,10 +15,10 @@ class CupCatalogSeeder extends Seeder
     public function run(): void
     {
         $gestion = GestionAcademica::updateOrCreate(
-            ['nombre' => 'CUP 2026'],
+            ['nombre' => '1-2026'],
             [
                 'fecha_inicio' => '2026-01-01',
-                'fecha_fin' => '2026-12-31',
+                'fecha_fin' => '2026-06-30',
                 'activo' => true,
             ],
         );

@@ -282,7 +282,6 @@ class NotaService
     public function canManageAllNotas(User $user): bool
     {
         return $user->isAdmin()
-            || $user->hasRole('ADMINISTRATIVO')
             || $user->hasRole('COORDINADOR_ACADEMICO')
             || (
                 ($user->hasPermission('notas:create') || $user->hasPermission('notas:update'))
