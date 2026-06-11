@@ -7,6 +7,8 @@ use App\Modules\AccesoSeguridad\Models\Rol;
 use App\Modules\AccesoSeguridad\Models\User;
 use App\Modules\GestionAcademica\Models\Carrera;
 use App\Modules\GestionAcademica\Models\GestionAcademica;
+use App\Modules\RegistroPostulantes\Mail\PagoInscripcionReceiptMail;
+use App\Modules\RegistroPostulantes\Models\PagoInscripcion;
 use App\Modules\RegistroPostulantes\Models\Postulacion;
 use App\Modules\RegistroPostulantes\Models\Postulante;
 use App\Modules\RegistroPostulantes\Services\PagoPostulanteService;
@@ -14,6 +16,7 @@ use App\Modules\RegistroPostulantes\Services\PostulanteSolicitudService;
 use Database\Seeders\AccessControlSeeder;
 use Database\Seeders\CupCatalogSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Stripe\Checkout\Session;
 use Tests\TestCase;
@@ -176,6 +179,7 @@ class PostulanteSolicitudPagoTest extends TestCase
         $payload = $service->checkoutSessionPayload($postulante->usuario, $postulante, $postulacion);
 
         $this->assertSame('pagos-cup@example.com', $payload['customer_email']);
+        $this->assertSame('pagos-cup@example.com', $payload['payment_intent_data']['receipt_email']);
     }
 
     public function test_stripe_checkout_payload_falls_back_to_user_email_without_notification_email(): void
@@ -190,10 +194,14 @@ class PostulanteSolicitudPagoTest extends TestCase
         $payload = $service->checkoutSessionPayload($postulante->usuario, $postulante, $postulacion);
 
         $this->assertSame($postulante->usuario->correo, $payload['customer_email']);
+        $this->assertSame($postulante->usuario->correo, $payload['payment_intent_data']['receipt_email']);
     }
 
     public function test_confirm_paid_stripe_session_enables_access_and_registers_payment(): void
     {
+        Mail::fake();
+        config()->set('services.postulantes.notification_email', 'pagos-cup@example.com');
+
         $postulante = $this->createPendingRequest();
         $admin = $this->userWithPermissions(['postulantes:update']);
         app(PostulanteSolicitudService::class)->confirm($postulante, $admin->id_usuario);
@@ -212,6 +220,7 @@ class PostulanteSolicitudPagoTest extends TestCase
                     'id' => $sessionId,
                     'payment_status' => 'paid',
                     'payment_intent' => 'pi_test_123',
+                    'payment_method_types' => ['card'],
                     'metadata' => [
                         'id_postulacion' => (string) $this->postulacionId,
                     ],
@@ -231,10 +240,21 @@ class PostulanteSolicitudPagoTest extends TestCase
             'pasarela' => 'STRIPE',
             'moneda' => 'USD',
         ]);
+
+        Mail::assertSent(PagoInscripcionReceiptMail::class, function (PagoInscripcionReceiptMail $mail): bool {
+            return $mail->hasTo('pagos-cup@example.com')
+                && $mail->pago->estado_pago === 'APROBADO'
+                && $mail->pago->numero_transaccion === 'pi_test_123'
+                && str_contains($mail->render(), 'Recibo de pago de inscripcion')
+                && str_contains($mail->render(), 'pi_test_123');
+        });
     }
 
     public function test_paid_stripe_session_does_not_duplicate_approved_payment(): void
     {
+        Mail::fake();
+        config()->set('services.postulantes.notification_email', 'pagos-cup@example.com');
+
         $postulante = $this->createPendingRequest();
         $admin = $this->userWithPermissions(['postulantes:update']);
         app(PostulanteSolicitudService::class)->confirm($postulante, $admin->id_usuario);
@@ -260,7 +280,8 @@ class PostulanteSolicitudPagoTest extends TestCase
         $service->confirmStripePayment($postulante->usuario, 'cs_test_paid');
         $service->confirmStripePayment($postulante->usuario, 'cs_test_paid');
 
-        $this->assertSame(1, \App\Modules\RegistroPostulantes\Models\PagoInscripcion::where('id_postulacion', $postulacion->id_postulacion)->where('estado_pago', 'APROBADO')->count());
+        $this->assertSame(1, PagoInscripcion::where('id_postulacion', $postulacion->id_postulacion)->where('estado_pago', 'APROBADO')->count());
+        Mail::assertSent(PagoInscripcionReceiptMail::class, 1);
     }
 
     public function test_cancelled_payment_redirects_to_payment_page(): void

@@ -64,6 +64,6 @@ class AsignacionAcademicaController extends Controller
     {
         $assigned = $this->asignacionService->assignPostulantes();
 
-        return back()->with('success', "Asignacion realizada correctamente. Postulantes asignados: {$assigned}.");
+        return back()->with('success', "Asignacion realizada correctamente llenando grupos por orden de turno. Postulantes asignados: {$assigned}.");
     }
 }

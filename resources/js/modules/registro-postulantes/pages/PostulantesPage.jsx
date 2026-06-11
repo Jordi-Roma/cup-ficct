@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from '@/sh
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, } from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/shared/components/ui/select';
-export default function PostulantesPage({ postulantes, filters, carreras, selectedPostulante, }) {
+export default function PostulantesPage({ postulantes, filters, carreras, gestiones = [], gestionActiva = null, selectedPostulante, }) {
     const { auth } = usePage().props;
     const canUpdate = auth.permissions.includes('postulantes:update');
     const [localFilters, setLocalFilters] = useState({
@@ -18,6 +18,7 @@ export default function PostulantesPage({ postulantes, filters, carreras, select
         documentacion_completa: filters.documentacion_completa ?? '',
         estado_admision: filters.estado_admision ?? '',
         id_carrera: filters.id_carrera ?? '',
+        gestion: filters.gestion ?? 'activa',
     });
     const [detailPostulante, setDetailPostulante] = useState(selectedPostulante ?? null);
     const [editPostulante, setEditPostulante] = useState(null);
@@ -40,6 +41,7 @@ export default function PostulantesPage({ postulantes, filters, carreras, select
             documentacion_completa: '',
             estado_admision: '',
             id_carrera: '',
+            gestion: 'activa',
         };
         setLocalFilters(emptyFilters);
         router.get('/postulantes', emptyFilters, {
@@ -98,7 +100,27 @@ export default function PostulantesPage({ postulantes, filters, carreras, select
                             Busca por CI, nombre, apellido o correo.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+                    <CardContent className="grid gap-3 md:grid-cols-3 xl:grid-cols-7">
+                        <Select value={localFilters.gestion || 'activa'} onValueChange={(value) => setLocalFilters({
+            ...localFilters,
+            gestion: value,
+        })}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Gestión"/>
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="activa">
+                                    Gestión activa{gestionActiva?.nombre ? ` (${gestionActiva.nombre})` : ''}
+                                </SelectItem>
+                                <SelectItem value="todas">
+                                    Todas las gestiones
+                                </SelectItem>
+                                {gestiones.map((gestion) => (<SelectItem key={gestion.id_gestion} value={gestion.id_gestion.toString()}>
+                                        {gestion.nombre}
+                                        {gestion.activo ? ' - Activa' : ''}
+                                    </SelectItem>))}
+                            </SelectContent>
+                        </Select>
                         <Input value={localFilters.search} onChange={(event) => setLocalFilters({
             ...localFilters,
             search: event.target.value,
@@ -156,7 +178,7 @@ export default function PostulantesPage({ postulantes, filters, carreras, select
                                     </SelectItem>))}
                             </SelectContent>
                         </Select>
-                        <div className="flex gap-2 md:col-span-3 xl:col-span-6">
+                        <div className="flex gap-2 md:col-span-3 xl:col-span-7">
                             <Button type="button" onClick={applyFilters} className="bg-[#001f3f] text-white hover:bg-[#06345f]">
                                 Filtrar
                             </Button>

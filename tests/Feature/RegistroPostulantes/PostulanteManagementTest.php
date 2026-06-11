@@ -40,6 +40,44 @@ class PostulanteManagementTest extends TestCase
         $this->actingAs($user)->get('/postulantes')->assertOk();
     }
 
+    public function test_postulantes_can_be_filtered_by_gestion(): void
+    {
+        $gestionActiva = GestionAcademica::create([
+            'nombre' => '1-2026',
+            'fecha_inicio' => '2026-01-01',
+            'fecha_fin' => '2026-06-30',
+            'activo' => true,
+        ]);
+        $gestionAnterior = GestionAcademica::create([
+            'nombre' => '2-2025',
+            'fecha_inicio' => '2025-07-01',
+            'fecha_fin' => '2025-12-31',
+            'activo' => false,
+        ]);
+
+        $this->createPostulante([
+            'ci' => '11111111',
+            'nombre' => 'Actual',
+            'gestion' => $gestionActiva,
+        ]);
+        $this->createPostulante([
+            'ci' => '22222222',
+            'nombre' => 'Anterior',
+            'gestion' => $gestionAnterior,
+        ]);
+        $user = $this->userWithPermissions(['postulantes:read']);
+
+        $activos = $this->actingAs($user)->get('/postulantes')->viewData('page')['props']['postulantes'];
+        $todos = $this->actingAs($user)->get('/postulantes?gestion=todas')->viewData('page')['props']['postulantes'];
+        $anteriores = $this->actingAs($user)->get("/postulantes?gestion={$gestionAnterior->id_gestion}")->viewData('page')['props']['postulantes'];
+
+        $this->assertCount(1, $activos);
+        $this->assertSame('Actual', $activos[0]['nombre']);
+        $this->assertCount(2, $todos);
+        $this->assertCount(1, $anteriores);
+        $this->assertSame('Anterior', $anteriores[0]['nombre']);
+    }
+
     public function test_search_filter_finds_ci_name_and_email(): void
     {
         $this->createPostulante([
@@ -81,6 +119,7 @@ class PostulanteManagementTest extends TestCase
                 'documentacion_completa' => true,
                 'id_carrera_opcion1' => $carrera2->id_carrera,
                 'id_carrera_opcion2' => $carrera1->id_carrera,
+                'turno_preferido' => 'MANANA',
             ])
             ->assertRedirect();
 
@@ -118,6 +157,7 @@ class PostulanteManagementTest extends TestCase
                 'documentacion_completa' => true,
                 'id_carrera_opcion1' => $carrera1->id_carrera,
                 'id_carrera_opcion2' => $carrera2->id_carrera,
+                'turno_preferido' => 'MANANA',
             ])
             ->assertSessionHasErrors('correo');
     }
@@ -138,6 +178,7 @@ class PostulanteManagementTest extends TestCase
                 'documentacion_completa' => true,
                 'id_carrera_opcion1' => $carrera1->id_carrera,
                 'id_carrera_opcion2' => $carrera1->id_carrera,
+                'turno_preferido' => 'MANANA',
             ])
             ->assertSessionHasErrors('id_carrera_opcion2');
     }
@@ -160,6 +201,7 @@ class PostulanteManagementTest extends TestCase
                 'documentacion_completa' => true,
                 'id_carrera_opcion1' => $carrera1->id_carrera,
                 'id_carrera_opcion2' => $carrera2->id_carrera,
+                'turno_preferido' => 'MANANA',
             ])
             ->assertRedirect();
 
@@ -216,7 +258,7 @@ class PostulanteManagementTest extends TestCase
 
     private function createPostulante(array $overrides = []): array
     {
-        $gestion = GestionAcademica::firstOrCreate(
+        $gestion = $overrides['gestion'] ?? GestionAcademica::firstOrCreate(
             ['nombre' => 'CUP TEST'],
             [
                 'fecha_inicio' => '2026-01-01',
@@ -253,6 +295,7 @@ class PostulanteManagementTest extends TestCase
             'id_carrera_opcion1' => $carrera1->id_carrera,
             'id_carrera_opcion2' => $carrera2->id_carrera,
             'estado_admision' => 'PENDIENTE',
+            'turno_preferido' => $overrides['turno_preferido'] ?? 'MANANA',
             'fecha_postulacion' => now(),
         ]);
 

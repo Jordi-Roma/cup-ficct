@@ -372,8 +372,6 @@ class GrupoAcademicoService
 
     private function nextAvailableGroupIndex(array $groups, string $turno): ?int
     {
-        $available = null;
-
         foreach ($groups as $index => $group) {
             if ($group['turno'] !== $turno) {
                 continue;
@@ -383,12 +381,10 @@ class GrupoAcademicoService
                 continue;
             }
 
-            if ($available === null || $group['asignados'] < $groups[$available]['asignados']) {
-                $available = $index;
-            }
+            return $index;
         }
 
-        return $available;
+        return null;
     }
 
     private function turnoLabel(?string $turno): string

@@ -4,6 +4,7 @@ namespace App\Modules\RegistroPostulantes\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\GestionAcademica\Models\Carrera;
+use App\Modules\GestionAcademica\Models\GestionAcademica;
 use App\Modules\RegistroPostulantes\Models\Postulante;
 use App\Modules\RegistroPostulantes\Requests\UpdatePostulanteRequest;
 use App\Modules\RegistroPostulantes\Services\PostulanteService;
@@ -27,7 +28,10 @@ class PostulanteController extends Controller
             'documentacion_completa',
             'estado_admision',
             'id_carrera',
+            'gestion',
         ]);
+        $filters['gestion'] = $filters['gestion'] ?? 'activa';
+        $gestionActiva = $this->gestionActiva();
 
         return Inertia::render('registro-postulantes/postulantes', [
             'postulantes' => $this->postulanteService->list($filters),
@@ -36,6 +40,12 @@ class PostulanteController extends Controller
                 ->where('activo', true)
                 ->orderBy('nombre')
                 ->get(['id_carrera', 'nombre']),
+            'gestiones' => $this->gestiones(),
+            'gestionActiva' => $gestionActiva ? [
+                'id_gestion' => $gestionActiva->id_gestion,
+                'nombre' => $gestionActiva->nombre,
+                'activo' => $gestionActiva->activo,
+            ] : null,
         ]);
     }
 
@@ -48,6 +58,8 @@ class PostulanteController extends Controller
                 ->where('activo', true)
                 ->orderBy('nombre')
                 ->get(['id_carrera', 'nombre']),
+            'gestiones' => $this->gestiones(),
+            'gestionActiva' => $this->gestionActiva(),
             'selectedPostulante' => $this->postulanteService->find($postulante),
         ]);
     }
@@ -64,5 +76,22 @@ class PostulanteController extends Controller
         $this->postulanteService->toggleActive($postulante);
 
         return back()->with('success', 'Estado del postulante actualizado.');
+    }
+
+    private function gestionActiva(): ?GestionAcademica
+    {
+        return GestionAcademica::query()
+            ->where('activo', true)
+            ->orderByDesc('fecha_inicio')
+            ->orderByDesc('id_gestion')
+            ->first(['id_gestion', 'nombre', 'activo']);
+    }
+
+    private function gestiones()
+    {
+        return GestionAcademica::query()
+            ->orderByDesc('fecha_inicio')
+            ->orderByDesc('id_gestion')
+            ->get(['id_gestion', 'nombre', 'activo']);
     }
 }

@@ -92,7 +92,7 @@ export default function CargaMasivaUsuariosPage({ resultado }) {
                     <h1 className="text-2xl font-bold text-foreground">Carga masiva de usuarios</h1>
                     <p className="text-sm text-muted-foreground">
                         Importa usuarios en lote desde archivos CSV exportados desde Excel. Cada fila debe incluir una
-                        contrasena.
+                        contraseña.
                     </p>
                 </div>
 
@@ -209,7 +209,7 @@ function ResultadoCarga({ resultado }) {
                                     <th className="p-3">CI</th>
                                     <th className="p-3">Nombre</th>
                                     <th className="p-3">Username</th>
-                                    <th className="p-3">Contrasena</th>
+                                    <th className="p-3">Contraseña</th>
                                     <th className="p-3">Rol</th>
                                 </tr>
                             </thead>

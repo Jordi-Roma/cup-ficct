@@ -16,6 +16,7 @@ const pageAliases = {
     'auth/login': './modules/acceso-seguridad/pages/SesionPage.jsx',
     'auth/register': './modules/registro-postulantes/pages/RegistroPage.jsx',
     'auth/reset-password': './modules/acceso-seguridad/pages/ResetPasswordPage.jsx',
+    'auth/verify-reset-code': './modules/acceso-seguridad/pages/VerifyResetCodePage.jsx',
     'auth/verify-email': './modules/acceso-seguridad/pages/VerifyEmailPage.jsx',
     'admin/permisos': './modules/acceso-seguridad/pages/PermisosPage.jsx',
     'admin/roles': './modules/acceso-seguridad/pages/RolesPage.jsx',

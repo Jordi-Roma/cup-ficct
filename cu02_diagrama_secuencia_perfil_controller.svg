@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1350" viewBox="0 0 1500 1350">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#111"/>
+    </marker>
+    <marker id="arrow-gray" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#555"/>
+    </marker>
+    <style>
+      .title { font: 700 28px Arial, sans-serif; fill: #111; }
+      .head { font: 700 18px Arial, sans-serif; fill: #111; }
+      .text { font: 15px Arial, sans-serif; fill: #111; }
+      .small { font: 13px Arial, sans-serif; fill: #111; }
+      .label { font: 700 14px Arial, sans-serif; fill: #111; }
+      .line { stroke: #111; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .return { stroke: #555; stroke-width: 2; fill: none; stroke-dasharray: 7 6; marker-end: url(#arrow-gray); }
+      .life { stroke: #777; stroke-width: 1.5; stroke-dasharray: 7 6; }
+      .box { fill: #fff; stroke: #111; stroke-width: 1.8; }
+      .block { fill: rgba(248,250,252,0.86); stroke: #111; stroke-width: 1.6; }
+      .section { stroke: #999; stroke-width: 1.1; stroke-dasharray: 5 5; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1500" height="1350" fill="#fff"/>
+  <text x="750" y="45" text-anchor="middle" class="title">CU02 - Diagrama de secuencia: Perfil de usuario</text>
+
+  <!-- Participants -->
+  <rect x="45" y="75" width="150" height="48" rx="4" class="box"/>
+  <text x="120" y="105" text-anchor="middle" class="head">Usuario</text>
+
+  <rect x="310" y="75" width="170" height="48" rx="4" class="box"/>
+  <text x="395" y="105" text-anchor="middle" class="head">UI PerfilPage</text>
+
+  <rect x="620" y="75" width="180" height="48" rx="4" class="box"/>
+  <text x="710" y="105" text-anchor="middle" class="head">Controller</text>
+
+  <rect x="990" y="75" width="170" height="48" rx="4" class="box"/>
+  <text x="1075" y="105" text-anchor="middle" class="head">usuario</text>
+
+  <rect x="1245" y="75" width="170" height="48" rx="4" class="box"/>
+  <text x="1330" y="105" text-anchor="middle" class="head">session</text>
+
+  <!-- Lifelines -->
+  <line x1="120" y1="123" x2="120" y2="1290" class="life"/>
+  <line x1="395" y1="123" x2="395" y2="1290" class="life"/>
+  <line x1="710" y1="123" x2="710" y2="1290" class="life"/>
+  <line x1="1075" y1="123" x2="1075" y2="1290" class="life"/>
+  <line x1="1330" y1="123" x2="1330" y2="1290" class="life"/>
+
+  <!-- 1. View/Edit profile -->
+  <rect x="30" y="155" width="1390" height="285" rx="4" class="block"/>
+  <rect x="30" y="155" width="115" height="30" class="box"/>
+  <text x="51" y="176" class="label">opt</text>
+  <text x="160" y="176" class="small">Usuario desea ver o editar su perfil</text>
+
+  <line x1="120" y1="220" x2="395" y2="220" class="line"/>
+  <text x="155" y="212" class="text">1. Ver/editar Perfil</text>
+
+  <line x1="395" y1="255" x2="710" y2="255" class="line"/>
+  <text x="485" y="247" class="text">1.1 edit()</text>
+
+  <line x1="710" y1="295" x2="1075" y2="295" class="line"/>
+  <text x="835" y="287" class="text">1.1.1 render()</text>
+
+  <line x1="1075" y1="325" x2="710" y2="325" class="return"/>
+  <text x="835" y="318" class="text">Datos del perfil</text>
+
+  <rect x="60" y="350" width="1340" height="70" rx="4" class="block"/>
+  <rect x="60" y="350" width="110" height="28" class="box"/>
+  <text x="80" y="370" class="label">alt</text>
+  <text x="185" y="370" class="label">Perfil encontrado / no disponible</text>
+  <line x1="710" y1="395" x2="395" y2="395" class="return"/>
+  <text x="430" y="388" class="text">Mostrar perfil o mensaje de error</text>
+
+  <!-- 2. Update profile -->
+  <rect x="30" y="475" width="1390" height="270" rx="4" class="block"/>
+  <rect x="30" y="475" width="115" height="30" class="box"/>
+  <text x="51" y="496" class="label">opt</text>
+  <text x="160" y="496" class="small">Usuario actualiza datos personales</text>
+
+  <line x1="120" y1="555" x2="395" y2="555" class="line"/>
+  <text x="155" y="547" class="text">2. Actualizar perfil</text>
+
+  <line x1="395" y1="590" x2="710" y2="590" class="line"/>
+  <text x="485" y="582" class="text">2.1 update(data)</text>
+
+  <rect x="60" y="615" width="1340" height="110" rx="4" class="block"/>
+  <rect x="60" y="615" width="110" height="28" class="box"/>
+  <text x="80" y="635" class="label">alt</text>
+  <line x1="60" y1="675" x2="1400" y2="675" class="section"/>
+  <text x="80" y="665" class="label">Datos validos</text>
+  <line x1="710" y1="660" x2="1075" y2="660" class="line"/>
+  <text x="830" y="652" class="text">2.1.1 save(data)</text>
+  <line x1="1075" y1="690" x2="710" y2="690" class="return"/>
+  <text x="835" y="683" class="text">Perfil guardado</text>
+  <text x="80" y="710" class="label">Datos invalidos o error al guardar</text>
+  <line x1="710" y1="715" x2="395" y2="715" class="return"/>
+  <text x="430" y="708" class="text">Confirmar actualizacion o mostrar error</text>
+
+  <!-- 3. Change password -->
+  <rect x="30" y="780" width="1390" height="265" rx="4" class="block"/>
+  <rect x="30" y="780" width="115" height="30" class="box"/>
+  <text x="51" y="801" class="label">opt</text>
+  <text x="160" y="801" class="small">Usuario cambia su contrasena</text>
+
+  <line x1="120" y1="855" x2="395" y2="855" class="line"/>
+  <text x="155" y="847" class="text">3. Cambiar contrasena</text>
+
+  <line x1="395" y1="890" x2="710" y2="890" class="line"/>
+  <text x="485" y="882" class="text">3.1 update(pwd)</text>
+
+  <rect x="60" y="915" width="1340" height="110" rx="4" class="block"/>
+  <rect x="60" y="915" width="110" height="28" class="box"/>
+  <text x="80" y="935" class="label">alt</text>
+  <line x1="60" y1="975" x2="1400" y2="975" class="section"/>
+  <text x="80" y="965" class="label">Contrasena actual correcta y nueva valida</text>
+  <line x1="710" y1="960" x2="1075" y2="960" class="line"/>
+  <text x="835" y="952" class="text">3.1.1 update(pwd)</text>
+  <line x1="1075" y1="990" x2="710" y2="990" class="return"/>
+  <text x="835" y="983" class="text">Contrasena actualizada</text>
+  <text x="80" y="1010" class="label">Contrasena actual incorrecta o nueva invalida</text>
+  <line x1="710" y1="1015" x2="395" y2="1015" class="return"/>
+  <text x="430" y="1008" class="text">Mostrar error de contrasena</text>
+
+  <!-- 4. Delete account -->
+  <rect x="30" y="1080" width="1390" height="240" rx="4" class="block"/>
+  <rect x="30" y="1080" width="115" height="30" class="box"/>
+  <text x="51" y="1101" class="label">opt</text>
+  <text x="160" y="1101" class="small">Usuario elimina su cuenta</text>
+
+  <line x1="120" y1="1145" x2="395" y2="1145" class="line"/>
+  <text x="155" y="1137" class="text">4. Eliminar cuenta</text>
+
+  <line x1="395" y1="1180" x2="710" y2="1180" class="line"/>
+  <text x="485" y="1172" class="text">4.1 destroy(pwd)</text>
+
+  <rect x="60" y="1205" width="1340" height="95" rx="4" class="block"/>
+  <rect x="60" y="1205" width="110" height="28" class="box"/>
+  <text x="80" y="1225" class="label">alt</text>
+  <line x1="60" y1="1250" x2="1400" y2="1250" class="section"/>
+  <text x="80" y="1245" class="label">Contrasena confirmada</text>
+  <line x1="710" y1="1240" x2="1330" y2="1240" class="line"/>
+  <text x="930" y="1232" class="text">4.1.1 destroy()</text>
+  <line x1="1330" y1="1268" x2="710" y2="1268" class="return"/>
+  <text x="930" y="1261" class="text">Cuenta/sesion eliminada</text>
+  <text x="80" y="1285" class="label">Contrasena incorrecta o usuario cancela</text>
+  <line x1="710" y1="1290" x2="395" y2="1290" class="return"/>
+  <text x="430" y="1283" class="text">Mostrar error o mantener cuenta activa</text>
+</svg>

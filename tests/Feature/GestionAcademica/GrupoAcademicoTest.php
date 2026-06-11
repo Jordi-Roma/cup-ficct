@@ -249,6 +249,42 @@ class GrupoAcademicoTest extends TestCase
         $this->assertLessThanOrEqual(2, DB::table('postulacion')->where('id_grupo', $grupoB->id_grupo)->count());
     }
 
+    public function test_assigns_postulantes_filling_first_group_before_next_one(): void
+    {
+        $gestion = $this->createGestion();
+        $this->createEligiblePostulaciones($gestion, 141);
+        $grupoA = GrupoAcademico::create([
+            'id_gestion' => $gestion->id_gestion,
+            'nombre' => 'M001',
+            'turno' => 'MANANA',
+            'capacidad_maxima' => 70,
+            'activo' => true,
+        ]);
+        $grupoB = GrupoAcademico::create([
+            'id_gestion' => $gestion->id_gestion,
+            'nombre' => 'M002',
+            'turno' => 'MANANA',
+            'capacidad_maxima' => 70,
+            'activo' => true,
+        ]);
+        $grupoC = GrupoAcademico::create([
+            'id_gestion' => $gestion->id_gestion,
+            'nombre' => 'M003',
+            'turno' => 'MANANA',
+            'capacidad_maxima' => 70,
+            'activo' => true,
+        ]);
+        $user = $this->userWithPermissions(['asignaciones:update']);
+
+        $this->actingAs($user)
+            ->post('/academico/asignaciones/asignar-postulantes')
+            ->assertRedirect();
+
+        $this->assertSame(70, DB::table('postulacion')->where('id_grupo', $grupoA->id_grupo)->count());
+        $this->assertSame(70, DB::table('postulacion')->where('id_grupo', $grupoB->id_grupo)->count());
+        $this->assertSame(1, DB::table('postulacion')->where('id_grupo', $grupoC->id_grupo)->count());
+    }
+
     public function test_user_with_grupos_delete_can_deactivate_group_without_physical_delete(): void
     {
         $gestion = $this->createGestion();

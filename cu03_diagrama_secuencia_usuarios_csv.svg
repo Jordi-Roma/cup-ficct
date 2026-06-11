@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1650" height="1650" viewBox="0 0 1650 1650">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#111"/>
+    </marker>
+    <marker id="arrow-gray" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#555"/>
+    </marker>
+    <style>
+      .title { font: 700 28px Arial, sans-serif; fill: #111; }
+      .head { font: 700 18px Arial, sans-serif; fill: #111; }
+      .text { font: 15px Arial, sans-serif; fill: #111; }
+      .small { font: 13px Arial, sans-serif; fill: #111; }
+      .label { font: 700 14px Arial, sans-serif; fill: #111; }
+      .line { stroke: #111; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .return { stroke: #555; stroke-width: 2; fill: none; stroke-dasharray: 7 6; marker-end: url(#arrow-gray); }
+      .life { stroke: #777; stroke-width: 1.5; stroke-dasharray: 7 6; }
+      .box { fill: #fff; stroke: #111; stroke-width: 1.8; }
+      .block { fill: rgba(248,250,252,0.86); stroke: #111; stroke-width: 1.6; }
+      .section { stroke: #999; stroke-width: 1.1; stroke-dasharray: 5 5; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1650" height="1650" fill="#fff"/>
+  <text x="825" y="45" text-anchor="middle" class="title">CU03 - Diagrama de secuencia: Gestion de usuarios y carga masiva</text>
+
+  <!-- Participants -->
+  <rect x="35" y="75" width="170" height="48" rx="4" class="box"/>
+  <text x="120" y="105" text-anchor="middle" class="head">Administrador</text>
+
+  <rect x="300" y="75" width="185" height="58" rx="4" class="box"/>
+  <text x="392" y="99" text-anchor="middle" class="head">UI</text>
+  <text x="392" y="119" text-anchor="middle" class="head">UsuariosPage</text>
+
+  <rect x="610" y="75" width="180" height="48" rx="4" class="box"/>
+  <text x="700" y="105" text-anchor="middle" class="head">Controller</text>
+
+  <rect x="930" y="75" width="170" height="48" rx="4" class="box"/>
+  <text x="1015" y="105" text-anchor="middle" class="head">usuario</text>
+
+  <rect x="1200" y="75" width="170" height="48" rx="4" class="box"/>
+  <text x="1285" y="105" text-anchor="middle" class="head">RolUsuario</text>
+
+  <rect x="1420" y="75" width="190" height="58" rx="4" class="box"/>
+  <text x="1515" y="99" text-anchor="middle" class="head">Postulante/</text>
+  <text x="1515" y="119" text-anchor="middle" class="head">Docente</text>
+
+  <!-- Lifelines -->
+  <line x1="120" y1="123" x2="120" y2="1595" class="life"/>
+  <line x1="392" y1="133" x2="392" y2="1595" class="life"/>
+  <line x1="700" y1="123" x2="700" y2="1595" class="life"/>
+  <line x1="1015" y1="123" x2="1015" y2="1595" class="life"/>
+  <line x1="1285" y1="123" x2="1285" y2="1595" class="life"/>
+  <line x1="1515" y1="133" x2="1515" y2="1595" class="life"/>
+
+  <!-- 1. List users -->
+  <rect x="25" y="160" width="1595" height="230" rx="4" class="block"/>
+  <rect x="25" y="160" width="115" height="30" class="box"/>
+  <text x="46" y="181" class="label">opt</text>
+  <text x="155" y="181" class="small">Administrador desea listar usuarios</text>
+
+  <line x1="120" y1="220" x2="392" y2="220" class="line"/>
+  <text x="155" y="212" class="text">1. Listar usuarios</text>
+  <line x1="392" y1="250" x2="700" y2="250" class="line"/>
+  <text x="475" y="242" class="text">1.1 index()</text>
+  <line x1="700" y1="280" x2="1015" y2="280" class="line"/>
+  <text x="815" y="272" class="text">1.1.1 list()</text>
+  <line x1="1015" y1="310" x2="700" y2="310" class="return"/>
+  <text x="805" y="303" class="text">Lista de usuarios</text>
+  <rect x="55" y="330" width="1565" height="45" rx="4" class="block"/>
+  <text x="75" y="358" class="label">alt</text>
+  <text x="180" y="358" class="text">Mostrar tabla si hay datos / mostrar mensaje si no hay resultados o falla la consulta</text>
+
+  <!-- 2. Create user -->
+  <rect x="25" y="430" width="1595" height="285" rx="4" class="block"/>
+  <rect x="25" y="430" width="115" height="30" class="box"/>
+  <text x="46" y="451" class="label">opt</text>
+  <text x="155" y="451" class="small">Administrador crea usuario manualmente</text>
+
+  <line x1="120" y1="495" x2="392" y2="495" class="line"/>
+  <text x="155" y="487" class="text">2. Crear usuario</text>
+  <line x1="392" y1="525" x2="700" y2="525" class="line"/>
+  <text x="475" y="517" class="text">2.1 store(data)</text>
+
+  <rect x="55" y="550" width="1565" height="145" rx="4" class="block"/>
+  <rect x="55" y="550" width="110" height="28" class="box"/>
+  <text x="75" y="570" class="label">alt</text>
+  <line x1="55" y1="620" x2="1620" y2="620" class="section"/>
+  <text x="75" y="605" class="label">Datos validos y tipo seleccionado</text>
+  <line x1="700" y1="600" x2="1015" y2="600" class="line"/>
+  <text x="795" y="592" class="text">2.1.1 createByType()</text>
+  <line x1="1015" y1="635" x2="700" y2="635" class="return"/>
+  <text x="795" y="628" class="text">Usuario creado</text>
+  <text x="75" y="670" class="label">Datos invalidos, correo duplicado o tipo invalido</text>
+  <line x1="700" y1="675" x2="392" y2="675" class="return"/>
+  <text x="435" y="668" class="text">Confirmar creacion o mostrar error</text>
+
+  <!-- 3. Update access -->
+  <rect x="25" y="755" width="1595" height="235" rx="4" class="block"/>
+  <rect x="25" y="755" width="115" height="30" class="box"/>
+  <text x="46" y="776" class="label">opt</text>
+  <text x="155" y="776" class="small">Administrador actualiza acceso del usuario</text>
+
+  <line x1="120" y1="835" x2="392" y2="835" class="line"/>
+  <text x="145" y="827" class="text">3. Actualizar acceso</text>
+  <line x1="392" y1="865" x2="700" y2="865" class="line"/>
+  <text x="455" y="857" class="text">3.1 update(id, acces)</text>
+  <line x1="700" y1="900" x2="1285" y2="900" class="line"/>
+  <text x="925" y="892" class="text">3.1.1 updateAccess()</text>
+  <line x1="1285" y1="930" x2="700" y2="930" class="return"/>
+  <text x="900" y="923" class="text">Acceso actualizado / error si no existe</text>
+  <line x1="700" y1="960" x2="392" y2="960" class="return"/>
+  <text x="435" y="953" class="text">Actualizar vista</text>
+
+  <!-- 4. Assign roles -->
+  <rect x="25" y="1030" width="1595" height="235" rx="4" class="block"/>
+  <rect x="25" y="1030" width="115" height="30" class="box"/>
+  <text x="46" y="1051" class="label">opt</text>
+  <text x="155" y="1051" class="small">Administrador asigna roles</text>
+
+  <line x1="120" y1="1100" x2="392" y2="1100" class="line"/>
+  <text x="155" y="1092" class="text">4. Asignar Roles</text>
+  <line x1="392" y1="1130" x2="700" y2="1130" class="line"/>
+  <text x="465" y="1122" class="text">4.1 syncRoles(roles)</text>
+  <line x1="700" y1="1165" x2="1285" y2="1165" class="line"/>
+  <text x="925" y="1157" class="text">4.1.1 syncRoles()</text>
+  <line x1="1285" y1="1195" x2="700" y2="1195" class="return"/>
+  <text x="900" y="1188" class="text">Roles sincronizados / rol invalido</text>
+  <line x1="700" y1="1230" x2="392" y2="1230" class="return"/>
+  <text x="435" y="1223" class="text">Confirmar asignacion o mostrar error</text>
+
+  <!-- 5. CSV import -->
+  <rect x="25" y="1300" width="1595" height="315" rx="4" class="block"/>
+  <rect x="25" y="1300" width="115" height="30" class="box"/>
+  <text x="46" y="1321" class="label">opt</text>
+  <text x="155" y="1321" class="small">Administrador realiza carga masiva CSV</text>
+
+  <line x1="120" y1="1370" x2="392" y2="1370" class="line"/>
+  <text x="145" y="1362" class="text">5. Carga Masiva CSV</text>
+  <line x1="392" y1="1400" x2="700" y2="1400" class="line"/>
+  <text x="485" y="1392" class="text">5.1 import(csv)</text>
+
+  <rect x="55" y="1425" width="1565" height="170" rx="4" class="block"/>
+  <rect x="55" y="1425" width="145" height="28" class="box"/>
+  <text x="75" y="1445" class="label">loop</text>
+  <text x="215" y="1445" class="small">Por cada fila valida del archivo CSV</text>
+  <line x1="700" y1="1480" x2="1515" y2="1480" class="line"/>
+  <text x="1020" y="1472" class="text">5.1.1 import(csv)</text>
+  <line x1="1515" y1="1510" x2="700" y2="1510" class="return"/>
+  <text x="990" y="1503" class="text">Usuario tipo postulante/docente creado o actualizado</text>
+
+  <rect x="85" y="1530" width="1505" height="50" rx="4" class="block"/>
+  <text x="105" y="1560" class="label">alt</text>
+  <text x="210" y="1560" class="text">CSV valido: mostrar resumen de importacion / CSV invalido: mostrar filas con errores</text>
+  <line x1="700" y1="1600" x2="392" y2="1600" class="return"/>
+  <text x="435" y="1593" class="text">Mostrar resultado de carga masiva</text>
+</svg>

@@ -30,8 +30,8 @@
             }
         </style>
 
-        <link rel="icon" href="/images/ficct-logo-icon.png" type="image/png">
-        <link rel="apple-touch-icon" href="/images/ficct-logo-icon.png">
+        <link rel="icon" href="/images/ficct-shield-oval.png?v=2" type="image/png">
+        <link rel="apple-touch-icon" href="/images/ficct-shield-oval.png?v=2">
 
         @fonts
 

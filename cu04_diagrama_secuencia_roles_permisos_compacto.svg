@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1550" height="1450" viewBox="0 0 1550 1450">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#111"/>
+    </marker>
+    <marker id="arrow-gray" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#555"/>
+    </marker>
+    <style>
+      .title { font: 700 28px Arial, sans-serif; fill: #111; }
+      .head { font: 700 17px Arial, sans-serif; fill: #111; }
+      .text { font: 15px Arial, sans-serif; fill: #111; }
+      .small { font: 13px Arial, sans-serif; fill: #111; }
+      .label { font: 700 14px Arial, sans-serif; fill: #111; }
+      .line { stroke: #111; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .return { stroke: #555; stroke-width: 2; fill: none; stroke-dasharray: 7 6; marker-end: url(#arrow-gray); }
+      .life { stroke: #777; stroke-width: 1.5; stroke-dasharray: 7 6; }
+      .box { fill: #fff; stroke: #111; stroke-width: 1.8; }
+      .block { fill: rgba(248,250,252,0.86); stroke: #111; stroke-width: 1.6; }
+      .section { stroke: #999; stroke-width: 1.1; stroke-dasharray: 5 5; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1550" height="1450" fill="#fff"/>
+  <text x="775" y="45" text-anchor="middle" class="title">CU04 - Diagrama de secuencia: Roles y permisos</text>
+
+  <!-- Participants -->
+  <rect x="35" y="75" width="170" height="48" rx="4" class="box"/>
+  <text x="120" y="105" text-anchor="middle" class="head">Administrador</text>
+
+  <rect x="290" y="75" width="230" height="58" rx="4" class="box"/>
+  <text x="405" y="99" text-anchor="middle" class="head">UI</text>
+  <text x="405" y="119" text-anchor="middle" class="head">RolesPage/PermisosPage</text>
+
+  <rect x="620" y="75" width="180" height="48" rx="4" class="box"/>
+  <text x="710" y="105" text-anchor="middle" class="head">Controller</text>
+
+  <rect x="940" y="75" width="170" height="48" rx="4" class="box"/>
+  <text x="1025" y="105" text-anchor="middle" class="head">usuario</text>
+
+  <rect x="1185" y="75" width="170" height="48" rx="4" class="box"/>
+  <text x="1270" y="105" text-anchor="middle" class="head">RolPermiso</text>
+
+  <rect x="1390" y="75" width="140" height="48" rx="4" class="box"/>
+  <text x="1460" y="105" text-anchor="middle" class="head">Permiso</text>
+
+  <!-- Lifelines -->
+  <line x1="120" y1="123" x2="120" y2="1390" class="life"/>
+  <line x1="405" y1="133" x2="405" y2="1390" class="life"/>
+  <line x1="710" y1="123" x2="710" y2="1390" class="life"/>
+  <line x1="1025" y1="123" x2="1025" y2="1390" class="life"/>
+  <line x1="1270" y1="123" x2="1270" y2="1390" class="life"/>
+  <line x1="1460" y1="123" x2="1460" y2="1390" class="life"/>
+
+  <!-- 1. List roles -->
+  <rect x="25" y="160" width="1505" height="220" rx="4" class="block"/>
+  <rect x="25" y="160" width="115" height="30" class="box"/>
+  <text x="46" y="181" class="label">opt</text>
+  <text x="155" y="181" class="small">Administrador desea listar roles</text>
+
+  <line x1="120" y1="220" x2="405" y2="220" class="line"/>
+  <text x="165" y="212" class="text">1. Listar roles</text>
+  <line x1="405" y1="250" x2="710" y2="250" class="line"/>
+  <text x="490" y="242" class="text">1.1 findAll()</text>
+  <line x1="710" y1="280" x2="1025" y2="280" class="line"/>
+  <text x="825" y="272" class="text">1.1.1 list()</text>
+  <line x1="1025" y1="310" x2="710" y2="310" class="return"/>
+  <text x="820" y="303" class="text">Lista de roles</text>
+  <line x1="710" y1="345" x2="405" y2="345" class="return"/>
+  <text x="445" y="338" class="text">Mostrar listado o mensaje sin resultados</text>
+
+  <!-- 2. Create role -->
+  <rect x="25" y="420" width="1505" height="260" rx="4" class="block"/>
+  <rect x="25" y="420" width="115" height="30" class="box"/>
+  <text x="46" y="441" class="label">opt</text>
+  <text x="155" y="441" class="small">Administrador crea un rol</text>
+
+  <line x1="120" y1="485" x2="405" y2="485" class="line"/>
+  <text x="165" y="477" class="text">2. Crear rol</text>
+  <line x1="405" y1="515" x2="710" y2="515" class="line"/>
+  <text x="490" y="507" class="text">2.1 create(data)</text>
+
+  <rect x="55" y="540" width="1475" height="125" rx="4" class="block"/>
+  <rect x="55" y="540" width="110" height="28" class="box"/>
+  <text x="75" y="560" class="label">alt</text>
+  <line x1="55" y1="600" x2="1530" y2="600" class="section"/>
+  <text x="75" y="590" class="label">Datos validos</text>
+  <line x1="710" y1="585" x2="1025" y2="585" class="line"/>
+  <text x="825" y="577" class="text">2.1.1 create(data)</text>
+  <line x1="1025" y1="620" x2="710" y2="620" class="return"/>
+  <text x="825" y="613" class="text">Rol creado</text>
+  <text x="75" y="645" class="label">Datos invalidos o rol duplicado</text>
+  <line x1="710" y1="650" x2="405" y2="650" class="return"/>
+  <text x="445" y="643" class="text">Confirmar creacion o mostrar error</text>
+
+  <!-- 3. Edit role + permission -->
+  <rect x="25" y="720" width="1505" height="300" rx="4" class="block"/>
+  <rect x="25" y="720" width="115" height="30" class="box"/>
+  <text x="46" y="741" class="label">opt</text>
+  <text x="155" y="741" class="small">Administrador edita rol y sus permisos</text>
+
+  <line x1="120" y1="785" x2="405" y2="785" class="line"/>
+  <text x="145" y="777" class="text">3. Editar rol + Permiso</text>
+  <line x1="405" y1="815" x2="710" y2="815" class="line"/>
+  <text x="470" y="807" class="text">3.1 update(id, data)</text>
+
+  <rect x="55" y="840" width="1475" height="160" rx="4" class="block"/>
+  <rect x="55" y="840" width="110" height="28" class="box"/>
+  <text x="75" y="860" class="label">alt</text>
+  <line x1="55" y1="910" x2="1530" y2="910" class="section"/>
+  <text x="75" y="895" class="label">Rol existe, datos validos y permisos validos</text>
+  <line x1="710" y1="890" x2="1270" y2="890" class="line"/>
+  <text x="900" y="882" class="text">3.1.1 update() + syncPermisos()</text>
+  <line x1="1270" y1="925" x2="710" y2="925" class="return"/>
+  <text x="900" y="918" class="text">Rol y permisos actualizados</text>
+  <text x="75" y="965" class="label">Rol no existe, datos invalidos o permiso invalido</text>
+  <line x1="710" y1="970" x2="405" y2="970" class="return"/>
+  <text x="445" y="963" class="text">Confirmar actualizacion o mostrar error</text>
+
+  <!-- 4. Toggle role -->
+  <rect x="25" y="1060" width="1505" height="205" rx="4" class="block"/>
+  <rect x="25" y="1060" width="115" height="30" class="box"/>
+  <text x="46" y="1081" class="label">opt</text>
+  <text x="155" y="1081" class="small">Administrador activa o desactiva rol</text>
+
+  <line x1="120" y1="1125" x2="405" y2="1125" class="line"/>
+  <text x="145" y="1117" class="text">4. Activar/desactivar rol</text>
+  <line x1="405" y1="1155" x2="710" y2="1155" class="line"/>
+  <text x="490" y="1147" class="text">4.1 toggle(id)</text>
+  <line x1="710" y1="1190" x2="1270" y2="1190" class="line"/>
+  <text x="925" y="1182" class="text">4.1.1 toggleActive()</text>
+  <line x1="1270" y1="1220" x2="710" y2="1220" class="return"/>
+  <text x="905" y="1213" class="text">Estado actualizado / error si no existe</text>
+  <line x1="710" y1="1245" x2="405" y2="1245" class="return"/>
+  <text x="445" y="1238" class="text">Actualizar vista</text>
+
+  <!-- 5. Manage permissions -->
+  <rect x="25" y="1300" width="1505" height="125" rx="4" class="block"/>
+  <rect x="25" y="1300" width="115" height="30" class="box"/>
+  <text x="46" y="1321" class="label">opt</text>
+  <text x="155" y="1321" class="small">Administrador gestiona permisos</text>
+
+  <line x1="120" y1="1360" x2="405" y2="1360" class="line"/>
+  <text x="145" y="1352" class="text">5. Gestionar permisos</text>
+  <line x1="405" y1="1390" x2="710" y2="1390" class="line"/>
+  <text x="465" y="1382" class="text">5.1 store/update(permiso)</text>
+  <line x1="710" y1="1415" x2="1460" y2="1415" class="line"/>
+  <text x="1000" y="1407" class="text">5.1.1 create/update()</text>
+</svg>

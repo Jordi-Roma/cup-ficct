@@ -14,6 +14,7 @@ use App\Modules\GestionAcademica\Models\Carrera;
 use App\Modules\GestionAcademica\Models\GestionAcademica;
 use App\Modules\GestionAcademica\Models\MateriaCup;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,15 +26,25 @@ class UsuarioController extends Controller
     ) {
     }
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $gestionFilter = $request->query('gestion', 'activa');
+        $gestionActiva = GestionAcademica::query()
+            ->where('activo', true)
+            ->orderByDesc('fecha_inicio')
+            ->first(['id_gestion', 'nombre', 'activo']);
+
         return Inertia::render('admin/usuarios', [
-            'usuarios' => $this->usuarioService->list(),
+            'usuarios' => $this->usuarioService->list((string) $gestionFilter, $gestionActiva?->id_gestion),
             'roles' => Rol::query()->where('activo', true)->orderBy('nombre')->get()->map(
                 fn (Rol $rol) => $this->rolService->serialize($rol->load('permisos')),
             ),
             'materias' => MateriaCup::query()->where('activo', true)->orderBy('nombre')->get(['id_materia', 'nombre']),
             'gestiones' => GestionAcademica::query()->orderByDesc('fecha_inicio')->get(['id_gestion', 'nombre', 'activo']),
+            'gestionActiva' => $gestionActiva,
+            'filters' => [
+                'gestion' => (string) $gestionFilter,
+            ],
             'carreras' => Carrera::query()->where('activo', true)->orderBy('nombre')->get(['id_carrera', 'nombre']),
         ]);
     }

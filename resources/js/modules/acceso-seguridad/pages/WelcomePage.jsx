@@ -1,12 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import {
-    BarChart3,
-    CheckSquare,
-    CreditCard,
-    FileText,
-    LogIn,
-    UserPlus,
-} from 'lucide-react';
+import { BarChart3, CheckSquare, CreditCard, FileText, LogIn, UserPlus } from 'lucide-react';
 import { dashboard, login, register } from '@/routes';
 import { Button } from '@/shared/components/ui/button';
 
@@ -45,303 +38,138 @@ export default function Welcome() {
             <Head title="Admisión CUP-FICCT" />
 
             <style>{`
-                /* ── Circuit board pattern ── */
-                .welcome-circuit-bg {
+                .welcome-grid {
                     background-image:
-                        linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
-                    background-size: 40px 40px;
+                        linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px);
+                    background-size: 42px 42px;
                 }
-                .welcome-circuit-left {
-                    background-image:
-                        linear-gradient(rgba(180,40,100,0.12) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(180,40,100,0.12) 1px, transparent 1px);
-                    background-size: 36px 36px;
+
+                .welcome-glow {
+                    background:
+                        radial-gradient(circle at 18% 12%, rgba(226, 70, 145, 0.45), transparent 28%),
+                        radial-gradient(circle at 92% 88%, rgba(156, 24, 92, 0.36), transparent 30%),
+                        linear-gradient(135deg, #2b071b 0%, #210515 38%, #5f0b34 100%);
                 }
-                /* ── Step card 3D effect ── */
-                @keyframes wcFloat {
-                    0%, 100% { transform: translateY(0px); }
-                    50%       { transform: translateY(-5px); }
+
+                @keyframes welcomeFloat {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-5px); }
                 }
-                .wc-step {
-                    transform-style: preserve-3d;
-                    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1),
-                                box-shadow 0.35s ease;
-                    animation: wcFloat 5s ease-in-out infinite;
+
+                .welcome-step {
+                    animation: welcomeFloat 5.5s ease-in-out infinite;
                 }
-                .wc-step:nth-child(1) { animation-delay: 0s; }
-                .wc-step:nth-child(2) { animation-delay: 0.7s; }
-                .wc-step:nth-child(3) { animation-delay: 1.4s; }
-                .wc-step:nth-child(4) { animation-delay: 2.1s; }
-                .wc-step:hover {
-                    transform: translateY(-8px) rotateX(5deg) scale(1.03);
-                    box-shadow: 0 20px 40px rgba(120,10,60,0.35), 0 6px 12px rgba(0,0,0,0.2);
-                }
-                /* ── Dot node pulse ── */
-                @keyframes wcDot {
-                    0%, 100% { opacity: 0.4; transform: scale(1); }
-                    50%       { opacity: 0.9; transform: scale(1.4); }
-                }
-                .wc-dot { animation: wcDot 3s ease-in-out infinite; }
-                .wc-dot:nth-child(2) { animation-delay: 0.6s; }
-                .wc-dot:nth-child(3) { animation-delay: 1.2s; }
-                .wc-dot:nth-child(4) { animation-delay: 1.8s; }
-                /* ── Building filter — line-art on pink ── */
-                .wc-building {
-                    filter: sepia(1) saturate(0.3) brightness(0.55) contrast(1.4);
-                    mix-blend-mode: multiply;
-                }
+
+                .welcome-step:nth-child(2) { animation-delay: .5s; }
+                .welcome-step:nth-child(3) { animation-delay: 1s; }
+                .welcome-step:nth-child(4) { animation-delay: 1.5s; }
             `}</style>
 
-            {/* ════════════════════════════════════════
-                FULL SCREEN WRAPPER
-            ════════════════════════════════════════ */}
-            <main className="flex min-h-screen flex-col overflow-hidden">
-
-                {/* ── CONTENT ROW ── */}
-                <div className="flex flex-1">
-
-                    {/* ════════════════════════════════
-                        LEFT PANEL — light pink, building
-                    ════════════════════════════════ */}
-                    <aside
-                        className="welcome-circuit-left relative flex w-64 shrink-0 flex-col overflow-hidden xl:w-72"
-                        style={{ background: 'linear-gradient(180deg, #f0a0be 0%, #e890b2 40%, #e080a8 100%)' }}
-                    >
-                        {/* Decorative circuit nodes */}
-                        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                            {[
-                                { top: '12%', left: '20%' }, { top: '28%', right: '15%' },
-                                { top: '55%', left: '35%' }, { top: '75%', right: '20%' },
-                            ].map((pos, i) => (
-                                <div
-                                    key={i}
-                                    className="wc-dot absolute size-2 rounded-full bg-white/60"
-                                    style={pos}
-                                />
-                            ))}
-                        </div>
-
-                        {/* Shield logo + faculty name */}
-                        <div className="relative z-10 flex flex-col items-center gap-2 px-4 pt-4">
-                            <img
-                                src="/images/ficct-shield-oval.png"
-                                alt="Escudo FICCT"
-                                className="h-24 w-auto object-contain xl:h-28"
-                                style={{
-                                    filter: 'contrast(18) brightness(0.45)',
-                                    mixBlendMode: 'multiply',
-                                    opacity: 0.72,
-                                }}
-                            />
-                            <div className="text-center">
-                                <p className="text-[9px] font-bold leading-tight tracking-wide text-[#4a0030] uppercase">
-                                    Facultad de Ingeniería
-                                </p>
-                                <p className="text-[9px] font-semibold leading-tight text-[#4a0030] uppercase">
-                                    en Ciencias de la Computación
-                                </p>
-                                <p className="text-[9px] font-semibold leading-tight text-[#4a0030] uppercase">
-                                    y Telecomunicaciones
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Big title */}
-                        <div className="relative z-10 px-5 pb-2">
-                            <h1 className="text-3xl font-extrabold leading-tight text-[#2c0020] xl:text-4xl">
-                                ADMISIÓN{' '}
-                                <span className="block">UNIVERSITARIA</span>
-                            </h1>
-                            <p
-                                className="mt-1 text-2xl font-extrabold xl:text-3xl"
-                                style={{ color: '#b01060' }}
-                            >
-                                CUP-FICCT
-                            </p>
-                        </div>
-
-                        {/* Building line-art illustration */}
-                        <div className="relative mt-auto overflow-hidden" style={{ height: '58%' }}>
-                            {/* Fade top edge into panel */}
-                            <div
-                                className="absolute inset-x-0 top-0 z-10 h-10"
-                                style={{ background: 'linear-gradient(to bottom, #e890b2, transparent)' }}
-                            />
-                            <img
-                                src="/images/ficct-building-lineart.png"
-                                alt="Edificio FICCT 236"
-                                className="h-full w-full object-contain object-bottom"
-                                style={{
-                                    /* White bg → transparent via multiply;
-                                       boost contrast so faint lines become solid */
-                                    filter: 'contrast(2) brightness(0.75)',
-                                    mixBlendMode: 'multiply',
-                                    opacity: 0.88,
-                                }}
-                            />
-                        </div>
-                    </aside>
-
-                    {/* ════════════════════════════════
-                        RIGHT PANEL — magenta gradient
-                    ════════════════════════════════ */}
-                    <section
-                        className="welcome-circuit-bg relative flex flex-1 flex-col overflow-hidden"
-                        style={{
-                            background: 'linear-gradient(145deg, #5e0a32 0%, #7a1244 20%, #6a1040 45%, #7e1448 65%, #520830 85%, #3e0624 100%)',
-                        }}
-                    >
-                        {/* SVG circuit decoration lines */}
-                        <svg
-                            className="pointer-events-none absolute inset-0 h-full w-full opacity-15"
-                            xmlns="http://www.w3.org/2000/svg"
-                            preserveAspectRatio="none"
-                        >
-                            <line x1="0" y1="20%" x2="60%" y2="20%" stroke="white" strokeWidth="0.8" strokeDasharray="6 5" />
-                            <line x1="0" y1="80%" x2="100%" y2="80%" stroke="white" strokeWidth="0.8" strokeDasharray="6 5" />
-                            <line x1="55%" y1="0" x2="55%" y2="100%" stroke="white" strokeWidth="0.8" strokeDasharray="6 5" />
-                            <circle cx="55%" cy="20%" r="5" fill="white" opacity="0.6" />
-                            <circle cx="0" cy="80%" r="4" fill="white" opacity="0.5" />
-                            <circle cx="55%" cy="80%" r="5" fill="white" opacity="0.6" />
-                        </svg>
-
-                        {/* Admin button (if logged in) */}
+            <main className="welcome-glow welcome-grid min-h-screen overflow-x-hidden text-white">
+                <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-5 py-6 sm:px-8 lg:px-10">
+                    <header className="relative z-20 flex items-center justify-end gap-4">
                         {auth.user && (
-                            <div className="relative z-20 flex justify-end p-5">
-                                <Button
-                                    asChild
-                                    className="border border-white/30 bg-white/15 text-white hover:bg-white/25"
-                                >
-                                    <a href="/">Ir al Sistema</a>
-                                </Button>
-                            </div>
+                            <Button asChild className="shrink-0 border border-white/25 bg-white/12 text-white hover:bg-white/20">
+                                <Link href={dashboard()}>Ir al Sistema</Link>
+                            </Button>
                         )}
+                    </header>
 
-                        {/* ── Main content flex ── */}
-                        <div className="relative z-10 flex flex-1 items-center gap-6 px-8 py-8 xl:px-12">
-
-                            {/* Welcome text + buttons */}
-                            <div className="flex-1 space-y-6">
-                                <div>
-                                    <h2
-                                        className="text-4xl font-extrabold leading-tight text-white xl:text-5xl"
-                                        style={{ textShadow: '0 2px 12px rgba(0,0,0,0.3)' }}
-                                    >
-                                        TE DAMOS LA{' '}
-                                        <span
-                                            className="block"
-                                            style={{ color: '#ffb8d8' }}
-                                        >
-                                            BIENVENIDA
-                                        </span>
-                                    </h2>
+                    <section className="relative z-10 grid flex-1 items-center gap-8 py-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.85fr)] lg:gap-10 lg:py-8">
+                        <div className="relative min-w-0">
+                            <div className="mb-8 flex justify-center lg:justify-start">
+                                <div className="relative flex size-24 items-center justify-center rounded-full border border-pink-200/18 bg-white/8 shadow-2xl shadow-pink-950/30 backdrop-blur sm:size-28">
+                                    <span className="absolute inset-[-10px] rounded-full border border-dashed border-pink-300/25" />
+                                    <img
+                                        src="/images/ficct-shield-oval.png"
+                                        alt="Escudo FICCT"
+                                        className="size-16 rounded-full object-contain sm:size-20"
+                                    />
                                 </div>
+                            </div>
 
-                                <p className="max-w-sm text-base leading-7 text-pink-100">
-                                    Registra tu postulación al Curso Preuniversitario de la FICCT,
-                                    consulta tu proceso de admisión y accede a tu información académica.
-                                </p>
+                            <p className="mb-3 text-xs font-extrabold tracking-wide text-pink-200 sm:text-sm">
+                                ADMISIÓN UNIVERSITARIA
+                            </p>
 
-                                <div className="flex flex-wrap gap-3">
-                                    {auth.user ? (
+                            <h1 className="max-w-2xl text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+                                TE DAMOS LA <span className="block text-pink-200">BIENVENIDA</span>
+                            </h1>
+
+                            <p className="mt-4 text-3xl font-black tracking-tight text-pink-300 sm:text-4xl">CUP-FICCT</p>
+
+                            <p className="mt-6 max-w-xl text-base leading-7 text-pink-50/88 sm:text-lg">
+                                Registra tu postulación al Curso Preuniversitario de la FICCT,
+                                consulta tu proceso de admisión y accede a tu información académica.
+                            </p>
+
+                            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                                {auth.user ? (
+                                    <Button
+                                        asChild
+                                        className="h-12 w-full border border-white/35 bg-white/14 px-6 text-sm font-bold text-white hover:bg-white/24 sm:w-auto"
+                                    >
+                                        <Link href={dashboard()}>Ir al Sistema</Link>
+                                    </Button>
+                                ) : (
+                                    <>
                                         <Button
                                             asChild
-                                            className="h-10 border border-white/40 bg-white/15 px-5 text-sm font-bold text-white hover:bg-white/25"
+                                            className="h-12 w-full border border-white/35 bg-white/14 px-6 text-sm font-bold text-white hover:bg-white/24 sm:w-auto"
                                         >
-                                            <a href="/">Ir al Sistema</a>
+                                            <Link href={register()}>
+                                                <UserPlus className="size-4" />
+                                                REGISTRARSE COMO POSTULANTE
+                                            </Link>
                                         </Button>
-                                    ) : (
-                                        <>
-                                            <Button
-                                                asChild
-                                                className="h-10 border border-white/50 bg-white/15 px-5 text-sm font-bold text-white hover:bg-white/28"
-                                                style={{ backdropFilter: 'blur(6px)' }}
-                                            >
-                                                <Link href={register()}>
-                                                    <UserPlus className="size-4" />
-                                                    REGISTRARSE COMO POSTULANTE
-                                                </Link>
-                                            </Button>
-                                            <Button
-                                                asChild
-                                                className="h-10 border border-white/50 bg-white/15 px-5 text-sm font-bold text-white hover:bg-white/28"
-                                                style={{ backdropFilter: 'blur(6px)' }}
-                                            >
-                                                <Link href={login()}>
-                                                    <LogIn className="size-4" />
-                                                    INICIAR SESIÓN
-                                                </Link>
-                                            </Button>
-                                        </>
-                                    )}
-                                </div>
+                                        <Button
+                                            asChild
+                                            className="h-12 w-full border border-white/35 bg-white/14 px-6 text-sm font-bold text-white hover:bg-white/24 sm:w-auto"
+                                        >
+                                            <Link href={login()}>
+                                                <LogIn className="size-4" />
+                                                INICIAR SESIÓN
+                                            </Link>
+                                        </Button>
+                                    </>
+                                )}
                             </div>
 
-                            {/* Step cards — right sub-column */}
-                            <div
-                                className="hidden w-72 flex-col gap-3 lg:flex xl:w-80"
-                                style={{ perspective: '900px' }}
-                            >
+                            <div className="mt-8 grid gap-3 sm:max-w-xl">
                                 {processSteps.map((step) => (
                                     <div
                                         key={step.number}
-                                        className="wc-step group relative overflow-hidden rounded-2xl px-4 py-3"
-                                        style={{
-                                            background: 'rgba(255,220,235,0.18)',
-                                            border: '1px solid rgba(255,255,255,0.28)',
-                                            backdropFilter: 'blur(12px)',
-                                        }}
+                                        className="welcome-step grid grid-cols-[auto_auto_minmax(0,1fr)] items-center gap-3 rounded-xl border border-white/10 bg-white/8 px-3 py-3 shadow-lg shadow-black/10 backdrop-blur"
                                     >
-                                        {/* Hover shimmer */}
-                                        <div
-                                            className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                                            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%)' }}
-                                        />
-
-                                        <div className="relative flex items-center gap-3">
-                                            {/* Icon box */}
-                                            <div
-                                                className="flex size-10 shrink-0 items-center justify-center rounded-xl"
-                                                style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.3)' }}
-                                            >
-                                                <step.icon className="size-5 text-white" />
-                                            </div>
-
-                                            <div className="min-w-0">
-                                                <p className="text-xs font-bold tracking-wide text-white">
-                                                    <span
-                                                        className="mr-1.5 text-pink-200"
-                                                        style={{ fontVariantNumeric: 'tabular-nums' }}
-                                                    >
-                                                        {step.number}
-                                                    </span>
-                                                    {step.title}
-                                                </p>
-                                                <p className="mt-0.5 text-xs leading-4 text-pink-100/90">
-                                                    {step.description}
-                                                </p>
-                                            </div>
+                                        <span className="flex size-9 items-center justify-center rounded-xl bg-pink-500/55 text-xs font-black text-white">
+                                            {step.number}
+                                        </span>
+                                        <step.icon className="size-4 text-pink-200" />
+                                        <div className="min-w-0">
+                                            <p className="truncate text-sm font-bold text-white">{step.title}</p>
+                                            <p className="text-xs leading-5 text-pink-50/75">{step.description}</p>
                                         </div>
-
-                                        {/* Bottom glow on hover */}
-                                        <div
-                                            className="absolute bottom-0 left-6 right-6 h-px opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                                            style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent)' }}
-                                        />
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* ── Bottom bar ── */}
-                        <div
-                            className="relative z-10 border-t border-white/15 py-2 text-center text-xs text-pink-200/80"
-                            style={{ background: 'rgba(0,0,0,0.12)' }}
-                        >
-                            • Facultad de Ingeniería en Ciencias de la Computación y Telecomunicaciones •
+                        <div className="relative min-h-[320px] overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.035] p-4 shadow-2xl shadow-black/20 sm:min-h-[420px] lg:min-h-[620px]">
+                            <div className="absolute inset-0 welcome-grid opacity-70" />
+                            <img
+                                src="/images/ficct-building-lineart.png"
+                                alt="Edificio FICCT 236"
+                                className="absolute bottom-0 left-1/2 max-h-[82%] w-[118%] max-w-none -translate-x-1/2 object-contain object-bottom opacity-80 mix-blend-screen sm:max-h-[88%] lg:w-[125%]"
+                            />
+
+                            <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#210515] to-transparent" />
                         </div>
                     </section>
+
+                    <footer className="relative z-10 border-t border-white/10 py-4 text-xs text-pink-100/65">
+                        • Facultad de Ingeniería en Ciencias de la Computación y Telecomunicaciones •
+                    </footer>
                 </div>
             </main>
         </>

@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['guest'])->group(function () {
     Route::get('forgot-password', [PasswordResetController::class, 'create'])->name('password.request');
     Route::post('forgot-password', [PasswordResetController::class, 'store'])->name('password.email');
-    Route::get('reset-password/{token}', [PasswordResetController::class, 'edit'])->name('password.reset');
+    Route::get('reset-password/verify', [PasswordResetController::class, 'verifyForm'])->name('password.verify.form');
+    Route::post('reset-password/verify', [PasswordResetController::class, 'verify'])->name('password.verify');
+    Route::get('reset-password', [PasswordResetController::class, 'edit'])->name('password.reset.form');
+    Route::get('reset-password/{token}', fn () => redirect()->route('password.verify.form'))->name('password.reset');
     Route::post('reset-password', [PasswordResetController::class, 'update'])->name('password.update');
 });
 

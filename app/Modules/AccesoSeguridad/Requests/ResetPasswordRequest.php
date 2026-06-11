@@ -7,7 +7,9 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ResetPasswordRequest extends FormRequest
 {
-    use PasswordValidationRules;
+    use PasswordValidationRules {
+        messages as passwordValidationMessages;
+    }
 
     public function authorize(): bool
     {
@@ -17,9 +19,12 @@ class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'token' => ['required', 'string'],
-            'username_or_email' => ['required', 'string', 'max:150'],
             'password' => $this->passwordRules(),
         ];
+    }
+
+    public function messages(): array
+    {
+        return $this->passwordValidationMessages();
     }
 }

@@ -1,4 +1,4 @@
-﻿import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import UserCreateForm from '@/modules/acceso-seguridad/components/UserCreateForm';
 import UserRolesForm from '@/modules/acceso-seguridad/components/UserRolesForm';
@@ -10,7 +10,16 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, } 
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/shared/components/ui/select';
-export default function UsuariosPage({ usuarios, roles, materias = [], gestiones = [], carreras = [] }) {
+
+export default function UsuariosPage({
+    usuarios,
+    roles,
+    materias = [],
+    gestiones = [],
+    carreras = [],
+    gestionActiva = null,
+    filters = {},
+}) {
     const { auth } = usePage().props;
     const canCreate = auth.permissions.includes('usuarios:create');
     const canUpdate = auth.permissions.includes('usuarios:update');
@@ -18,6 +27,7 @@ export default function UsuariosPage({ usuarios, roles, materias = [], gestiones
     const [accessUser, setAccessUser] = useState(null);
     const [rolesUser, setRolesUser] = useState(null);
     const [createOpen, setCreateOpen] = useState(false);
+    const selectedGestion = filters.gestion ?? 'activa';
     const { data, setData, put, processing } = useForm({
         estado_acceso: 'HABILITADO',
         activo: true,
@@ -56,6 +66,12 @@ export default function UsuariosPage({ usuarios, roles, materias = [], gestiones
         put(`/admin/usuarios/${accessUser.id_usuario}`, {
             preserveScroll: true,
             onSuccess: () => setAccessUser(null),
+        });
+    };
+    const changeGestionFilter = (gestion) => {
+        router.get('/admin/usuarios', { gestion }, {
+            preserveScroll: true,
+            preserveState: true,
         });
     };
     return (<>
@@ -102,9 +118,28 @@ export default function UsuariosPage({ usuarios, roles, materias = [], gestiones
                             <CardTitle>Listado de usuarios</CardTitle>
                             <CardDescription>
                                 Administra acceso, roles y creación de usuarios.
+                                {selectedGestion === 'activa' && gestionActiva?.nombre
+                                    ? ` Postulantes filtrados por gestión activa: ${gestionActiva.nombre}.`
+                                    : ''}
                             </CardDescription>
                         </div>
                         <div className="flex flex-col gap-2 sm:flex-row">
+                            <div className="min-w-48">
+                                <Select value={selectedGestion} onValueChange={changeGestionFilter}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Gestión" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="activa">Gestión activa</SelectItem>
+                                        <SelectItem value="todas">Todas las gestiones</SelectItem>
+                                        {gestiones.map((gestion) => (
+                                            <SelectItem key={gestion.id_gestion} value={String(gestion.id_gestion)}>
+                                                {gestion.nombre}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                             {canCreate && (<Button type="button" onClick={() => setCreateOpen(true)}>Crear usuario</Button>)}
                             <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar usuario..." className="md:max-w-xs"/>
                         </div>

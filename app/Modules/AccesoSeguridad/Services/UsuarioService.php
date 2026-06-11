@@ -19,13 +19,27 @@ class UsuarioService
     {
     }
 
-    public function list(): Collection
+    public function list(string $gestionFilter = 'activa', ?int $gestionActivaId = null): Collection
     {
-        return User::query()
-            ->with(['roles' => fn ($query) => $query->orderBy('nombre')])
+        $query = User::query()
+            ->with([
+                'roles' => fn ($query) => $query->orderBy('nombre'),
+                'postulante.postulaciones',
+            ])
             ->orderBy('apellido')
-            ->orderBy('nombre')
-            ->get()
+            ->orderBy('nombre');
+
+        $gestionId = $this->selectedGestionId($gestionFilter, $gestionActivaId);
+
+        if ($gestionId !== null) {
+            $query->where(function ($query) use ($gestionId) {
+                $query
+                    ->whereDoesntHave('postulante')
+                    ->orWhereHas('postulante.postulaciones', fn ($query) => $query->where('id_gestion', $gestionId));
+            });
+        }
+
+        return $query->get()
             ->map(fn (User $user) => $this->serialize($user));
     }
 
@@ -175,6 +189,21 @@ class UsuarioService
     private function coordinatorRoleName(): string
     {
         return 'COORDINADOR_ACADEMICO';
+    }
+
+    private function selectedGestionId(string $gestionFilter, ?int $gestionActivaId): ?int
+    {
+        if ($gestionFilter === 'todas') {
+            return null;
+        }
+
+        if ($gestionFilter === 'activa' || $gestionFilter === '') {
+            return $gestionActivaId;
+        }
+
+        return filter_var($gestionFilter, FILTER_VALIDATE_INT) !== false
+            ? (int) $gestionFilter
+            : $gestionActivaId;
     }
 
     private function assignRoleByName(User $user, string $roleName): void

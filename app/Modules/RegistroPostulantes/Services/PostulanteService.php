@@ -15,6 +15,8 @@ class PostulanteService
 {
     public function list(array $filters): Collection
     {
+        $gestionId = $this->selectedGestionId($filters['gestion'] ?? 'activa');
+
         return Postulante::query()
             ->with([
                 'usuario',
@@ -23,6 +25,9 @@ class PostulanteService
                 'postulaciones.grupo',
                 'postulaciones.gestion',
             ])
+            ->when($gestionId !== null, function (Builder $query) use ($gestionId): void {
+                $query->whereHas('postulaciones', fn (Builder $postulacionQuery) => $postulacionQuery->where('id_gestion', $gestionId));
+            })
             ->when($filters['search'] ?? null, function (Builder $query, string $search): void {
                 $query->whereHas('usuario', function (Builder $userQuery) use ($search): void {
                     $userQuery
@@ -35,20 +40,33 @@ class PostulanteService
             ->when($filters['ciudad'] ?? null, fn (Builder $query, string $city) => $query->where('ciudad', 'ilike', "%{$city}%"))
             ->when($filters['colegio_procedencia'] ?? null, fn (Builder $query, string $school) => $query->where('colegio_procedencia', 'ilike', "%{$school}%"))
             ->when(isset($filters['documentacion_completa']) && $filters['documentacion_completa'] !== '', fn (Builder $query) => $query->where('documentacion_completa', filter_var($filters['documentacion_completa'], FILTER_VALIDATE_BOOLEAN)))
-            ->when($filters['estado_admision'] ?? null, function (Builder $query, string $status): void {
-                $query->whereHas('postulaciones', fn (Builder $postulacionQuery) => $postulacionQuery->where('estado_admision', $status));
+            ->when($filters['estado_admision'] ?? null, function (Builder $query, string $status) use ($gestionId): void {
+                $query->whereHas('postulaciones', function (Builder $postulacionQuery) use ($status, $gestionId): void {
+                    $postulacionQuery->where('estado_admision', $status);
+
+                    if ($gestionId !== null) {
+                        $postulacionQuery->where('id_gestion', $gestionId);
+                    }
+                });
             })
-            ->when($filters['id_carrera'] ?? null, function (Builder $query, int|string $careerId): void {
-                $query->whereHas('postulaciones', function (Builder $postulacionQuery) use ($careerId): void {
+            ->when($filters['id_carrera'] ?? null, function (Builder $query, int|string $careerId) use ($gestionId): void {
+                $query->whereHas('postulaciones', function (Builder $postulacionQuery) use ($careerId, $gestionId): void {
                     $postulacionQuery
-                        ->where('id_carrera_opcion1', $careerId)
-                        ->orWhere('id_carrera_opcion2', $careerId);
+                        ->where(function (Builder $careerQuery) use ($careerId): void {
+                            $careerQuery
+                                ->where('id_carrera_opcion1', $careerId)
+                                ->orWhere('id_carrera_opcion2', $careerId);
+                        });
+
+                    if ($gestionId !== null) {
+                        $postulacionQuery->where('id_gestion', $gestionId);
+                    }
                 });
             })
             ->whereHas('usuario')
             ->get()
             ->sortBy(fn (Postulante $postulante) => $postulante->usuario?->apellido.' '.$postulante->usuario?->nombre)
-            ->map(fn (Postulante $postulante) => $this->serialize($postulante))
+            ->map(fn (Postulante $postulante) => $this->serialize($postulante, $gestionId))
             ->values();
     }
 
@@ -119,9 +137,9 @@ class PostulanteService
         }
     }
 
-    public function serialize(Postulante $postulante): array
+    public function serialize(Postulante $postulante, ?int $gestionId = null): array
     {
-        $postulacion = $this->currentPostulacion($postulante);
+        $postulacion = $this->currentPostulacion($postulante, $gestionId);
         $user = $postulante->usuario;
 
         return [
@@ -149,6 +167,11 @@ class PostulanteService
             'requiere_pago' => (bool) $postulante->requiere_pago,
             'postulacion' => $postulacion ? [
                 'id_postulacion' => $postulacion->id_postulacion,
+                'gestion' => $postulacion->gestion ? [
+                    'id_gestion' => $postulacion->gestion->id_gestion,
+                    'nombre' => $postulacion->gestion->nombre,
+                    'activo' => $postulacion->gestion->activo,
+                ] : null,
                 'estado_admision' => $postulacion->estado_admision,
                 'estado_proceso' => $postulacion->estado_proceso,
                 'turno_preferido' => $postulacion->turno_preferido,
@@ -186,11 +209,16 @@ class PostulanteService
         }
     }
 
-    private function currentPostulacion(Postulante $postulante): ?Postulacion
+    private function currentPostulacion(Postulante $postulante, ?int $gestionId = null): ?Postulacion
     {
         $postulaciones = $postulante->relationLoaded('postulaciones')
             ? $postulante->postulaciones
             : $postulante->postulaciones()->with(['carreraOpcion1', 'carreraOpcion2', 'grupo', 'gestion'])->get();
+
+        if ($gestionId !== null) {
+            return $postulaciones->firstWhere('id_gestion', $gestionId);
+        }
+
         $activeGestionId = GestionAcademica::query()
             ->where('activo', true)
             ->orderByDesc('id_gestion')
@@ -198,6 +226,25 @@ class PostulanteService
 
         return $postulaciones->firstWhere('id_gestion', $activeGestionId)
             ?? $postulaciones->sortByDesc('fecha_postulacion')->first();
+    }
+
+    private function selectedGestionId(string|int|null $gestionFilter): ?int
+    {
+        if ($gestionFilter === null || $gestionFilter === '' || $gestionFilter === 'activa') {
+            return GestionAcademica::query()
+                ->where('activo', true)
+                ->orderByDesc('fecha_inicio')
+                ->orderByDesc('id_gestion')
+                ->value('id_gestion');
+        }
+
+        if ($gestionFilter === 'todas') {
+            return null;
+        }
+
+        return filter_var($gestionFilter, FILTER_VALIDATE_INT) !== false
+            ? (int) $gestionFilter
+            : null;
     }
 
     private function turnoLabel(?string $turno): string

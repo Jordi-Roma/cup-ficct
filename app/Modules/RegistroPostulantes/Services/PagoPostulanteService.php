@@ -3,13 +3,17 @@
 namespace App\Modules\RegistroPostulantes\Services;
 
 use App\Modules\AccesoSeguridad\Models\User;
+use App\Modules\RegistroPostulantes\Mail\PagoInscripcionReceiptMail;
 use App\Modules\RegistroPostulantes\Models\PagoInscripcion;
 use App\Modules\RegistroPostulantes\Models\Postulacion;
 use App\Modules\RegistroPostulantes\Models\Postulante;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Stripe\Checkout\Session;
 use Stripe\StripeClient;
+use Throwable;
 
 class PagoPostulanteService
 {
@@ -76,10 +80,11 @@ class PagoPostulanteService
             ]);
         }
 
-        DB::transaction(function () use ($user, $session): void {
+        $receiptData = DB::transaction(function () use ($user, $session): ?array {
             $postulante = $this->postulanteFor($user);
             $postulacion = $this->currentPostulacion($postulante);
             $metadata = $this->metadataArray($session);
+            $receiptShouldBeSent = false;
 
             if ((int) ($metadata['id_postulacion'] ?? 0) !== (int) $postulacion->id_postulacion) {
                 throw ValidationException::withMessages([
@@ -89,7 +94,7 @@ class PagoPostulanteService
 
             if ($postulacion->estado_proceso !== 'VALIDADO_PENDIENTE_PAGO') {
                 if ($postulacion->estado_proceso === 'HABILITADO_CUP') {
-                    return;
+                    return null;
                 }
 
                 throw ValidationException::withMessages([
@@ -103,7 +108,7 @@ class PagoPostulanteService
                 ->first();
 
             if (! $approvedPayment) {
-                PagoInscripcion::create([
+                $approvedPayment = PagoInscripcion::create([
                     'id_postulacion' => $postulacion->id_postulacion,
                     'monto' => self::STRIPE_AMOUNT_DECIMAL,
                     'moneda' => strtoupper(self::STRIPE_CURRENCY),
@@ -114,6 +119,7 @@ class PagoPostulanteService
                     'fecha_inicio' => now(),
                     'fecha_confirmacion' => now(),
                 ]);
+                $receiptShouldBeSent = true;
             }
 
             $postulacion->update([
@@ -124,16 +130,46 @@ class PagoPostulanteService
                 'activo' => true,
                 'estado_acceso' => 'HABILITADO',
             ]);
+
+            if (! $receiptShouldBeSent) {
+                return null;
+            }
+
+            $postulante->loadMissing('usuario');
+            $postulacion->loadMissing(['gestion', 'carreraOpcion1', 'carreraOpcion2']);
+
+            return [
+                'user' => $user->fresh(),
+                'postulante' => $postulante,
+                'postulacion' => $postulacion,
+                'pago' => $approvedPayment,
+                'session' => $session,
+            ];
         });
+
+        if ($receiptData) {
+            $this->sendPaymentReceipt(
+                $receiptData['user'],
+                $receiptData['postulante'],
+                $receiptData['postulacion'],
+                $receiptData['pago'],
+                $receiptData['session'],
+            );
+        }
     }
 
     public function checkoutSessionPayload(User $user, Postulante $postulante, Postulacion $postulacion): array
     {
+        $receiptEmail = $this->checkoutCustomerEmail($user);
+
         return [
             'mode' => 'payment',
             'success_url' => route('postulante.pago.exito', [], true).'?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('postulante.pago.cancelado', [], true),
-            'customer_email' => $this->checkoutCustomerEmail($user),
+            'customer_email' => $receiptEmail,
+            'payment_intent_data' => [
+                'receipt_email' => $receiptEmail,
+            ],
             'line_items' => [
                 [
                     'quantity' => 1,
@@ -244,5 +280,39 @@ class PagoPostulanteService
         return config('services.postulantes.notification_email')
             ?: config('services.postulante_notification_email')
             ?: $user->correo;
+    }
+
+    private function receiptEmail(User $user): string
+    {
+        return config('services.postulantes.notification_email')
+            ?: config('services.postulante_notification_email')
+            ?: config('mail.from.address')
+            ?: $user->correo;
+    }
+
+    private function sendPaymentReceipt(
+        User $user,
+        Postulante $postulante,
+        Postulacion $postulacion,
+        PagoInscripcion $pago,
+        Session $session,
+    ): void {
+        try {
+            Mail::to($this->receiptEmail($user))->send(new PagoInscripcionReceiptMail(
+                $user,
+                $postulante,
+                $postulacion,
+                $pago,
+                $session,
+            ));
+        } catch (Throwable $exception) {
+            Log::warning('No se pudo enviar recibo de pago CUP-FICCT', [
+                'id_usuario' => $user->id_usuario,
+                'id_postulante' => $postulante->id_postulante,
+                'id_postulacion' => $postulacion->id_postulacion,
+                'id_pago' => $pago->id_pago,
+                'error' => $exception->getMessage(),
+            ]);
+        }
     }
 }
